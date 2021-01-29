@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk, Label, Button, PhotoImage
+from tkinter import ttk, Label, Button, PhotoImage, filedialog
 
 import PIL
 from PIL import Image, ImageTk
@@ -55,11 +55,37 @@ def display_excitation():
     button_green.grid(row=0, column=1)
     e_window.mainloop()
 
+# opens file explorer at program path, useful to choose images to analyze or to load previously analyzed data
+def get_file(filetype="img"):
+    # default is image file loader bc it'll be used in more windows than data loader
+    if filetype == "img":
+        # function returns directory path for chosen file(s) as tuple
+        filename = filedialog.askopenfilenames(initialdir='C:\IdeaProjects\primedConversionUI',title="Select a file",
+                                                     filetype=(
+                                                         ("png files", "*.png"),
+                                                         ("jpg files", "*.jpg"),
+                                                         ("tif files", "*.tif"),
+                                                     ))
+        # random example code opening one or more images
+        if len(filename)>1:
+            for image in filename:
+                photo = PIL.Image.open(image)
+                photo.show()
+        elif len(filename)==1:
+            photo = PIL.Image.open(filename[0])
+            photo.show()
+    # will add specific filetype instead of pdf for data when we know what we're saving it as
+    else:
+        filename = filedialog.askopenfilename(initialdir='C:\IdeaProjects\primedConversionUI', title="Select a file",
+                                              filetype=(("All files", "*.pdf"), ("all files", "*.*")))
+
 
 
 b1 = Button(window, text="Regular Excitation", command=display_excitation)
 b2 = Button(window, text="Photo Conversion", command=display_photo_conversion)
 b3 = Button(window, text="Primed Conversion", command=display_primed_conversion)
+b4 = Button(window, text="Load previous data", command=lambda: get_file("data"))
+
 # This produces a grid structure so we can add the buttons in a grid format
 window.columnconfigure(0, weight=1, minsize=75)
 window.rowconfigure(0, weight=1, minsize=50)
@@ -78,5 +104,7 @@ frame.grid(row=1, column=1, padx=5, pady=5)
 b2.grid(row=2, column=1)
 frame.grid(row=1, column=3, padx=5, pady=5)
 b3.grid(row=2, column=2)
+frame.grid(row=1, column=2, padx=5, pady=5)
+b4.grid(row=3, column=1)
 
 window.mainloop()
