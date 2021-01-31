@@ -1,13 +1,15 @@
 import tkinter as tk
 from tkinter import ttk, Label, Button, PhotoImage, filedialog
-
 import PIL
 from PIL import Image, ImageTk
 from PIL.ImageTk import PhotoImage
 
+#Displa_excitation and Display_photo_conversion are now in another file.
+from excitation import display_excitation
+from photoconversion import display_photo_conversion
 from image_analysis import send_message, get_file # We can use this to use functions from other python scripts
-
 # Setting up the initial window
+
 window = tk.Tk()
 window.title('Home')
 window.geometry("800x600")
@@ -23,37 +25,10 @@ def display_primed_conversion():
     img = PhotoImage(image)
     canvas.create_image(12, 11, anchor=tk.NW, image=img) #(500-476)/2=12, (400-378)/2=11
     pr_window.mainloop()
-
 #output = Label(pr_window, text=send_message())
-    #output.place(x=100, y=100)
+#output.place(x=100, y=100)
 # When Primed Conversion button is pressed, it will display "Example code" to the window as a label
 
-def display_photo_conversion():
-    pc_window = tk.Toplevel()
-    pc_window.title('Photo Conversion Testing Stage')
-    pc_window.geometry("1000x600")
-
-def display_excitation():
-    e_window = tk.Toplevel()
-    e_window.title('Excitation Testing Stage')
-    e_window.geometry("600x600")
-    e_window.columnconfigure(0, weight=1, minsize=75)
-    e_window.columnconfigure(1, weight=1, minsize=75)
-    e_window.rowconfigure(0, weight=1, minsize=50)
-    e_window.rowconfigure(1, weight=1, minsize=75)
-    e_window.rowconfigure(2, weight=1, minsize=50)
-    button_red = Button(e_window, text="Red Excitation", foreground="Red")
-    button_green = Button(e_window, text="Green Excitation", foreground="Green")
-    e_frame = tk.Frame(
-        master = e_window,
-        relief = tk.RAISED,
-        borderwidth = 1
-    )
-    e_frame.grid(row=0, column=0, padx=5, pady=5)
-    button_red.grid(row=0, column=0)
-    e_frame.grid(row=0, column=1, padx=5, pady=5)
-    button_green.grid(row=0, column=1)
-    e_window.mainloop()
 
 # opens file explorer at program path, useful to choose images to analyze or to load previously analyzed data
 def get_file(filetype="img"):
@@ -86,7 +61,9 @@ b2 = Button(window, text="Photo Conversion", command=display_photo_conversion)
 b3 = Button(window, text="Primed Conversion", command=display_primed_conversion)
 b4 = Button(window, text="Load previous data", command=lambda: get_file("data"))
 
-Hello = Label(window, text="Hello! \n Welcome to the user interface of our imaging platform. \n Click on 'Regular Excita"
+
+#Small text to introduce the user interface
+Hello = Label(window, text="\n Welcome to the user interface of our imaging platform. \n Click on 'Regular Excita"
                            "tion' to analyse the fluorescence properties of the samples. \nTo see if the samples are "
                            "photoconvertible, click on Photoconversion."
                            "\nTo determine if the samples are primed convertible, click on 'Primed Conversion'.")
