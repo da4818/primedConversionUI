@@ -10,7 +10,7 @@ from image_analysis import send_message, get_file # We can use this to use funct
 # Setting up the initial window
 window = tk.Tk()
 window.title('Home')
-window.geometry("600x600")
+window.geometry("800x600")
 
 def display_primed_conversion():
     pr_window = tk.Toplevel() # Widget that is daughter window of the parent
@@ -31,7 +31,7 @@ def display_primed_conversion():
 def display_photo_conversion():
     pc_window = tk.Toplevel()
     pc_window.title('Photo Conversion Testing Stage')
-    pc_window.geometry("600x600")
+    pc_window.geometry("1000x600")
 
 def display_excitation():
     e_window = tk.Toplevel()
@@ -42,8 +42,8 @@ def display_excitation():
     e_window.rowconfigure(0, weight=1, minsize=50)
     e_window.rowconfigure(1, weight=1, minsize=75)
     e_window.rowconfigure(2, weight=1, minsize=50)
-    button_red = Button(e_window, text="Red Excitation",)
-    button_green = Button(e_window, text="Green Excitation")
+    button_red = Button(e_window, text="Red Excitation", foreground="Red")
+    button_green = Button(e_window, text="Green Excitation", foreground="Green")
     e_frame = tk.Frame(
         master = e_window,
         relief = tk.RAISED,
@@ -86,6 +86,11 @@ b2 = Button(window, text="Photo Conversion", command=display_photo_conversion)
 b3 = Button(window, text="Primed Conversion", command=display_primed_conversion)
 b4 = Button(window, text="Load previous data", command=lambda: get_file("data"))
 
+Hello = Label(window, text="Hello! \n Welcome to the user interface of our imaging platform. \n Click on 'Regular Excita"
+                           "tion' to analyse the fluorescence properties of the samples. \nTo see if the samples are "
+                           "photoconvertible, click on Photoconversion."
+                           "\nTo determine if the samples are primed convertible, click on 'Primed Conversion'.")
+
 # This produces a grid structure so we can add the buttons in a grid format
 window.columnconfigure(0, weight=1, minsize=75)
 window.rowconfigure(0, weight=1, minsize=50)
@@ -106,5 +111,8 @@ frame.grid(row=1, column=3, padx=5, pady=5)
 b3.grid(row=2, column=2)
 frame.grid(row=1, column=2, padx=5, pady=5)
 b4.grid(row=3, column=1)
+
+Hello.grid(row=0, column=1)
+
 
 window.mainloop()
