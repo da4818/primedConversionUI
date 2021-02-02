@@ -6,7 +6,7 @@ from matplotlib.figure import Figure
 import tkinter as tk
 from tkinter import ttk
 
-
+#The majority of the code complicated to use --> may keep the graphing aspect to implement later
 LARGE_FONT= ("Verdana", 12)
 
 
