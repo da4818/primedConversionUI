@@ -22,6 +22,7 @@ class startPage(Frame):
         frame = Frame(self, relief=RAISED, borderwidth=1)
         frame.pack(fill="both", expand=True)
         self.pack(fill="both", expand=True)
+
         excitationButton = Button(self, text="Regular Excitation", command=lambda: (self.destroy(), excitationPage()))
         excitationButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         photoButton = Button(self, text="Photo Conversion", command=lambda: (self.destroy(), photoPage()))
@@ -39,12 +40,13 @@ class excitationPage(Frame):
         self.master.title("Regular Excitation")
         frame = Frame(self, relief=RAISED, borderwidth=1)
         frame.pack(fill="both", expand=True)
-        self.pack(fill="both", expand=True)
 
-        redButton = Button(self, text="Red Excitation")
+        redButton = Button(frame, text="Red Excitation", command=lambda: (self.destroy(), redExcitationPage()))
         redButton.pack(side="top", fill="both", expand=True, padx=5, pady=10)
-        greenButton = Button(self, text="Green Excitation")
+        greenButton = Button(frame, text="Green Excitation")
         greenButton.pack(side="top", fill="both", expand=True, padx=5, pady=10)
+
+        self.pack(fill="both", expand=True)
 
         home = Button(self, text="Home", command=lambda: (self.destroy(), startPage()))
         home.pack(side="left", fill="both", expand=True, padx=5, pady=5)
@@ -52,8 +54,27 @@ class excitationPage(Frame):
         photoButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         primedButton = Button(self, text="Primed Conversion", command=lambda: (self.destroy(), primedPage()))
         primedButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-        dataButton = Button(self, text="Load Previous Data",command=lambda: (self.destroy(), dataPage()))
+        dataButton = Button(self, text="Load Previous Data", command=lambda: (self.destroy(), dataPage()))
         dataButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
+
+class redExcitationPage(Frame):
+    def __init__(self):
+        super().__init__()
+        self.master.title("Excitation - Red LED")
+        frame = Frame(self, relief="raised", borderwidth=1)
+        frame.pack(fill="both", expand=True)
+        #output = Label(frame, text="text").place(x=20, y=20)
+        self.pack(fill="both", expand=True)
+
+        startButton = Button(self, text="Start Excitation", command=lambda: display_text(frame)) #Closes the current page and calls the next page to appear within the same frame
+        startButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
+        stopButton = Button(self, text="Stop") #Closes the current page and calls the next page to appear within the same frame
+        stopButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
+
+def display_text(frame):
+    out = "Starting LED..."
+    label = Label(frame, text=out,bg='gray92').pack() #As the label is in a white box - this is to match the window
+
 
 #PRIMED CONVERSION PAGE
 class primedPage(Frame):
