@@ -1,19 +1,19 @@
 import tkinter as tk
-from tkinter import ttk, Label, Button, PhotoImage, filedialog
+from tkinter import Label, Button, PhotoImage, filedialog
 
 import PIL
-from PIL import Image, ImageTk
+from PIL import Image
 from PIL.ImageTk import PhotoImage
 
-from image_analysis import send_message, get_file # We can use this to use functions from other python scripts
+from image_analysis import send_message, get_file #We can use this to use functions from other python scripts
 
-# Setting up the initial window
+#Setting up the initial window
 window = tk.Tk()
 window.title('Home')
 window.geometry("600x600")
 
 def display_primed_conversion():
-    pr_window = tk.Toplevel() # Widget that is daughter window of the parent
+    pr_window = tk.Toplevel()# Widget that is daughter window of the parent
     pr_window.title('Primed Conversion Testing Stage')
     pr_window.geometry("600x600")
     canvas = tk.Canvas(pr_window, width = 500, height = 400)
@@ -21,11 +21,11 @@ def display_primed_conversion():
     image = Image.open(get_file(3)) # This function returns the name of the png file to be imported
     image = image.resize((476, 378), Image.ANTIALIAS)
     img = PhotoImage(image)
-    canvas.create_image(12, 11, anchor=tk.NW, image=img) #(500-476)/2=12, (400-378)/2=11
+    canvas.create_image(12, 11, anchor=tk.NW, image=img)#(500-476)/2=12, (400-378)/2=11
     pr_window.mainloop()
 
 #output = Label(pr_window, text=send_message())
-    #output.place(x=100, y=100)
+#output.place(x=100, y=100)
 # When Primed Conversion button is pressed, it will display "Example code" to the window as a label
 
 def display_photo_conversion():
@@ -60,18 +60,18 @@ def get_file(filetype="img"):
     # default is image file loader bc it'll be used in more windows than data loader
     if filetype == "img":
         # function returns directory path for chosen file(s) as tuple
-        filename = filedialog.askopenfilenames(initialdir='C:\IdeaProjects\primedConversionUI',title="Select a file",
-                                                     filetype=(
-                                                         ("png files", "*.png"),
-                                                         ("jpg files", "*.jpg"),
-                                                         ("tif files", "*.tif"),
-                                                     ))
+        filename = filedialog.askopenfilenames(initialdir='C:\IdeaProjects\primedConversionUI', title="Select a file",
+                                               filetype=(
+                                                   ("png files", "*.png"),
+                                                   ("jpg files", "*.jpg"),
+                                                   ("tif files", "*.tif"),
+                                               ))
         # random example code opening one or more images
-        if len(filename)>1:
+        if len(filename) > 1:
             for image in filename:
                 photo = PIL.Image.open(image)
                 photo.show()
-        elif len(filename)==1:
+        elif len(filename) == 1:
             photo = PIL.Image.open(filename[0])
             photo.show()
     # will add specific filetype instead of pdf for data when we know what we're saving it as

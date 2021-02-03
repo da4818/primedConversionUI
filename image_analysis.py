@@ -18,8 +18,8 @@ photo_rgb = photo.convert("RGB")
 width, height = photo.size
 #rgb_val = photo_rgb.getpixel((1,1))
 R0,G0,B0 = photo_rgb.getpixel((0,0))
-print("size:",width,",",height)
-print("Values:",R0,G0,B0)
+#print("size:",width,",",height)
+#print("Values:",R0,G0,B0)
 #print(rgb_val)
 for x in range(width):
     for y in range(height):
@@ -31,7 +31,7 @@ for x in range(width):
         photo_rgb.putpixel((x,y),(new_R,new_G,new_B))
 #photo_rgb.save('example'+str(3  )+'.png')
 #photo.show()
-photo_rgb.show()
+#photo_rgb.show()
 def get_file(i):
     out = 'example'+str(i)+'.png'
     #photo_rgb.save(photo_rgb.save('example'+str(1)+'.png'))
