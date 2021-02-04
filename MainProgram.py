@@ -41,9 +41,9 @@ class excitationPage(Frame):
         frame = Frame(self, relief=RAISED, borderwidth=1)
         frame.pack(fill="both", expand=True)
 
-        redButton = Button(frame, text="Red Excitation", command=lambda: (self.destroy(), redExcitationPage()))
+        redButton = Button(frame, text="Red Excitation", command=lambda: (self.destroy(), colourExcitationPage("red")))
         redButton.pack(side="top", fill="both", expand=True, padx=5, pady=10)
-        greenButton = Button(frame, text="Green Excitation")
+        greenButton = Button(frame, text="Green Excitation", command=lambda: (self.destroy(), colourExcitationPage('green')))
         greenButton.pack(side="top", fill="both", expand=True, padx=5, pady=10)
 
         self.pack(fill="both", expand=True)
@@ -57,23 +57,42 @@ class excitationPage(Frame):
         dataButton = Button(self, text="Load Previous Data", command=lambda: (self.destroy(), dataPage()))
         dataButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
 
-class redExcitationPage(Frame):
-    def __init__(self):
+#The red and green excitation will perform similar commands, but will vary in terms of the title name and the type of light to turn on and off
+#Here, a validation check is used to confirm whether red or green excitation occurs - appropriate functions will be added accordingly
+class colourExcitationPage(Frame):
+    def __init__(self, colour):
         super().__init__()
-        self.master.title("Excitation - Red LED")
+        if colour == 'red':
+            print('Red light')
+            self.master.title("Excitation - Red LED")
+        elif colour == 'green':
+            print('Green light')
+            self.master.title("Excitation - Green LED")
+
         frame = Frame(self, relief="raised", borderwidth=1)
         frame.pack(fill="both", expand=True)
-        #output = Label(frame, text="text").place(x=20, y=20)
         self.pack(fill="both", expand=True)
 
-        startButton = Button(self, text="Start Excitation", command=lambda: display_text(frame)) #Closes the current page and calls the next page to appear within the same frame
+        startButton = Button(self, text="Start Excitation", command=lambda: display_LED_message(frame)) #Closes the current page and calls the next page to appear within the same frame
         startButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         stopButton = Button(self, text="Stop") #Closes the current page and calls the next page to appear within the same frame
         stopButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
 
-def display_text(frame):
-    out = "Starting LED..."
-    label = Label(frame, text=out,bg='gray92').pack() #As the label is in a white box - this is to match the window
+
+def message(frame, label):
+    label['text'] = "Stopping LED..."
+    frame.after(2000, remove_message, label)
+def remove_message(label):
+    label.forget()
+
+
+def display_LED_message(frame):
+    label = Label(frame, text="Starting LED...", bg='gray92')
+    label.pack() #As the label is in a white box - this is to match the window
+    #Here the function to turn the light on/off will coded - for now there is a delay that simulate the time taken to perform the excitation
+    frame.after(2000, message, frame, label)
+
+
 
 
 #PRIMED CONVERSION PAGE
@@ -140,4 +159,3 @@ class dataPage(Frame):
 if __name__ == "__main__":
     startPage()
     root.mainloop()
-root.mainloop()
