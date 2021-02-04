@@ -30,6 +30,12 @@ def display_primed_conversion():
 # When Primed Conversion button is pressed, it will display "Example code" to the window as a label
 
 
+
+
+
+
+
+
 # opens file explorer at program path, useful to choose images to analyze or to load previously analyzed data
 def get_file(filetype="img"):
     # default is image file loader bc it'll be used in more windows than data loader
