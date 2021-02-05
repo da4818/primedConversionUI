@@ -8,7 +8,7 @@ from PIL import Image
 from PIL.ImageTk import PhotoImage
 
 from image_analysis import get_file
-
+from arduino import arduino_connection
 root = Tk()
 root.title("Primed Conversion Testing Stage")
 root.geometry("650x600")
@@ -83,7 +83,7 @@ class colourExcitationPage(Frame):
         frame.pack(fill="both", expand=True)
         self.pack(fill="both", expand=True)
 
-        startButton = Button(self, text="Start Excitation", command=lambda: display_LED_message(frame)) #Closes the current page and calls the next page to appear within the same frame
+        startButton = Button(self, text="Start Excitation", command=lambda: (display_LED_message(frame), arduino_connection(colour))) #Closes the current page and calls the next page to appear within the same frame
         startButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         stopButton = Button(self, text="Stop") #Closes the current page and calls the next page to appear within the same frame
         stopButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
@@ -106,6 +106,7 @@ def display_LED_message(frame):
     Here the function to turn the light on/off will coded - 
     for now there is a delay that simulate the time taken to perform the excitation
     '''
+
     frame.after(2000, message, frame, label)
 
 #PRIMED CONVERSION PAGE
