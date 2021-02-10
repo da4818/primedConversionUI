@@ -17,7 +17,6 @@ Buttons are displayed in order of
 'Home','Regular Excitation','Photo Conversion','Primed Conversion', 'Load Previous Data'
 '''
 
-
 #START PAGE
 class startPage(Frame):
 
