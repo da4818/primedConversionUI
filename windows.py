@@ -4,15 +4,25 @@ import PIL
 from PIL import Image, ImageTk
 from PIL.ImageTk import PhotoImage
 
+
 #Displa_excitation and Display_photo_conversion are now in another file.
 from excitation import display_excitation
 from photoconversion import display_photo_conversion
-from image_analysis import send_message, get_file # We can use this to use functions from other python scripts
+from image_analysis import send_message, get_file# We can use this to use functions from other python scripts
+from motor_rp import arduino_rp
+
+
 # Setting up the initial window
+
+#Import arduino functions
+
+
+
 
 window = tk.Tk()
 window.title('Home')
 window.geometry("800x600")
+
 
 def display_primed_conversion():
     pr_window = tk.Toplevel() # Widget that is daughter window of the parent
