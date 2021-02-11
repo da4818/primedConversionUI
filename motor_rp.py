@@ -6,15 +6,18 @@
 
 #I wanted to create an arduino file that would turn the servo motor by 180°
 #However, I know that to connect the python file, we need to have the arduino code running,
-#But as it needs to turn only once when we press the button, it does not really work as the motor would
-#turn as soon as the code would run
+#But as it needs to start only once when we press the button, it does not really work as the motor would
+#turn as soon as the code would run, so before using our user interface.
 #I need to figure out a way where clinking "red excitation" button and "green excitation button
 #would make the arduino code start.
 
 
 def arduino_rp ():
     #from pip._vendor.distlib.compat import raw_input
+
+
     import serial
+    from servo import myservo  #To include the servo library
     import time
     port = "/dev/cu.usbmodem14201" #This port name is found on arduino>tools>port
     ard = serial.Serial(port, 9600, timeout=0.1) #9600 is the baudrate - should be the same for all devices
@@ -23,7 +26,8 @@ def arduino_rp ():
     pos = 0;
     while 1:
         while pos<=180:
-            myservo.write(pos);
+            myservo.write(pos);  #I have imported the servo library, but it is an error?
         pos+=1
 
+#https://makerprojekt.com/portfolio/python-arduino-servo-control/ I have just found this
 
