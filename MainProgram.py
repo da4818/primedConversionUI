@@ -4,7 +4,8 @@ from tkinter import filedialog
 from tkinter.ttk import Frame, Button
 
 import PIL
-from PIL import Image
+from PIL import Image, ImageTk
+from PIL.Image import ANTIALIAS
 from PIL.ImageTk import PhotoImage
 
 from image_analysis import get_file
@@ -42,12 +43,12 @@ class excitationPage(Frame):
     def __init__(self):
         super().__init__()
         self.master.title("Regular Excitation")
-        frame = Frame(self, relief=RAISED, borderwidth=1)
-        frame.pack(fill="both", expand=True)
+        exFrame = Frame(self, relief=RAISED, borderwidth=1)
+        exFrame.pack(fill="both", expand=True)
 
-        redButton = Button(frame, text="Red Excitation", command=lambda: (self.destroy(), colourExcitationPage("red")))
+        redButton = Button(exFrame, text="Red Excitation", command=lambda: (self.destroy(), colourExcitationPage("red")))
         redButton.pack(side="top", fill="both", expand=True, padx=5, pady=10)
-        greenButton = Button(frame, text="Green Excitation",
+        greenButton = Button(exFrame, text="Green Excitation",
                              command=lambda: (self.destroy(), colourExcitationPage('green')))
         greenButton.pack(side="top", fill="both", expand=True, padx=5, pady=10)
 
@@ -113,10 +114,12 @@ class primedPage(Frame):
     def __init__(self):
         super().__init__()
         self.master.title("Primed Conversion")
-        frame = Frame(self, relief=RAISED, borderwidth=1)
-        frame.pack(fill="both", expand=True)
-
+        prFrame = Frame(self, relief=RAISED, borderwidth=1)
+        prFrame.pack(fill="both", expand=True)
         self.pack(fill="both", expand=True)
+
+        startButton = Button(prFrame, text="Start Primed Conversion")
+        startButton.pack(fill="both", expand=True, padx=5, pady=5)
         home = Button(self, text="Home", command=lambda: (self.destroy(), startPage()))
         home.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         excitationButton = Button(self, text="Regular Excitation", command=lambda: (self.destroy(), excitationPage()))
@@ -130,9 +133,12 @@ class photoPage(Frame):
     def __init__(self):
         super().__init__()
         self.master.title("Photo Conversion")
-        frame = Frame(self, relief=RAISED, borderwidth=1)
-        frame.pack(fill="both", expand=True)
+        pcFrame = Frame(self, relief=RAISED, borderwidth=1)
+        pcFrame.pack(fill="both", expand=True)
         self.pack(fill="both", expand=True)
+        startButton = Button(pcFrame, text="Start Photo Conversion")
+        startButton.pack(fill="both", expand=True, padx=5, pady=5)
+
         home = Button(self, text="Home", command=lambda: (self.destroy(), startPage()))
         home.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         excitationButton = Button(self, text="Regular Excitation", command=lambda: (self.destroy(), excitationPage()))
@@ -147,16 +153,22 @@ class dataPage(Frame):
     def __init__(self):
         super().__init__()
         self.master.title("Previous Data")
-        frame = Frame(self, relief=RAISED, borderwidth=1)
-        frame.pack(fill="both", expand=True)
-        #photo = PIL.Image.open("example3.png")
-        #photo.show()
-        canvas = tk.Canvas(frame, width = 500, height = 400)
+        dataFrame = Frame(self, relief=RAISED, borderwidth=1)
+        dataFrame.pack(fill="both", expand=True)
+        canvas = tk.Canvas(dataFrame, width = 600, height = 500)
         canvas.pack(pady=20)
-        image = Image.open("example3.png") # This function returns the name of the png file to be imported
-        image = image.resize((476, 378), Image.ANTIALIAS)
-        img = PhotoImage(image)
-        canvas.create_image(12, 11, anchor=tk.NW, image=img)#(500-476)/2=12, (400-378)/2=11
+        photo = PIL.Image.open("example3.png")
+        X,Y = photo.size
+        photo = PIL.Image.open("example3.png").resize((300, 300), ANTIALIAS)
+        render = ImageTk.PhotoImage(photo)
+        img = Label(canvas, image=render)
+        img.image = render
+        img.place(x=0,y=0)
+
+        #image = Image.open("example3.png") # This function returns the name of the png file to be imported
+        #image = image.resize((476, 378), Image.ANTIALIAS)
+        #img = PhotoImage(image)
+        #canvas.create_image(12, 11, anchor=tk.NW, image=img)#(500-476)/2=12, (400-378)/2=11
 
         self.pack(fill="both", expand=True)
         home = Button(self, text="Home", command=lambda: (self.destroy(), startPage()))
