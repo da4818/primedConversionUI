@@ -1,3 +1,4 @@
+import os
 import tkinter as tk
 from tkinter import *
 from tkinter import filedialog
@@ -10,6 +11,7 @@ from PIL.ImageTk import PhotoImage
 
 from image_analysis import get_file
 from arduino import arduino_connection
+from skimage_image_analysis import get_files
 root = Tk()
 root.title("Primed Conversion Testing Stage")
 root.geometry("650x600")
@@ -155,20 +157,28 @@ class dataPage(Frame):
         self.master.title("Previous Data")
         dataFrame = Frame(self, relief=RAISED, borderwidth=1)
         dataFrame.pack(fill="both", expand=True)
-        canvas = tk.Canvas(dataFrame, width = 600, height = 500)
-        canvas.pack(pady=20)
-        photo = PIL.Image.open("example3.png")
-        X,Y = photo.size
-        photo = PIL.Image.open("example3.png").resize((300, 300), ANTIALIAS)
+
+        imageinfo = get_files()
+        #photo = PIL.Image.open(os.path.join('/Users/debbie/BioEng/year 3/Group project/Primed_Conversion_efficiency_Images_test/Test File/4/','pr-mEosFP new_pr-mEosFP_new_after4_1_ch00.tif'))
+
+        '''photo = PIL.Image.open(os.path.join(imageinfo.paths[0],imageinfo.names[0])).resize((150, 150), ANTIALIAS)
         render = ImageTk.PhotoImage(photo)
         img = Label(canvas, image=render)
         img.image = render
-        img.place(x=0,y=0)
-
-        #image = Image.open("example3.png") # This function returns the name of the png file to be imported
-        #image = image.resize((476, 378), Image.ANTIALIAS)
-        #img = PhotoImage(image)
-        #canvas.create_image(12, 11, anchor=tk.NW, image=img)#(500-476)/2=12, (400-378)/2=11
+        photo1 = PIL.Image.open(os.path.join(imageinfo.paths[2],imageinfo.names[2])).resize((150, 150), ANTIALIAS)
+        render1 = ImageTk.PhotoImage(photo1)
+        img1 = Label(canvas, image=render1)
+        img1.image = render1
+        img.pack(side="left", fill="both", expand=True, padx=5, pady=5)
+        img1.pack(side="left", fill="both", expand=True, padx=5, pady=5)'''
+        canvas = tk.Canvas(dataFrame, width = 300, height = 500, bg='gray92')
+        canvas.pack(fill="both", expand=True, pady=5)
+        for i in range(len(imageinfo.names)):
+            photo = PIL.Image.open(os.path.join(imageinfo.paths[i],imageinfo.names[i])).resize((150, 150), ANTIALIAS)
+            render = ImageTk.PhotoImage(photo)
+            img = Label(canvas, text="Test "+str(i+1), image=render, compound="bottom")
+            img.image = render
+            img.pack(side="left", anchor=NW, fill="none", expand=True, padx=5, pady=5)
 
         self.pack(fill="both", expand=True)
         home = Button(self, text="Home", command=lambda: (self.destroy(), startPage()))

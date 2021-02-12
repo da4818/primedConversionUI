@@ -192,6 +192,26 @@ def graph_images(images_array, title=None, med_means=None, std_devs=None, ratios
     plt.show()
     # plt.close()
 
+class ImageData:
+    def __init__(self, paths, filenames):
+        self.paths = paths
+        self.names = filenames
+
+#Function used in main program to get the file path and name
+def get_files():
+    filepath = '/Users/debbie/BioEng/year 3/Group project/Primed_Conversion_efficiency_Images_test/Test File/4/*.tif'
+    imagepaths = glob.glob(filepath, recursive=True)
+    filenames = [path.basename(path_string) for path_string in imagepaths]
+    new_set = imagepaths #Need to create a new list of file paths that don't include the filename itself (as this is needed for showing an image on tkinter)
+    i=0;
+    for x in new_set:
+        for y in filenames:
+            if (x.find(y)>0):
+                new_set[i] = x.replace(y, '')
+                i=i+1
+    imageinfo = ImageData(new_set, filenames)
+    return imageinfo
+
 def main():
     # loading up all image paths in a list using glob --> I had to amend the path to match my laptop XD
     #filepath = 'Primed_Conversion_efficiency_Images_test/Test File/*/*.tif'
@@ -260,4 +280,5 @@ def main():
     k = 1
 
 if __name__ == "__main__":
-    main()
+    #main()
+    get_files()
