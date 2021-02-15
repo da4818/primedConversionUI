@@ -9,7 +9,7 @@ from PIL import Image, ImageTk
 from PIL.Image import ANTIALIAS
 from PIL.ImageTk import PhotoImage
 
-from image_analysis import get_file
+
 from arduino import arduino_connection
 from skimage_image_analysis import get_files
 root = Tk()
@@ -190,7 +190,7 @@ class dataPage(Frame):
         photoButton = Button(self, text="Photo Conversion", command=lambda: (self.destroy(), photoPage()))
         photoButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
 
-# opens file explorer at program path, useful to choose images to analyze or to load previously analyzed data
+'''# opens file explorer at program path, useful to choose images to analyze or to load previously analyzed data
 def get_file(filetype="img"):
     # default is image file loader bc it'll be used in more windows than data loader
     if filetype == "img":
@@ -212,7 +212,7 @@ def get_file(filetype="img"):
     # will add specific filetype instead of pdf for data when we know what we're saving it as
     else:
         filename = filedialog.askopenfilename(initialdir='C:\IdeaProjects\primedConversionUI', title="Select a file",
-                                              filetype=(("All files", "*.pdf"), ("all files", "*.*")))
+                                              filetype=(("All files", "*.pdf"), ("all files", "*.*")))'''
 
 
 if __name__ == "__main__":

@@ -17,6 +17,8 @@ import glob  # glob used to extract all filepaths from desired folder
     when using skimage to open a tiff file. (still technically using skimage to open the file but through the PIL plugin).
     - blur and threshold methods might change for our images, we'll have to test and find best methods again
     - have to be careful with functions, gotta be able to work with more than 1 sample 
+
+
     Can do:
     - loads all images from a filepath
     - identify if image is red/green excitation, pre/photo/primed conversion through file name (case sensitive!)
@@ -47,11 +49,14 @@ import glob  # glob used to extract all filepaths from desired folder
   
   
 path = 'Primed_Conversion_efficiency_Images_test/Test File/4/pr-mEosFP new_pr-mEosFP_new_post-pc_4_1_green.tif'
+
 '''
 
 # empty class to act as a structure for image data
 class ImageData:
-    pass
+    def __init__(self, paths, names):
+        self.paths = paths
+        self.names = names
 
 class ImageAnalyze:
     def __init__(self, images_array, filenames):
@@ -99,7 +104,7 @@ class ImageAnalyze:
                 print("ERROR: Program cannot find out if image \'"+ID_temp.filename+"\' is converted or not.")
                 while True:
                     k = input("Please enter 0 for pre-conversion, 1 for Photoconverted, "
-                              "2 for Primed converted: ")
+                              "2 for Primed converted")
                     if k == '0':
                         ID_temp.converted = False
                         break
@@ -113,7 +118,7 @@ class ImageAnalyze:
                         break
                     else:
                         print("Please input 0 for a pre-conversion image, "
-                              "1 for a photoconversion image, 2 for a primed conversion image: ")
+                              "1 for a photoconversion image, 2 for a primed conversion image")
             self.IData.append(ID_temp)
 
     # grayscales then blurs images. Exists as its own function for ease of modification if we'll be hanging
@@ -147,11 +152,13 @@ class ImageAnalyze:
         -labels = integer arrays that'll make the function take into account only specific areas of image (here binary array)
         -index = specify region labels. if no index, values where labels is nonzero is taken into account
         (if index = [0, 1] -> returns 2 medians/means: one over values where labels=0 and other over vals where label=1)
+
         If we make a binary image of where the samples are, we can then assign a value to each sample area, creating a label
         array with as many diff numbers as samples on the plate. (assign using ndimage.label)
         We can then use the label array as 'labels' in median/mean, and the index as np.unique(labels) that would output
         an array with 1 iteration of every different number in the label array.
         tl;dr: - useful when we'll be working with many samples
+
         (credit to the lab that made the picker screening platform, got the idea from their code)
         """
         # initializing lists for median/mean/standard deviation values
@@ -191,13 +198,7 @@ def graph_images(images_array, title=None, med_means=None, std_devs=None, ratios
         else:       plt.suptitle("Images", fontsize=70)
     plt.show()
     # plt.close()
-
-class ImageData:
-    def __init__(self, paths, filenames):
-        self.paths = paths
-        self.names = filenames
-
-#Function used in main program to get the file path and name
+#Function to
 def get_files():
     filepath = '/Users/debbie/BioEng/year 3/Group project/Primed_Conversion_efficiency_Images_test/Test File/4/*.tif'
     imagepaths = glob.glob(filepath, recursive=True)
@@ -212,10 +213,10 @@ def get_files():
     imageinfo = ImageData(new_set, filenames)
     return imageinfo
 
+
 def main():
-    # loading up all image paths in a list using glob --> I had to amend the path to match my laptop XD
-    #filepath = 'Primed_Conversion_efficiency_Images_test/Test File/*/*.tif'
-    filepath = '/Users/debbie/BioEng/year 3/Group project/Primed_Conversion_efficiency_Images_test/Test File/4/*.tif'
+    # loading up all image paths in a list using glob
+    filepath = 'Primed_Conversion_efficiency_Images_test/Test File/*/*.tif'
     imagepaths = glob.glob(filepath, recursive=True)
 
     # isolate filename to categorize files
@@ -238,6 +239,7 @@ def main():
     median values are close to identical to mean values, makes sense since proteins are evenly distributed in sample.
     # HAVEN'T TAKEN NOISE INTO ACCOUNT YET. could be done when we have images of plate, taking median of all values on
     # plate and substracting it from medians of sample areas. can also substract median absolute deviation
+
     # Normalizing 1st test - use mean of images in folder 4 and center pixels of folder 5 images around it
     # -> a start, vals seem better than non-normalized (see commented vals below)
     # 2nd test: - see if using std deviation makes values more understandable
@@ -281,4 +283,86 @@ def main():
 
 if __name__ == "__main__":
     main()
-    #get_files()
+
+# code purgatory, might need to bring some of this back at some point so I'd rather not delete yet
+#
+#
+# g_1 = images[0][~b_g_postpc_1]
+# g_2 = images[2][~b_g_postpc_1]
+# r_1 = images[1][~b_r_postpc_1]
+# r_2 = images[3][~b_r_postpc_1]
+#
+# b_g_postpc_2 = images_blurred[4] >= min_threshold[4]
+# b_r_postpc_1 = images_blurred[1] <= min_threshold[1]
+# b_r_postpc_2 = images_blurred[5] <= min_threshold[5]
+#
+#
+# images[0][b_g_postpc_1] = 0
+# # masking same area onto pre-conversion image for comparisons
+# images[2][b_g_postpc_1] = 0
+# # second green pair
+# images[4][b_g_postpc_2] = 0
+# images[6][b_g_postpc_2] = 0
+# # red pairs
+# images[1][b_r_postpc_1] = 0
+# images[3][b_r_postpc_1] = 0
+# images[5][b_r_postpc_2] = 0
+# images[7][b_r_postpc_2] = 0
+#
+# g_float_1 = g_float_1*50
+# g_float_2 = g_float_2*50
+# r_float_1 = r_float_1*50
+# r_float_2 = r_float_2*50
+#
+# converting to float in 0,1 range
+#     g_grey_1 = rgb2gray(images[0])
+#     g_grey_2 = rgb2gray(images[2])
+#     r_grey_1 = rgb2gray(images[1])
+#     r_grey_2 = rgb2gray(images[3])
+#     # ratios between means for greyscale
+#     ratio_red = r_mean_post/r_mean_pre  # mean intensity ratio in red excitation, pre and post-conversion
+#     ratio_green = g_mean_post/g_mean_pre  # mean intensity ratio in green excitation, pre and post-conversion
+#     ratio_pre = r_mean_pre/g_mean_pre
+#     ratio_post = r_mean_post/g_mean_post
+#     ratio_r_post = r_mean_post/g_mean_pre
+# # same for greyscale
+#     g_mean_post = np.mean(g_grey_1[np.nonzero(g_grey_1)])
+#     g_mean_pre  = np.mean(g_grey_2[np.nonzero(g_grey_2)])
+#     r_mean_post = np.mean(r_grey_1[np.nonzero(r_grey_1)])
+#     r_mean_pre  = np.mean(r_grey_2[np.nonzero(r_grey_2)])
+
+#
+# def quantify(images_array, binary_array):
+#     # Not using rgb2gray for calculations as the greyscale doesn't equally transform green and red
+#     # (Y = 0.2125 R + 0.7154 G + 0.0721 B, from scikit image documentation)
+#     # Converting to 0,1 range using img_to_float instead. (could also just keep in 0,255)
+#     images_float = np.array([img_as_float(img) for img in images_array])
+#     # initializing lists for median/mean values
+#     green_medians = []
+#     green_means = []
+#     red_medians = []
+#     red_means = []
+#     means = []
+#     medians = []
+#     std_devs = []
+#
+#     for i, img in enumerate(images_float):
+#         if i%2==0:
+#             green_medians.append(median(img[:,:,1], binary_array, 0))
+#             green_means.append(mean(img[:,:,1], binary_array, 0))
+#             median_temp = median(img[:,:,1], binary_array, 0)
+#             mean_temp = mean(img[:,:,1], binary_array, 0)
+#             stddev_temp = median(img[:,:,1], binary_array, 0)
+#         else:
+#             red_medians.append(median(img[:,:,0], binary_array, 0))
+#             red_means.append(mean(img[:,:,0], binary_array, 0))
+#             median_temp = median(img[:,:,0], binary_array, 0)
+#             mean_temp= mean(img[:,:,0], binary_array, 0)
+#             stddev_temp = median(img[:,:,0], binary_array, 0)
+#         medians.append(median_temp)
+#         means.append(mean_temp)
+#         std_devs.append(stddev_temp)
+#     return (means, medians, std_devs)
+
+
+

@@ -1,40 +1,51 @@
-import PIL
-from PIL import Image
-import matplotlib
+import numpy as np
+
 import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
-#from networkx.drawing.tests.test_pylab import plt
-#from skimage import data
+from skimage.io import imread
+from PIL import Image
+from skimage.exposure import rescale_intensity
+from skimage.filters import threshold_triangle, try_all_threshold
+from skimage.morphology import remove_small_objects, remove_small_holes, skeletonize, closing, selem
+from skimage.measure import label, regionprops
+from skimage.color import label2rgb
+from scipy import ndimage
 
-# We will use this python script to perform the image analysis and display the results
+imagename='OldFiles/test4.tif'
 
-
-
-def send_message():
-    return 'Example text'
-
-photo = PIL.Image.open("test4.tif")
-photo_rgb = photo.convert("RGB")
-width, height = photo.size
-#rgb_val = photo_rgb.getpixel((1,1))
-R0,G0,B0 = photo_rgb.getpixel((0,0))
-#print("size:",width,",",height)
-#print("Values:",R0,G0,B0)
-#print(rgb_val)
+sample = Image.open(imagename)
+sample.show()
+pix = sample.load()
+width,height = sample.size
+photo = sample.convert("RGB")
+totals = [0.0, 0.0, 0.0]
+for y in range(sample.size[1]):
+    for x in range(sample.size[0]):
+        color = pix[x,y]
+        for c in range(3):
+            totals[c] += color[c] ** 2.2
+count = sample.size[0] * sample.size[1]
+color = tuple(int(round((totals[c] / count) ** (1/2.2))) for c in range(3))
+R,G,B = color
+print(R,G,B)
 for x in range(width):
     for y in range(height):
-        R,G,B = photo_rgb.getpixel((x,y))
-        new_R,new_G,new_B = (R-R0)*50,(B-B0)*50,(G-G0)*50 # Multiplying by 50 amplifies the difference in brightness
-        #print(D,E,F)
-        #R1,G1,B1 = photo_rgb.getpixel((x,y))
-        #R1, G1, B1 = photo_rgb.getpixel((x,y))
-        photo_rgb.putpixel((x,y),(new_R,new_G,new_B))
-#photo_rgb.save('example'+str(3  )+'.png')
-#photo.show()
-#photo_rgb.show()
-def get_file(i):
-    out = 'example'+str(i)+'.png'
-    #photo_rgb.save(photo_rgb.save('example'+str(1)+'.png'))
-    return out
+        photo.putpixel((x,y),(R,G,B))
+photo.show()
 
-#example3.png is the edited file "pr-mEosFP new_pr-mEosFP_new_before_4_ch00.tif
+images =
+def graph_images(images_array, title=None, med_means=None, std_devs=None, ratios=None):
+    plt.figure(figsize=(10, 10))  # big size to see all images in okay quality
+    # plotting each image onto the figure, with possibility of title, axes, legend
+    for i, img in enumerate(images_array):
+        plt.subplot(2, 4, i + 1)
+        plt.xticks([])
+        plt.yticks([])
+        plt.grid(False)
+        plt.imshow(img, cmap='gray')
+        plt.title("Image " + str(i), fontsize=20)
+        if title:   plt.suptitle(title, fontsize=50)
+        else:       plt.suptitle("Images", fontsize=70)
+    plt.show()
+    # plt.close()
+
+
