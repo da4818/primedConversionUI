@@ -280,5 +280,5 @@ def main():
     k = 1
 
 if __name__ == "__main__":
-    #main()
-    get_files()
+    main()
+    #get_files()
