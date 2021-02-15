@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="simpleio">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/simpleio.mpy" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
