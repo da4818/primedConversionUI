@@ -32,7 +32,6 @@ for x in range(width):
         photo.putpixel((x,y),(R,G,B))
 photo.show()
 
-images =
 def graph_images(images_array, title=None, med_means=None, std_devs=None, ratios=None):
     plt.figure(figsize=(10, 10))  # big size to see all images in okay quality
     # plotting each image onto the figure, with possibility of title, axes, legend
