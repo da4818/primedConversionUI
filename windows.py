@@ -1,21 +1,19 @@
 import os
 import tkinter as tk
 from tkinter import *
-from tkinter import filedialog
-from tkinter.ttk import Frame, Button
-#matplotlib.use("TkAgg")
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+from tkinter.ttk import Frame, Button, Entry
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg#, NavigationToolbar2Tk
 from matplotlib.figure import Figure
+
 
 import PIL
 from PIL import Image, ImageTk
 from PIL.Image import ANTIALIAS
-from PIL.ImageTk import PhotoImage
 
 from arduino import arduino_connection
 from skimage_image_analysis import get_files
 
-from function_programs.analysis_data import histogram, masked_image, export_images
+from function_programs.analysis_data import *
 root = Tk()
 root.title("Primed Conversion Testing Stage")
 root.geometry("650x600")
@@ -91,45 +89,80 @@ class colourExcitationPage(Frame):
 
         startButton = Button(self, text="Start Excitation", command=lambda: (display_LED_message(frame), arduino_connection(colour))) #Closes the current page and calls the next page to appear within the same frame
         startButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-        stopButton = Button(self, text="Stop", command=lambda: change_title())
+        stopButton = Button(self, text="Stop", command=lambda: display_analysis())
         stopButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-        backButton = Button(self, text="Back", command=lambda: (self.destroy(), excitationPage())) #Closes the current page and calls the next page to appear within the same frame
+        backButton = Button(self, text="Back", command=lambda: (self.destroy(), excitationPage()))
         backButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
+        #Closes the current page and calls the next page to appear within the same frame
 
-        def change_title():
+        def display_analysis():
             self.master.title("Image analysis")
-            img, img1 = export_images("sample.png")
-            f = Figure(figsize=(5,5),dpi=100)
+            img, img1 = export_images("tagRFP.png")
+            f = Figure(figsize=(5, 5), dpi=100)
             a = f.add_subplot(221)
             a.imshow(img)
             a.axis('off')
             b = f.add_subplot(222)
             b.imshow(img1)
             b.axis('off')
+
             c = f.add_subplot(212) #Take the 3rd and 4rd subplot as one
-            hist, bin_edges = histogram("sample.png")
-            c.plot(bin_edges[0:-1],hist)
+            display_graphs(f,c,25,False)
+
+        def plot_peaks(graph, canvas, distance, hist, bin_edges):
+            x, y = obtain_peaks(20,distance,hist,bin_edges)
+            graph.plot(x,y,'x')
+            canvas.draw()
+
+        def display_graphs(f,c,default,onclick):
+            thresholds, colours = get_thresholds()
+            hist, bin_edges = histogram("tagRFP.png")
+            c.plot(bin_edges[0:-1], hist)
+            for t, col in zip(thresholds, colours):
+                c.axvline(x=t, color=col, label='line at x = {}'.format(t))
+
+            x, y = obtain_peaks(20,default,hist,bin_edges)
+            c.plot(x,y,'x')
+            c.legend()
             c.set_xlabel('Greyscale value')
             c.set_ylabel('Number of pixels')
-
-
-
-            canvas = FigureCanvasTkAgg(f,frame)
+            canvas = FigureCanvasTkAgg(f, frame)
+            #plot_peaks(c, canvas, default, hist, bin_edges)
             canvas.draw()
+
             canvas.get_tk_widget().pack(side="top", fill="both", expand=True)
             canvas._tkcanvas.pack(side="top", fill="both", expand=True)
+            number=tk.StringVar()
+            dLabel= Label(frame, text = 'Adjust distance criteria', font=('calibre',15, 'bold'))
+            dLabel.pack(side="left", fill="both", expand=True)
+            distance = tk.Entry(frame, textvariable=number,font=('calibre',10,'normal'))
+            distance.pack(side="left", fill="both", expand=True)
+            out = Button(frame, text="Add peaks", command=lambda: (submit(c,canvas)))
+            out.pack(side="left", fill="both", expand=True)
+            confirm = Button(frame, text="Show highest brightness", command=lambda: display_brightness())
+            confirm.pack(side="left", fill="both", expand=True)
+            def display_brightness():
+                print("Highest greyscale value:",x[x.size-1])
+            def submit(graph, canvas):
+                if (only_numbers(number.get())):
+                    d = int(number.get()) #the smaller the number, the more peaks or detected
+                    print(d)
+                    plot_peaks(graph,canvas,d, hist, bin_edges)
+                    #display_graphs(f,c,d,True)
+
+                else:
+                    print("Invalid entry, try again")
 
 
 
-
+def only_numbers(char):
+    return char.isdigit()
 
 def message(frame, label):
     label['text'] = "Stopping LED..."
-    frame.after(2000, remove_message, frame, label)
-def remove_message(frame, label):
+    frame.after(2000, remove_message, label)
+def remove_message(label):
     label.forget()
-
-
 def display_LED_message(frame):
     label = Label(frame, text="Starting LED...", bg='gray92')
     label.pack()
@@ -203,7 +236,7 @@ class dataPage(Frame):
         canvas = tk.Canvas(dataFrame, width = 300, height = 500, bg='gray92')
         canvas.pack(fill="both", expand=True, pady=5)
         for i in range(len(imageinfo)):
-            photo = PIL.Image.open(os.path.join(imageinfo[i].path,imageinfo[i].name)).resize((150, 150), ANTIALIAS)
+            photo = PIL.Image.open(os.path.join(imageinfo[i].path, imageinfo[i].name)).resize((150, 150), ANTIALIAS)
             render = ImageTk.PhotoImage(photo)
             img = Label(canvas, text="Test "+str(i+1), image=render, compound="bottom")
             img.image = render
@@ -218,6 +251,7 @@ class dataPage(Frame):
         primedButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         photoButton = Button(self, text="Photo Conversion", command=lambda: (self.destroy(), photoPage()))
         photoButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
+
 
 '''# opens file explorer at program path, useful to choose images to analyze or to load previously analyzed data
 def get_file(filetype="img"):

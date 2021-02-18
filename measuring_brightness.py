@@ -14,7 +14,7 @@ Similar to those thermal camera, except it's for brightness
 
 
 # read the image as grayscale from the outset
-file="testing.jpg"
+file="tiles.png"
 image = skimage.io.imread(file, as_gray=True)
 original = cv2.imread(file)
 gray = cv2.imread(file)
@@ -55,7 +55,7 @@ for t in t_Values:
 gray[masks[0]] = hex_to_RGB(colours[0])
 gray[masks[1]] = hex_to_RGB(colours[1])
 gray[masks[2]] = hex_to_RGB(colours[2])
-gray[masks[3]] = hex_to_RGB(colours[2])
+gray[masks[3]] = hex_to_RGB(colours[3])
 gray[masks[4]] = hex_to_RGB(colours[4])
 '''cv2.imshow('Original image', original)
 cv2.imshow('Masked image', gray)
