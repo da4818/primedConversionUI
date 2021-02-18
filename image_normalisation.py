@@ -5,7 +5,6 @@ import numpy as np
 
 # We will use this python script to perform the image analysis and display the results
 
-
 #FUNCTIONALISED
 photo = PIL.Image.open("after.png")
 photo.show(title="New")

@@ -2,7 +2,7 @@ import os
 import tkinter as tk
 from tkinter import *
 from tkinter import filedialog
-from tkinter.ttk import Frame, Button
+from tkinter.ttk import Frame, Button, Figure
 
 import PIL
 from PIL import Image, ImageTk
@@ -92,6 +92,12 @@ class colourExcitationPage(Frame):
         backButton = Button(self, text="Back", command=lambda: (self.destroy(), excitationPage()))
         backButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
 
+        def graphing_data():
+            f = Figure(figsize=(5,5),dpi=100)
+            a = f.add_subplot(111)
+            a.plot([1,2,3,4,5],[5,6,1,3,8])
+
+
 
 def message(frame, label):
     label['text'] = "Stopping LED..."
@@ -173,8 +179,8 @@ class dataPage(Frame):
         img1.pack(side="left", fill="both", expand=True, padx=5, pady=5)'''
         canvas = tk.Canvas(dataFrame, width = 300, height = 500, bg='gray92')
         canvas.pack(fill="both", expand=True, pady=5)
-        for i in range(len(imageinfo.names)):
-            photo = PIL.Image.open(os.path.join(imageinfo.paths[i],imageinfo.names[i])).resize((150, 150), ANTIALIAS)
+        for i in range(len(imageinfo)):
+            photo = PIL.Image.open(os.path.join(imageinfo[i].path,imageinfo[i].name)).resize((150, 150), ANTIALIAS)
             render = ImageTk.PhotoImage(photo)
             img = Label(canvas, text="Test "+str(i+1), image=render, compound="bottom")
             img.image = render

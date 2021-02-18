@@ -1,5 +1,4 @@
 #hexadecimal to RBG conversion
-
 def hex_to_RGB(h):
     h=h.lstrip('#')
     RGB= tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
