@@ -1,4 +1,3 @@
-import sys
 import numpy as np
 import cv2
 import skimage.color
@@ -6,7 +5,7 @@ import skimage.io
 import skimage.viewer
 from scipy.signal import find_peaks
 import matplotlib.pyplot as plt
-from colour_conversion import hex_to_RGB, hex_to_BGR
+from function_programs.colour_conversion import hex_to_RGB
 
 '''
 Program that outputs a grayscale histogram of the image - an indicator for its brightness
@@ -71,5 +70,6 @@ plt.yticks([])
 plt.grid(False)
 plt.title('Brightness of image using colour masking')
 plt.show()
+
 
 

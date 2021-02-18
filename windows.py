@@ -2,16 +2,20 @@ import os
 import tkinter as tk
 from tkinter import *
 from tkinter import filedialog
-from tkinter.ttk import Frame, Button, Figure
+from tkinter.ttk import Frame, Button
+#matplotlib.use("TkAgg")
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+from matplotlib.figure import Figure
 
 import PIL
 from PIL import Image, ImageTk
 from PIL.Image import ANTIALIAS
 from PIL.ImageTk import PhotoImage
 
-
 from arduino import arduino_connection
 from skimage_image_analysis import get_files
+
+from function_programs.analysis_data import histogram, masked_image, export_images
 root = Tk()
 root.title("Primed Conversion Testing Stage")
 root.geometry("650x600")
@@ -87,22 +91,42 @@ class colourExcitationPage(Frame):
 
         startButton = Button(self, text="Start Excitation", command=lambda: (display_LED_message(frame), arduino_connection(colour))) #Closes the current page and calls the next page to appear within the same frame
         startButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-        stopButton = Button(self, text="Stop") #Closes the current page and calls the next page to appear within the same frame
+        stopButton = Button(self, text="Stop", command=lambda: change_title())
         stopButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-        backButton = Button(self, text="Back", command=lambda: (self.destroy(), excitationPage()))
+        backButton = Button(self, text="Back", command=lambda: (self.destroy(), excitationPage())) #Closes the current page and calls the next page to appear within the same frame
         backButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
 
-        def graphing_data():
+        def change_title():
+            self.master.title("Image analysis")
+            img, img1 = export_images("sample.png")
             f = Figure(figsize=(5,5),dpi=100)
-            a = f.add_subplot(111)
-            a.plot([1,2,3,4,5],[5,6,1,3,8])
+            a = f.add_subplot(221)
+            a.imshow(img)
+            a.axis('off')
+            b = f.add_subplot(222)
+            b.imshow(img1)
+            b.axis('off')
+            c = f.add_subplot(212) #Take the 3rd and 4rd subplot as one
+            hist, bin_edges = histogram("sample.png")
+            c.plot(bin_edges[0:-1],hist)
+            c.set_xlabel('Greyscale value')
+            c.set_ylabel('Number of pixels')
+
+
+
+            canvas = FigureCanvasTkAgg(f,frame)
+            canvas.draw()
+            canvas.get_tk_widget().pack(side="top", fill="both", expand=True)
+            canvas._tkcanvas.pack(side="top", fill="both", expand=True)
+
+
 
 
 
 def message(frame, label):
     label['text'] = "Stopping LED..."
-    frame.after(2000, remove_message, label)
-def remove_message(label):
+    frame.after(2000, remove_message, frame, label)
+def remove_message(frame, label):
     label.forget()
 
 
@@ -110,11 +134,10 @@ def display_LED_message(frame):
     label = Label(frame, text="Starting LED...", bg='gray92')
     label.pack()
     '''
-    As the label is in a white box - this is to match the window
+    As the label is in a white box - this is to match the window colour
     Here the function to turn the light on/off will coded - 
     for now there is a delay that simulate the time taken to perform the excitation
     '''
-
     frame.after(2000, message, frame, label)
 
 #PRIMED CONVERSION PAGE
@@ -165,9 +188,9 @@ class dataPage(Frame):
         dataFrame.pack(fill="both", expand=True)
 
         imageinfo = get_files()
-        #photo = PIL.Image.open(os.path.join('/Users/debbie/BioEng/year 3/Group project/Primed_Conversion_efficiency_Images_test/Test File/4/','pr-mEosFP new_pr-mEosFP_new_after4_1_ch00.tif'))
 
-        '''photo = PIL.Image.open(os.path.join(imageinfo.paths[0],imageinfo.names[0])).resize((150, 150), ANTIALIAS)
+        '''#photo = PIL.Image.open(os.path.join('/Users/debbie/BioEng/year 3/Group project/Primed_Conversion_efficiency_Images_test/Test File/4/','pr-mEosFP new_pr-mEosFP_new_after4_1_ch00.tif'))
+        photo = PIL.Image.open(os.path.join(imageinfo.paths[0],imageinfo.names[0])).resize((150, 150), ANTIALIAS)
         render = ImageTk.PhotoImage(photo)
         img = Label(canvas, image=render)
         img.image = render
