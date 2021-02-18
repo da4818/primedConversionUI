@@ -97,7 +97,7 @@ class colourExcitationPage(Frame):
 
         def display_analysis():
             self.master.title("Image analysis")
-            img, img1 = export_images("tagRFP.png")
+            img, img1 = export_images("tagCFP.png")
             f = Figure(figsize=(5, 5), dpi=100)
             a = f.add_subplot(221)
             a.imshow(img)
@@ -116,7 +116,7 @@ class colourExcitationPage(Frame):
 
         def display_graphs(f,c,default,onclick):
             thresholds, colours = get_thresholds()
-            hist, bin_edges = histogram("tagRFP.png")
+            hist, bin_edges = histogram("tagCFP.png")
             c.plot(bin_edges[0:-1], hist)
             for t, col in zip(thresholds, colours):
                 c.axvline(x=t, color=col, label='line at x = {}'.format(t))
