@@ -48,10 +48,10 @@ class excitationPage(Frame):
         exFrame = Frame(self, relief=RAISED, borderwidth=1)
         exFrame.pack(fill="both", expand=True)
 
-        redButton = Button(exFrame, text="Red Excitation", command=lambda: (self.destroy(), colourExcitationPage("red")))
+        redButton = Button(exFrame, text="Red Excitation", command=lambda: (self.destroy(), colourExcitationPage("red_excitation")))
         redButton.pack(side="top", fill="both", expand=True, padx=5, pady=10)
         greenButton = Button(exFrame, text="Green Excitation",
-                             command=lambda: (self.destroy(), colourExcitationPage('green')))
+                             command=lambda: (self.destroy(), colourExcitationPage('green_excitation')))
         greenButton.pack(side="top", fill="both", expand=True, padx=5, pady=10)
 
         self.pack(fill="both", expand=True)
@@ -74,18 +74,18 @@ appropriate functions will be added accordingly
 class colourExcitationPage(Frame):
     def __init__(self, colour):
         super().__init__()
-        if colour == 'red':
-            print('Red light')
-            self.master.title("Excitation - Red LED")
-        elif colour == 'green':
-            print('Green light')
-            self.master.title("Excitation - Green LED")
+        if colour == 'red_excitation':
+            print('Red Excitation')
+            self.master.title("Red Excitation - (Post PC)")
+        elif colour == 'green_excitation':
+            print('Green Excitation')
+            self.master.title("Green Excitation - (Pre PC)")
 
         frame = Frame(self, relief="raised", borderwidth=1)
         frame.pack(fill="both", expand=True)
         self.pack(fill="both", expand=True)
 
-        startButton = Button(self, text="Start Excitation", command=lambda: (display_LED_message(frame), arduino_connection(colour))) #Closes the current page and calls the next page to appear within the same frame
+        startButton = Button(self, text="Start Excitation", command=lambda: (arduino_connection(colour))) #Closes the current page and calls the next page to appear within the same frame
         startButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         stopButton = Button(self, text="Stop") #Closes the current page and calls the next page to appear within the same frame
         stopButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
@@ -120,7 +120,7 @@ class primedPage(Frame):
         prFrame.pack(fill="both", expand=True)
         self.pack(fill="both", expand=True)
 
-        startButton = Button(prFrame, text="Start Primed Conversion")
+        startButton = Button(prFrame, text="Start Primed Conversion", command=lambda: arduino_connection('PC'))
         startButton.pack(fill="both", expand=True, padx=5, pady=5)
         home = Button(self, text="Home", command=lambda: (self.destroy(), startPage()))
         home.pack(side="left", fill="both", expand=True, padx=5, pady=5)
@@ -138,7 +138,7 @@ class photoPage(Frame):
         pcFrame = Frame(self, relief=RAISED, borderwidth=1)
         pcFrame.pack(fill="both", expand=True)
         self.pack(fill="both", expand=True)
-        startButton = Button(pcFrame, text="Start Photo Conversion")
+        startButton = Button(pcFrame, text="Start Photo Conversion", command=lambda: arduino_connection('UV'))
         startButton.pack(fill="both", expand=True, padx=5, pady=5)
 
         home = Button(self, text="Home", command=lambda: (self.destroy(), startPage()))
