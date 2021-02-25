@@ -7,13 +7,23 @@ def arduino_connection(var):
     t = 0
     ard_data = []
     while 1:
-        if(var == 'green'):
+        if(var == 'UV'):
             ard.write(b'1') #Writing 1 to the arduino effectively sets val to 1 (see arduino code)
             data = len(ard.readline()) #When an LED is turned on, the arduino will write "ON\n", this data can be read through python
             if (data==3): # "ON\n" is 3 characters long--> \n counts as the 3rd character
                 break #This stops the LED from blinking in a loop
-        elif(var =='red'):
+        elif(var =='PC'):
+            ard.write(b'2')
+            data = len(ard.readline()) #Similar to above
+            if (data==3):
+                break
+        elif(var =='green_excitation'):
             ard.write(b'3')
+            data = len(ard.readline()) #Similar to above
+            if (data==3):
+                break
+        elif(var =='red_excitation'):
+            ard.write(b'4')
             data = len(ard.readline()) #Similar to above
             if (data==3):
                 break
