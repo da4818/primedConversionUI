@@ -87,7 +87,7 @@ class colourExcitationPage(Frame):
         frame.pack(fill="both", expand=True)
         self.pack(fill="both", expand=True)
 
-        startButton = Button(self, text="Start Excitation", command=lambda: (display_LED_message(frame), arduino_connection(colour))) #Closes the current page and calls the next page to appear within the same frame
+        startButton = Button(self, text="Start Excitation", command=lambda: (display_LED_message(frame), arduino_connection(colour),display_analysis())) #Closes the current page and calls the next page to appear within the same frame
         startButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         stopButton = Button(self, text="Stop", command=lambda: display_analysis())
         stopButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
@@ -97,7 +97,7 @@ class colourExcitationPage(Frame):
 
         def display_analysis():
             self.master.title("Image analysis")
-            img, img1 = export_images("tagCFP.png")
+            img, img1 = export_images("sample.png")
             f = Figure(figsize=(5, 5), dpi=100)
             a = f.add_subplot(221)
             a.imshow(img)
