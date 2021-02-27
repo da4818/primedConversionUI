@@ -83,7 +83,7 @@ class colourExcitationPage(Frame):
             self.master.title("Excitation - Red LED")
         elif colour == 'green':
             print('Green light')
-            val=3
+            val=2
             self.master.title("Excitation - Green LED")
 
         frame = Frame(self, relief="raised", borderwidth=1)
@@ -129,7 +129,7 @@ class photoPage(Frame):
         pcFrame = Frame(self, relief=RAISED, borderwidth=1)
         pcFrame.pack(fill="both", expand=True)
         self.pack(fill="both", expand=True)
-        startButton = Button(pcFrame, text="Start Photo Conversion", command=lambda: (startButton.forget(), analysisPage(2, pcFrame)))
+        startButton = Button(pcFrame, text="Start Photo Conversion", command=lambda: (startButton.forget(), analysisPage(3, pcFrame)))
         startButton.pack(fill="both", expand=True, padx=5, pady=5)
 
         home = Button(self, text="Home", command=lambda: (self.destroy(), startPage()))
@@ -172,46 +172,53 @@ class analysisPage(Frame):
     def __init__(self,val, frame):
         super().__init__()
         self.master.title("Image Analysis")
-        show_graph(val, frame)
+        img, img1 = export_images("sample.png")
+        fig = plt.figure(constrained_layout=True)
+        spec = fig.add_gridspec(2,2)
+        a = fig.add_subplot(spec[0,0])
+        a.imshow(img)
+        a.axis('off')
+        a.set_title("Before")
+        b = fig.add_subplot(spec[0,1])
+        b.imshow(img1)
+        b.axis('off')
+        b.set_title("After")
+        c = fig.add_subplot(spec[1,0:2])
+        self.show_graph(1, c, fig)
+        canvas = FigureCanvasTkAgg(fig, frame)
 
-def show_graph(val, frame):
-    img, img1 = export_images("sample.png")
-    x = [1,2,3]
-    y, is_valid = choose_y(val)
-    print(y)
-    if (is_valid == False):
-        print("Invalid number")
-    fig = plt.figure(constrained_layout=True)
-    spec = fig.add_gridspec(2,2)
-    a = fig.add_subplot(spec[0,0])
-    a.imshow(img)
-    a.axis('off')
-    a.set_title("Before")
-    b = fig.add_subplot(spec[0,1])
-    b.imshow(img1)
-    b.axis('off')
-    b.set_title("After")
-    c = fig.add_subplot(spec[1,0:2])
-    c.plot(x,y)
-    c.set_xlabel('Greyscale value')
-    c.set_ylabel('Number of pixels')
-    c.set_title("Graph")
-    canvas = FigureCanvasTkAgg(fig, frame)
-    fig.canvas.draw()
-    plot_widget = canvas.get_tk_widget()
-    plot_widget.pack(side="top", fill="both", expand=False, padx=5, pady=5)
+        plot_widget = canvas.get_tk_widget()
+        plot_widget.pack(side="top", fill="both", expand=False, padx=5, pady=5)
+        number = tk.StringVar()
+        peak_criteria_entry = Entry(frame, textvariable=number, width=2)
+        peak_criteria_entry.pack(side="left", fill="both", expand=True)
+        adjust_peak = Button(frame, text='Adjust peak detection', command=lambda: (self.submit(number,c,fig)))
+        adjust_peak.pack(side="top", fill="both", expand=True, padx=5, pady=5)
 
-    number = tk.StringVar()
-    peak_criteria_entry = Entry(frame, textvariable=number, width=2)
-    peak_criteria_entry.pack(side="left", fill="both", expand=True)
-    adjust_peak = Button(frame, text='Adjust peak detection', command=lambda: submit())
-    adjust_peak.pack(side="top", fill="both", expand=True, padx=5, pady=5)
-    def submit():
+    def show_graph(self, val, c, fig):
+        x = [1,2,3]
+        y, is_valid = choose_y(val)
+        if (is_valid == False):
+            print("Invalid number")
+        c.plot(x,y)
+        c.set_xlabel('Greyscale value')
+        c.set_ylabel('Number of pixels')
+        c.set_title("Graph")
+        fig.canvas.draw()
+
+
+    def submit(self,number,c,fig):
         if (only_numbers(number.get())):
             d = int(number.get()) #the smaller the number, the more peaks or detected
             print(d)
+            c.cla()
+            self.show_graph(2,c,fig)
         else:
             print("Invalid entry, try again")
+
+
+
+
 
 
 
