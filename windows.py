@@ -4,6 +4,7 @@ from tkinter import *
 from tkinter.ttk import Frame, Button, Entry
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg#, NavigationToolbar2Tk
+from generate_plots import choose_y
 from matplotlib.figure import Figure
 
 
@@ -86,63 +87,16 @@ class colourExcitationPage(Frame):
         frame.pack(fill="both", expand=True)
         self.pack(fill="both", expand=True)
 
-        startButton = Button(self, text="Start Excitation", command=lambda: (display_analysis(colour))) #Closes the current page and calls the next page to appear within the same frame
+        startButton = Button(self, text="Start Excitation", command=lambda: (display_LED_message(frame), frame.after(4000, analysisPage(1, frame)))) #Closes the current page and calls the next page to appear within the same frame
         startButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-        stopButton = Button(self, text="Stop", command=lambda: display_analysis())
+        stopButton = Button(self, text="Stop")
         stopButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         backButton = Button(self, text="Back", command=lambda: (self.destroy(), excitationPage()))
         backButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         #Closes the current page and calls the next page to appear within the same frame
 
-        def display_analysis(colour):
-            self.master.title("LED")
-            display_LED_message(frame)
-            frame.after(4000,show_label)
-
-        def show_label():
-            self.master.title("Image analysis")
-            label = Label(frame, text=colour, bg='gray92')
-            label.pack()
-            x = [1,2,3]
-            y = [2,4,1]
-            fig = plt.figure(1)
-            plt.plot(x, y)
-            plt.xlabel('x - axis')
-            plt.ylabel('y - axis')
-            plt.title('Test')
-            #plt.show()
-            canvas = FigureCanvasTkAgg(fig, frame)
-            fig.canvas.draw()
-            plot_widget=canvas.get_tk_widget()
-            plot_widget.pack()
-            test = Button(frame, text='testing')
-            test.pack(side='left')
 
 
-
-
-
-
-
-def only_numbers(char):
-    return char.isdigit()
-
-def message(frame, label):
-    label['text'] = "LED off..."
-    frame.after(2000, remove_message, label)
-def remove_message(label):
-    label.forget()
-
-
-def display_LED_message(frame):
-    label = Label(frame, text="LED on...", bg='gray92')
-    label.pack()
-    frame.after(2000, message, frame, label)
-    '''
-    As the label is in a white box - this is to match the window colour
-    Here the function to turn the light on/off will coded - 
-    for now there is a delay that simulate the time taken to perform the excitation
-    '''
 
 
 #PRIMED CONVERSION PAGE
@@ -172,7 +126,7 @@ class photoPage(Frame):
         pcFrame = Frame(self, relief=RAISED, borderwidth=1)
         pcFrame.pack(fill="both", expand=True)
         self.pack(fill="both", expand=True)
-        startButton = Button(pcFrame, text="Start Photo Conversion")
+        startButton = Button(pcFrame, text="Start Photo Conversion", command=lambda: (startButton.forget(), analysisPage(2, pcFrame)))
         startButton.pack(fill="both", expand=True, padx=5, pady=5)
 
         home = Button(self, text="Home", command=lambda: (self.destroy(), startPage()))
@@ -185,7 +139,6 @@ class photoPage(Frame):
         dataButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
 
 class dataPage(Frame):
-
     def __init__(self):
         super().__init__()
         self.master.title("Previous Data")
@@ -193,18 +146,6 @@ class dataPage(Frame):
         dataFrame.pack(fill="both", expand=True)
 
         imageinfo = get_files()
-
-        '''#photo = PIL.Image.open(os.path.join('/Users/debbie/BioEng/year 3/Group project/Primed_Conversion_efficiency_Images_test/Test File/4/','pr-mEosFP new_pr-mEosFP_new_after4_1_ch00.tif'))
-        photo = PIL.Image.open(os.path.join(imageinfo.paths[0],imageinfo.names[0])).resize((150, 150), ANTIALIAS)
-        render = ImageTk.PhotoImage(photo)
-        img = Label(canvas, image=render)
-        img.image = render
-        photo1 = PIL.Image.open(os.path.join(imageinfo.paths[2],imageinfo.names[2])).resize((150, 150), ANTIALIAS)
-        render1 = ImageTk.PhotoImage(photo1)
-        img1 = Label(canvas, image=render1)
-        img1.image = render1
-        img.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-        img1.pack(side="left", fill="both", expand=True, padx=5, pady=5)'''
         canvas = tk.Canvas(dataFrame, width = 300, height = 500, bg='gray92')
         canvas.pack(fill="both", expand=True, pady=5)
         for i in range(len(imageinfo)):
@@ -224,31 +165,43 @@ class dataPage(Frame):
         photoButton = Button(self, text="Photo Conversion", command=lambda: (self.destroy(), photoPage()))
         photoButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
 
+class analysisPage(Frame):
+    def __init__(self,val, frame):
+        super().__init__()
+        self.master.title("Image Analysis")
+        #self.pack(fill="both", expand=True)
+        show_label(val, frame)
 
-'''# opens file explorer at program path, useful to choose images to analyze or to load previously analyzed data
-def get_file(filetype="img"):
-    # default is image file loader bc it'll be used in more windows than data loader
-    if filetype == "img":
-        # function returns directory path for chosen file(s) as tuple
-        filename = filedialog.askopenfilenames(initialdir='C:\IdeaProjects\primedConversionUI', title="Select a file",
-                                               filetype=(
-                                                   ("png files", "*.png"),
-                                                   ("jpg files", "*.jpg"),
-                                                   ("tif files", "*.tif"),
-                                               ))
-        # random example code opening one or more images
-        if len(filename) > 1:
-            for image in filename:
-                photo = PIL.Image.open(image)
-                photo.show()
-        elif len(filename) == 1:
-            photo = PIL.Image.open(filename[0])
-            photo.show()
-    # will add specific filetype instead of pdf for data when we know what we're saving it as
-    else:
-        filename = filedialog.askopenfilename(initialdir='C:\IdeaProjects\primedConversionUI', title="Select a file",
-                                              filetype=(("All files", "*.pdf"), ("all files", "*.*")))'''
+def show_label(val, frame):
+    x = [1,2,3]
+    y, is_valid = choose_y(val)
+    print(y)
+    if (is_valid == False):
+        print("Invalid number")
+    fig = plt.figure(1)
+    plt.plot(x, y)
+    plt.xlabel('x - axis')
+    plt.ylabel('y - axis')
+    plt.title('Test')
+    canvas = FigureCanvasTkAgg(fig, frame)
+    fig.canvas.draw()
+    plot_widget = canvas.get_tk_widget()
+    plot_widget.pack(side="left", fill="both", expand=True, padx=5, pady=5)
+    test = Button(frame, text='Adjust peak detection')
+    test.pack(side="left", fill="both", expand=True, padx=5, pady=5)
 
+def only_numbers(char):
+    return char.isdigit()
+
+def message(frame, label):
+    label['text'] = "LED off..."
+    frame.after(1000, remove_message, label)
+def remove_message(label):
+    label.forget()
+def display_LED_message(frame):
+    label = Label(frame, text="LED on...", bg='gray92')
+    label.pack()
+    frame.after(1000, message, frame, label)
 
 if __name__ == "__main__":
     startPage()
