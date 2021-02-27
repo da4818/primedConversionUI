@@ -2,6 +2,7 @@ import os
 import tkinter as tk
 from tkinter import *
 from tkinter.ttk import Frame, Button, Entry
+import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg#, NavigationToolbar2Tk
 from matplotlib.figure import Figure
 
@@ -9,8 +10,6 @@ from matplotlib.figure import Figure
 import PIL
 from PIL import Image, ImageTk
 from PIL.Image import ANTIALIAS
-
-from arduino import arduino_connection
 from skimage_image_analysis import get_files
 
 from function_programs.analysis_data import *
@@ -87,7 +86,7 @@ class colourExcitationPage(Frame):
         frame.pack(fill="both", expand=True)
         self.pack(fill="both", expand=True)
 
-        startButton = Button(self, text="Start Excitation", command=lambda: (display_LED_message(frame), arduino_connection(colour),display_analysis())) #Closes the current page and calls the next page to appear within the same frame
+        startButton = Button(self, text="Start Excitation", command=lambda: (display_analysis(colour))) #Closes the current page and calls the next page to appear within the same frame
         startButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         stopButton = Button(self, text="Stop", command=lambda: display_analysis())
         stopButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
@@ -95,66 +94,33 @@ class colourExcitationPage(Frame):
         backButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         #Closes the current page and calls the next page to appear within the same frame
 
-        def display_analysis():
+        def display_analysis(colour):
+            self.master.title("LED")
+            display_LED_message(frame)
+            frame.after(4000,show_label)
+
+        def show_label():
             self.master.title("Image analysis")
-            img, img1 = export_images("sample.png")
-            fileTitle= Label(frame, text = 'Sample.png')
-            fileTitle.pack()
-            f = Figure(figsize=(5, 5), dpi=100)
-            a = f.add_subplot(221)
-            a.imshow(img)
-            a.axis('off')
-            b = f.add_subplot(222)
-            b.imshow(img1)
-            b.axis('off')
+            label = Label(frame, text=colour, bg='gray92')
+            label.pack()
+            x = [1,2,3]
+            y = [2,4,1]
+            fig = plt.figure(1)
+            plt.plot(x, y)
+            plt.xlabel('x - axis')
+            plt.ylabel('y - axis')
+            plt.title('Test')
+            #plt.show()
+            canvas = FigureCanvasTkAgg(fig, frame)
+            fig.canvas.draw()
+            plot_widget=canvas.get_tk_widget()
+            plot_widget.pack()
+            test = Button(frame, text='testing')
+            test.pack(side='left')
 
-            c = f.add_subplot(212) #Take the 3rd and 4rd subplot as one
-            display_graphs(f,c,25)
 
-        def plot_peaks(graph, canvas, distance, hist, bin_edges):
-            x, y = obtain_peaks(20,distance,hist,bin_edges)
-            graph.plot(x,y,'x')
-            canvas.draw()
 
-        def display_graphs(f,c,default):
-            thresholds, colours = get_thresholds()
-            hist, bin_edges = histogram("tagCFP.png")
-            c.plot(bin_edges[0:-1], hist)
-            for t, col in zip(thresholds, colours):
-                c.axvline(x=t, color=col, label='line at x = {}'.format(t))
 
-            x, y = obtain_peaks(20,default,hist,bin_edges)
-            c.plot(x,y,'x')
-            c.legend()
-            c.set_xlabel('Greyscale value')
-            c.set_ylabel('Number of pixels')
-            canvas = FigureCanvasTkAgg(f, frame)
-            #plot_peaks(c, canvas, default, hist, bin_edges)
-            canvas.draw()
-
-            canvas.get_tk_widget().pack(side="top", fill="both", expand=True)
-            canvas._tkcanvas.pack(side="top", fill="both", expand=True)
-            number=tk.StringVar()
-            dLabel= Label(frame, text = 'Adjust distance criteria:', font=('calibre', 15, 'normal'))
-            #dLabel.insert(0, 'Default: 25')
-            dLabel.pack(side="left", fill="both", expand=True)
-            distance = tk.Entry(frame, width=5, textvariable=number, font=('calibre', 10, 'normal'))
-            distance.pack(side="left", fill="both", expand=True)
-            out = Button(frame, text="Add peaks", command=lambda: (submit(c, canvas)))
-            out.pack(side="left", fill="both", expand=True)
-            confirm = Button(frame, text="Show highest brightness", command=lambda: display_brightness())
-            confirm.pack(side="left", fill="both", expand=True)
-            def display_brightness():
-                print("Highest greyscale value:",x[x.size-1])
-            def submit(graph, canvas):
-                if (only_numbers(number.get())):
-                    d = int(number.get()) #the smaller the number, the more peaks or detected
-                    print(d)
-                    plot_peaks(graph,canvas,d, hist, bin_edges)
-                    #display_graphs(f,c,d,True)
-
-                else:
-                    print("Invalid entry, try again")
 
 
 
@@ -162,19 +128,22 @@ def only_numbers(char):
     return char.isdigit()
 
 def message(frame, label):
-    label['text'] = "Stopping LED..."
+    label['text'] = "LED off..."
     frame.after(2000, remove_message, label)
 def remove_message(label):
     label.forget()
+
+
 def display_LED_message(frame):
-    label = Label(frame, text="Starting LED...", bg='gray92')
+    label = Label(frame, text="LED on...", bg='gray92')
     label.pack()
+    frame.after(2000, message, frame, label)
     '''
     As the label is in a white box - this is to match the window colour
     Here the function to turn the light on/off will coded - 
     for now there is a delay that simulate the time taken to perform the excitation
     '''
-    frame.after(2000, message, frame, label)
+
 
 #PRIMED CONVERSION PAGE
 class primedPage(Frame):

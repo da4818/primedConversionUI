@@ -14,7 +14,7 @@ Similar to those thermal camera, except it's for brightness
 
 
 # read the image as grayscale from the outset
-file="tiles.png"
+file="sample.png"
 image = skimage.io.imread(file, as_gray=True)
 original = cv2.imread(file)
 gray = cv2.imread(file)
