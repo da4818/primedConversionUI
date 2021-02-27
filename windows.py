@@ -4,6 +4,7 @@ from tkinter import *
 from tkinter.ttk import Frame, Button, Entry
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg#, NavigationToolbar2Tk
+from matplotlib.gridspec import GridSpec
 from generate_plots import choose_y
 from matplotlib.figure import Figure
 
@@ -78,16 +79,18 @@ class colourExcitationPage(Frame):
         super().__init__()
         if colour == 'red':
             print('Red light')
+            val=1
             self.master.title("Excitation - Red LED")
         elif colour == 'green':
             print('Green light')
+            val=3
             self.master.title("Excitation - Green LED")
 
         frame = Frame(self, relief="raised", borderwidth=1)
         frame.pack(fill="both", expand=True)
         self.pack(fill="both", expand=True)
 
-        startButton = Button(self, text="Start Excitation", command=lambda: (display_LED_message(frame), frame.after(4000, analysisPage(1, frame)))) #Closes the current page and calls the next page to appear within the same frame
+        startButton = Button(self, text="Start Excitation", command=lambda: (display_LED_message(frame), frame.after(4000, analysisPage(val, frame)))) #Closes the current page and calls the next page to appear within the same frame
         startButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         stopButton = Button(self, text="Stop")
         stopButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
@@ -169,26 +172,48 @@ class analysisPage(Frame):
     def __init__(self,val, frame):
         super().__init__()
         self.master.title("Image Analysis")
-        #self.pack(fill="both", expand=True)
-        show_label(val, frame)
+        show_graph(val, frame)
 
-def show_label(val, frame):
+def show_graph(val, frame):
+    img, img1 = export_images("sample.png")
     x = [1,2,3]
     y, is_valid = choose_y(val)
     print(y)
     if (is_valid == False):
         print("Invalid number")
-    fig = plt.figure(1)
-    plt.plot(x, y)
-    plt.xlabel('x - axis')
-    plt.ylabel('y - axis')
-    plt.title('Test')
+    fig = plt.figure(constrained_layout=True)
+    spec = fig.add_gridspec(2,2)
+    a = fig.add_subplot(spec[0,0])
+    a.imshow(img)
+    a.axis('off')
+    a.set_title("Before")
+    b = fig.add_subplot(spec[0,1])
+    b.imshow(img1)
+    b.axis('off')
+    b.set_title("After")
+    c = fig.add_subplot(spec[1,0:2])
+    c.plot(x,y)
+    c.set_xlabel('Greyscale value')
+    c.set_ylabel('Number of pixels')
+    c.set_title("Graph")
     canvas = FigureCanvasTkAgg(fig, frame)
     fig.canvas.draw()
     plot_widget = canvas.get_tk_widget()
-    plot_widget.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-    test = Button(frame, text='Adjust peak detection')
-    test.pack(side="left", fill="both", expand=True, padx=5, pady=5)
+    plot_widget.pack(side="top", fill="both", expand=False, padx=5, pady=5)
+
+    number = tk.StringVar()
+    peak_criteria_entry = Entry(frame, textvariable=number, width=2)
+    peak_criteria_entry.pack(side="left", fill="both", expand=True)
+    adjust_peak = Button(frame, text='Adjust peak detection', command=lambda: submit())
+    adjust_peak.pack(side="top", fill="both", expand=True, padx=5, pady=5)
+    def submit():
+        if (only_numbers(number.get())):
+            d = int(number.get()) #the smaller the number, the more peaks or detected
+            print(d)
+        else:
+            print("Invalid entry, try again")
+
+
 
 def only_numbers(char):
     return char.isdigit()
