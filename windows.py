@@ -98,6 +98,8 @@ class colourExcitationPage(Frame):
         def display_analysis():
             self.master.title("Image analysis")
             img, img1 = export_images("sample.png")
+            fileTitle= Label(frame, text = 'Sample.png')
+            fileTitle.pack()
             f = Figure(figsize=(5, 5), dpi=100)
             a = f.add_subplot(221)
             a.imshow(img)
@@ -107,14 +109,14 @@ class colourExcitationPage(Frame):
             b.axis('off')
 
             c = f.add_subplot(212) #Take the 3rd and 4rd subplot as one
-            display_graphs(f,c,25,False)
+            display_graphs(f,c,25)
 
         def plot_peaks(graph, canvas, distance, hist, bin_edges):
             x, y = obtain_peaks(20,distance,hist,bin_edges)
             graph.plot(x,y,'x')
             canvas.draw()
 
-        def display_graphs(f,c,default,onclick):
+        def display_graphs(f,c,default):
             thresholds, colours = get_thresholds()
             hist, bin_edges = histogram("tagCFP.png")
             c.plot(bin_edges[0:-1], hist)
@@ -133,11 +135,12 @@ class colourExcitationPage(Frame):
             canvas.get_tk_widget().pack(side="top", fill="both", expand=True)
             canvas._tkcanvas.pack(side="top", fill="both", expand=True)
             number=tk.StringVar()
-            dLabel= Label(frame, text = 'Adjust distance criteria', font=('calibre',15, 'bold'))
+            dLabel= Label(frame, text = 'Adjust distance criteria:', font=('calibre', 15, 'normal'))
+            #dLabel.insert(0, 'Default: 25')
             dLabel.pack(side="left", fill="both", expand=True)
-            distance = tk.Entry(frame, textvariable=number,font=('calibre',10,'normal'))
+            distance = tk.Entry(frame, width=5, textvariable=number, font=('calibre', 10, 'normal'))
             distance.pack(side="left", fill="both", expand=True)
-            out = Button(frame, text="Add peaks", command=lambda: (submit(c,canvas)))
+            out = Button(frame, text="Add peaks", command=lambda: (submit(c, canvas)))
             out.pack(side="left", fill="both", expand=True)
             confirm = Button(frame, text="Show highest brightness", command=lambda: display_brightness())
             confirm.pack(side="left", fill="both", expand=True)
