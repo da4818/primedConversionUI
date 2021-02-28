@@ -4,11 +4,6 @@ from tkinter import *
 from tkinter.ttk import Frame, Button, Entry
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg#, NavigationToolbar2Tk
-from matplotlib.gridspec import GridSpec
-from generate_plots import choose_y
-from matplotlib.figure import Figure
-
-
 import PIL
 from PIL import Image, ImageTk
 from PIL.Image import ANTIALIAS
@@ -68,6 +63,7 @@ class excitationPage(Frame):
         dataButton = Button(self, text="Load Previous Data", command=lambda: (self.destroy(), dataPage()))
         dataButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
 
+
 '''
 The red and green excitation will perform similar commands, 
 but will vary in terms of the title name and the type of light to turn on and off
@@ -79,28 +75,22 @@ class colourExcitationPage(Frame):
         super().__init__()
         if colour == 'red':
             print('Red light')
-            val=1
             self.master.title("Excitation - Red LED")
         elif colour == 'green':
             print('Green light')
-            val=2
             self.master.title("Excitation - Green LED")
 
         frame = Frame(self, relief="raised", borderwidth=1)
         frame.pack(fill="both", expand=True)
         self.pack(fill="both", expand=True)
 
-        startButton = Button(self, text="Start Excitation", command=lambda: (display_LED_message(frame), frame.after(4000, analysisPage(val, frame)))) #Closes the current page and calls the next page to appear within the same frame
+        startButton = Button(self, text="Start Excitation", command=lambda: (display_LED_message(frame), frame.after(4000, analysisPage(frame, "sample.png")))) #Closes the current page and calls the next page to appear within the same frame
         startButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         stopButton = Button(self, text="Stop")
         stopButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         backButton = Button(self, text="Back", command=lambda: (self.destroy(), excitationPage()))
         backButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         #Closes the current page and calls the next page to appear within the same frame
-
-
-
-
 
 #PRIMED CONVERSION PAGE
 class primedPage(Frame):
@@ -129,7 +119,7 @@ class photoPage(Frame):
         pcFrame = Frame(self, relief=RAISED, borderwidth=1)
         pcFrame.pack(fill="both", expand=True)
         self.pack(fill="both", expand=True)
-        startButton = Button(pcFrame, text="Start Photo Conversion", command=lambda: (startButton.forget(), analysisPage(3, pcFrame)))
+        startButton = Button(pcFrame, text="Start Photo Conversion", command=lambda: (startButton.forget(), analysisPage(pcFrame, "sample.png")))
         startButton.pack(fill="both", expand=True, padx=5, pady=5)
 
         home = Button(self, text="Home", command=lambda: (self.destroy(), startPage()))
@@ -169,22 +159,22 @@ class dataPage(Frame):
         photoButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
 
 class analysisPage(Frame):
-    def __init__(self,val, frame):
+    def __init__(self, frame, filename):
         super().__init__()
         self.master.title("Image Analysis")
-        img, img1 = export_images("sample.png")
+        img, img1 = export_images(filename)
         fig = plt.figure(constrained_layout=True)
-        spec = fig.add_gridspec(2,2)
-        a = fig.add_subplot(spec[0,0])
+        spec = fig.add_gridspec(2, 2)
+        a = fig.add_subplot(spec[0, 0])
         a.imshow(img)
         a.axis('off')
         a.set_title("Before")
-        b = fig.add_subplot(spec[0,1])
+        b = fig.add_subplot(spec[0, 1])
         b.imshow(img1)
         b.axis('off')
         b.set_title("After")
-        c = fig.add_subplot(spec[1,0:2])
-        self.show_graph(1, c, fig)
+        c = fig.add_subplot(spec[1, 0:2])
+        self.show_graph(c, fig, 25, filename)
         canvas = FigureCanvasTkAgg(fig, frame)
 
         plot_widget = canvas.get_tk_widget()
@@ -192,35 +182,32 @@ class analysisPage(Frame):
         number = tk.StringVar()
         peak_criteria_entry = Entry(frame, textvariable=number, width=2)
         peak_criteria_entry.pack(side="left", fill="both", expand=True)
-        adjust_peak = Button(frame, text='Adjust peak detection', command=lambda: (self.submit(number,c,fig)))
+        adjust_peak = Button(frame, text='Adjust peak detection', command=lambda: (self.submit(number, c, fig)))
         adjust_peak.pack(side="top", fill="both", expand=True, padx=5, pady=5)
 
-    def show_graph(self, val, c, fig):
-        x = [1,2,3]
-        y, is_valid = choose_y(val)
-        if (is_valid == False):
-            print("Invalid number")
-        c.plot(x,y)
+    def show_graph(self, c, fig, distance, filename):
+        thresholds, colours = get_thresholds()
+        hist, bin_edges = histogram(filename)
+        c.plot(bin_edges[0:-1], hist)
+
+        for t, col in zip(thresholds, colours):
+            c.axvline(x=t, color=col, label='line at x = {}'.format(t))
+
+        x, y = obtain_peaks(20, distance, hist, bin_edges)
+        c.plot(x, y, 'x')
         c.set_xlabel('Greyscale value')
         c.set_ylabel('Number of pixels')
         c.set_title("Graph")
         fig.canvas.draw()
 
-
-    def submit(self,number,c,fig):
-        if (only_numbers(number.get())):
+    def submit(self, number, c, fig):
+        if only_numbers(number.get()):
             d = int(number.get()) #the smaller the number, the more peaks or detected
             print(d)
             c.cla()
-            self.show_graph(2,c,fig)
+            self.show_graph(c, fig, d, "sample.png")
         else:
             print("Invalid entry, try again")
-
-
-
-
-
-
 
 def only_numbers(char):
     return char.isdigit()
@@ -234,6 +221,7 @@ def display_LED_message(frame):
     label = Label(frame, text="LED on...", bg='gray92')
     label.pack()
     frame.after(1000, message, frame, label)
+
 
 if __name__ == "__main__":
     startPage()
