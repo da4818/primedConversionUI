@@ -114,10 +114,12 @@ class ImageAnalyze:
                         break
                     elif k == '1':
                         ID_temp.converted = True
+                        ID_temp.channel = True
                         # self.IData[i].primed = False
                         break
                     elif k == '2':
                         ID_temp.converted = True
+                        ID_temp.channel = True
                         # self.IData[i].primed = True
                         break
                     else:
