@@ -7,8 +7,15 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg#, NavigationTool
 import PIL
 from PIL import Image, ImageTk
 from PIL.Image import ANTIALIAS
+
+from PIL.ImageTk import PhotoImage
+
+
+from raspigpio import raspi_connection
+
 from arduino import arduino_connection
 from function_programs.analysis_data import *
+
 from skimage_image_analysis import get_files
 root = Tk()
 root.title("Primed Conversion Testing Stage")
@@ -84,7 +91,9 @@ class colourExcitationPage(Frame):
         frame.pack(fill="both", expand=True)
         self.pack(fill="both", expand=True)
 
-        startButton = Button(self, text="Start Excitation", command=lambda: (arduino_connection(colour),display_LED_message(frame), frame.after(4000, analysisPage(frame, "sample.png")))) #Closes the current page and calls the next page to appear within the same frame
+
+        startButton = Button(self, text="Start Excitation", command=lambda: (raspi_connection(colour),display_LED_message(frame), frame.after(4000, analysisPage(frame, "sample.png")))) #Closes the current page and calls the next page to appear within the same frame
+
         startButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         stopButton = Button(self, text="Stop")
         stopButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
@@ -101,7 +110,8 @@ class primedPage(Frame):
         prFrame.pack(fill="both", expand=True)
         self.pack(fill="both", expand=True)
 
-        startButton = Button(prFrame, text="Start Primed Conversion", command=lambda: arduino_connection('PC'))
+        startButton = Button(prFrame, text="Start Primed Conversion", command=lambda: raspi_connection('PC'))
+
         startButton.pack(fill="both", expand=True, padx=5, pady=5)
         home = Button(self, text="Home", command=lambda: (self.destroy(), startPage()))
         home.pack(side="left", fill="both", expand=True, padx=5, pady=5)
@@ -119,7 +129,9 @@ class photoPage(Frame):
         pcFrame = Frame(self, relief=RAISED, borderwidth=1)
         pcFrame.pack(fill="both", expand=True)
         self.pack(fill="both", expand=True)
-        startButton = Button(pcFrame, text="Start Photo Conversion", command=lambda: (arduino_connection('UV'), startButton.forget(), analysisPage(pcFrame, "sample.png")))
+
+        startButton = Button(pcFrame, text="Start Photo Conversion", command=lambda: (raspi_connection('UV'), startButton.forget(), analysisPage(pcFrame, "sample.png")))
+
         startButton.pack(fill="both", expand=True, padx=5, pady=5)
 
         home = Button(self, text="Home", command=lambda: (self.destroy(), startPage()))
