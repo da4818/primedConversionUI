@@ -211,8 +211,6 @@ class analysisPage(Frame):
 
 def only_numbers(char):
     return char.isdigit()
-
-
 def message(self, frame, label):
     label['text'] = "LED off..."
     frame.after(1000, remove_message, self, label, frame)
