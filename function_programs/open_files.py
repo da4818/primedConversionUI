@@ -2,6 +2,7 @@ import glob
 import shutil
 from PIL import Image
 import os
+import re
 from os import path
 import numpy as np
 from skimage import io
@@ -20,14 +21,30 @@ def open_files(state):
     for root, directories, files in os.walk(prefilepath):
         for name in files:
             pre_files_list.append((root, name)) #os.path.join
+
+    root, name = zip(*post_files_list)
+    numbers = re.findall(r'\d+', str(name))
+    res = list(map(int, numbers))
+    print (max(res))
     return pre_files_list, post_files_list
 
+def find_max(name):
+    numbers = re.findall(r'\d+', str(name))
+    res = list(map(int, numbers))
+    return max(res)
+
+
 def save_image(pre, post):
-    root, name = zip(*post)
-    root1, name1 = zip(*pre)
-    img  = Image.new( mode = "RGB", size = (50, 50))
-    newpost="post"+str(len(post)+1)+".png" #this works when no files are deleted - ensure no 'out of frame' numbering
-    newpre = "pre"+str(len(pre)+1)+".png"
+    root, name = zip(*pre)
+    root1, name1 = zip(*post)
+
+    img = Image.new( mode = "RGB", size = (50, 50))
+    preindex = find_max(name)
+    postindex = find_max(name1)
+    index = max(preindex, postindex) #in case files are deleted non-uniformly, the new set of images will use an ID that hasn't been used before
+
+    newpost="post"+str(index+1)+".png" #This will create a file name of the largest number +1
+    newpre = "pre"+str(index+1)+".png"
     print(newpost)
     #img.save(str(root[0])+str(newpost))
     img.save(str(root1[0])+str(newpre))
