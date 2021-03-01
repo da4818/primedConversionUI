@@ -218,7 +218,8 @@ def message(self, frame, label):
     frame.after(1000, remove_message, self, label, frame)
 def remove_message(self, label, frame):
     label.forget()
-    self.destroy(), analysisPage(frame, "sample.png")
+    #self.destroy()
+    analysisPage(frame, "sample.png")
 def display_LED_message(self, frame):
     label = Label(frame, text="LED on...", bg='gray92')
     label.pack()
