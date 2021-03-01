@@ -7,15 +7,10 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg#, NavigationTool
 import PIL
 from PIL import Image, ImageTk
 from PIL.Image import ANTIALIAS
-
 from PIL.ImageTk import PhotoImage
-
-
 from raspigpio import raspi_connection
-
 from arduino import arduino_connection
 from function_programs.analysis_data import *
-
 from skimage_image_analysis import get_files
 root = Tk()
 root.title("Primed Conversion Testing Stage")
@@ -92,10 +87,10 @@ class colourExcitationPage(Frame):
         self.pack(fill="both", expand=True)
 
 
-        startButton = Button(self, text="Start Excitation", command=lambda: (raspi_connection(colour),display_LED_message(frame), frame.after(4000, analysisPage(frame, "sample.png")))) #Closes the current page and calls the next page to appear within the same frame
+        startButton = Button(self, text="Start Excitation", command=lambda: (raspi_connection(colour),display_LED_message(frame), frame.after(4000, analysisPage(frame, "Images/sample.jpg")))) #Closes the current page and calls the next page to appear within the same frame
 
         startButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-        stopButton = Button(self, text="Stop")
+        stopButton = Button(self, text="Stop", command=lambda:analysisPage(frame, "Images/sample.jpg") )
         stopButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         backButton = Button(self, text="Back", command=lambda: (self.destroy(), excitationPage()))
         backButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
@@ -121,7 +116,7 @@ class primedPage(Frame):
         photoButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         dataButton = Button(self, text="Load Previous Data", command=lambda: (self.destroy(), dataPage()))
         dataButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-
+#PHOTO CONVERSION PAGE
 class photoPage(Frame):
     def __init__(self):
         super().__init__()
@@ -130,7 +125,7 @@ class photoPage(Frame):
         pcFrame.pack(fill="both", expand=True)
         self.pack(fill="both", expand=True)
 
-        startButton = Button(pcFrame, text="Start Photo Conversion", command=lambda: (raspi_connection('UV'), startButton.forget(), analysisPage(pcFrame, "sample.png")))
+        startButton = Button(pcFrame, text="Start Photo Conversion", command=lambda: (raspi_connection('UV'), startButton.forget(), analysisPage(pcFrame, "Images/sample.jpg")))
 
         startButton.pack(fill="both", expand=True, padx=5, pady=5)
 
@@ -142,7 +137,7 @@ class photoPage(Frame):
         primedButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         dataButton = Button(self, text="Load previous data", command=lambda: (self.destroy(), dataPage()))
         dataButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-
+#PREVIOUS DATA PAGE
 class dataPage(Frame):
 
     def __init__(self):
@@ -171,6 +166,7 @@ class dataPage(Frame):
         photoButton = Button(self, text="Photo Conversion", command=lambda: (self.destroy(), photoPage()))
         photoButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
 
+#DATA ANALYSIS PAGE
 class analysisPage(Frame):
     def __init__(self, frame, filename):
         super().__init__()
@@ -195,7 +191,7 @@ class analysisPage(Frame):
         number = tk.StringVar()
         peak_criteria_entry = Entry(frame, textvariable=number, width=2)
         peak_criteria_entry.pack(side="left", fill="both", expand=True)
-        adjust_peak = Button(frame, text='Adjust peak detection', command=lambda: (self.submit(number, c, fig)))
+        adjust_peak = Button(frame, text='Adjust peak detection', command=lambda: (self.submit(number, c, fig, filename)))
         adjust_peak.pack(side="top", fill="both", expand=True, padx=5, pady=5)
 
     def show_graph(self, c, fig, distance, filename):
@@ -213,12 +209,12 @@ class analysisPage(Frame):
         c.set_title("Graph")
         fig.canvas.draw()
 
-    def submit(self, number, c, fig):
+    def submit(self, number, c, fig, filename):
         if only_numbers(number.get()):
             d = int(number.get()) #the smaller the number, the more peaks or detected
             print(d)
             c.cla()
-            self.show_graph(c, fig, d, "sample.png")
+            self.show_graph(c, fig, d, filename)
         else:
             print("Invalid entry, try again")
 

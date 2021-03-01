@@ -229,18 +229,17 @@ def main():
     # loading up all image paths in a list using glob
     filepath = 'Primed_Conversion_efficiency_Images_test/Test File/*/*.tif'
     imagepaths = glob.glob(filepath, recursive=True)
-
     # isolate filename to categorize files
     filenames = [path.basename(path_string) for path_string in imagepaths]
     # loading images as numpy arrays, all inside a numpy array
     images = np.array([io.imread(img, plugin='pil') for img in imagepaths])
-
     # instantiating the ImageAnalyze class
     #IA = ImageAnalyze(images,filenames)
     out = get_files()
-    print(out[0].path)
+
 
 
 if __name__ == "__main__":
     main()
+
 
