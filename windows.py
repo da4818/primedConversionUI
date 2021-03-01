@@ -220,16 +220,18 @@ class analysisPage(Frame):
 
 def only_numbers(char):
     return char.isdigit()
-
-def message(frame, label):
+def message(self, frame, label):
     label['text'] = "LED off..."
-    frame.after(1000, remove_message, label)
-def remove_message(label):
+    frame.after(1000, remove_message, self, label, frame)
+def remove_message(self, label, frame):
     label.forget()
-def display_LED_message(frame):
+    #self.destroy()
+    analysisPage(frame, "sample.png")
+def display_LED_message(self, frame):
     label = Label(frame, text="LED on...", bg='gray92')
     label.pack()
-    frame.after(1000, message, frame, label)
+    frame.after(1000, message, self, frame, label)
+
 
 
 if __name__ == "__main__":
