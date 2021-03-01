@@ -83,8 +83,8 @@ class colourExcitationPage(Frame):
         frame = Frame(self, relief="raised", borderwidth=1)
         frame.pack(fill="both", expand=True)
         self.pack(fill="both", expand=True)
-
-        startButton = Button(self, text="Start Excitation", command=lambda: (display_LED_message(frame), frame.after(4000, analysisPage(frame, "sample.png")))) #Closes the current page and calls the next page to appear within the same frame
+        #, frame.after(4000, analysisPage(frame, "sample.png"))
+        startButton = Button(self, text="Start Excitation", command=lambda: (display_LED_message(self, frame))) #Closes the current page and calls the next page to appear within the same frame
         startButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         stopButton = Button(self, text="Stop")
         stopButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
@@ -212,15 +212,18 @@ class analysisPage(Frame):
 def only_numbers(char):
     return char.isdigit()
 
-def message(frame, label):
+
+def message(self, frame, label):
     label['text'] = "LED off..."
-    frame.after(1000, remove_message, label)
-def remove_message(label):
+    frame.after(1000, remove_message, self, label, frame)
+def remove_message(self, label, frame):
     label.forget()
-def display_LED_message(frame):
+    self.destroy(), analysisPage(frame, "sample.png")
+def display_LED_message(self, frame):
     label = Label(frame, text="LED on...", bg='gray92')
     label.pack()
-    frame.after(1000, message, frame, label)
+    frame.after(1000, message, self, frame, label)
+
 
 
 if __name__ == "__main__":
