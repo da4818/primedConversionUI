@@ -5,7 +5,6 @@ import os
 import re
 
 
-
 def save_analysis_images(state,type):
     if state == "red":
         prefilepath = '/Users/debbie/python/GroupProject/raw_images/red/'
@@ -29,12 +28,12 @@ def save_analysis_images(state,type):
         for name in files:
             normalised_files_list.append((normalisedfilepath, name)) #os.path.join
     if len(normalised_files_list) == 0:
-        normalised_files_list.append((normalisedfilepath, ""))
+        normalised_files_list.append((normalisedfilepath, "")) #we want to store the root even if no file exists there
     imagepaths, imagenames = get_image_info(pre_files_list, post_files_list, normalised_files_list, state, type)
     return imagepaths, imagenames
 
 
-def find_max(name):
+def find_max(name): #Find the largest filename ID number
     numbers = re.findall(r'\d+', str(name))
     res = list(map(int, numbers))
     if len(res) == 0:
@@ -63,7 +62,7 @@ def get_image_info(pre, post, norm, state, type):
     img, img1, img2 = normalise_image(state)
     pre_index = find_max(name)
 
-    index = max(pre_index, post_index, norm_index) #in case files are deleted non-uniformly, the new set of analysis_images will use an ID that hasn't been used before
+    index = max(pre_index, post_index, norm_index) #In case files are deleted non-uniformly, the new set of analysis_images will use an ID that hasn't been used before
 
     if type == "pc": #for photoconversion
         post_filename = "postpc"+str(index+1)+".png" #This will create a file name of the largest number +1
