@@ -119,7 +119,7 @@ class photoPage(Frame):
         pcFrame = Frame(self, relief=RAISED, borderwidth=1)
         pcFrame.pack(fill="both", expand=True)
         self.pack(fill="both", expand=True)
-        startButton = Button(pcFrame, text="Start Photo Conversion", command=lambda: (startButton.forget(), analysisPage(pcFrame, "sample.png")))
+        startButton = Button(pcFrame, text="Start Photo Conversion", command=lambda: (startButton.forget(), analysisPage(pcFrame,"sample.png")))
         startButton.pack(fill="both", expand=True, padx=5, pady=5)
 
         home = Button(self, text="Home", command=lambda: (self.destroy(), startPage()))
@@ -168,11 +168,11 @@ class analysisPage(Frame):
         a = fig.add_subplot(spec[0, 0])
         a.imshow(img)
         a.axis('off')
-        a.set_title("Before")
+        a.set_title("Normalised")
         b = fig.add_subplot(spec[0, 1])
         b.imshow(img1)
         b.axis('off')
-        b.set_title("After")
+        b.set_title("Masked")
         c = fig.add_subplot(spec[1, 0:2])
         self.show_graph(c, fig, 25, filename)
         canvas = FigureCanvasTkAgg(fig, frame)
@@ -184,6 +184,9 @@ class analysisPage(Frame):
         peak_criteria_entry.pack(side="left", fill="both", expand=True)
         adjust_peak = Button(frame, text='Adjust peak detection', command=lambda: (self.submit(number, c, fig)))
         adjust_peak.pack(side="top", fill="both", expand=True, padx=5, pady=5)
+        max_peak = Button(frame, text='Get highest value')
+        max_peak.pack(side="top", fill="both", expand=True, padx=5, pady=5)
+
 
     def show_graph(self, c, fig, distance, filename):
         thresholds, colours = get_thresholds()
@@ -208,6 +211,7 @@ class analysisPage(Frame):
             self.show_graph(c, fig, d, "sample.png")
         else:
             print("Invalid entry, try again")
+        return d
 
 def only_numbers(char):
     return char.isdigit()
@@ -222,7 +226,6 @@ def display_LED_message(self, frame):
     label = Label(frame, text="LED on...", bg='gray92')
     label.pack()
     frame.after(1000, message, self, frame, label)
-
 
 
 if __name__ == "__main__":

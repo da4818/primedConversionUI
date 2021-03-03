@@ -47,9 +47,12 @@ def save_image(pre, post):
     img.save(str(pre_root[0])+str(pre_filename)) #the roots will be the same e.g. pre_root[0] == pre_root[1] == ...
     img1.save(str(post_root[0])+str(post_filename))
 
-    pre_img = Image.open(os.path.join(pre_root[0],pre_filename))
+    pre_img = os.path.join(pre_root[0],pre_filename)
+    post_img = os.path.join(post_root[0],post_filename)
+
+    '''pre_img = Image.open(os.path.join(pre_root[0],pre_filename))
     post_img = Image.open(os.path.join(post_root[0],post_filename))
-    #pre_img.show()
+    #pre_img.show()'''
     return pre_img, post_img
 
 
