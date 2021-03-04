@@ -12,12 +12,12 @@ def normalise_image(state):
     elif state == 'green':
         path = '/Users/debbie/python/GroupProject/raw_images/green/'
 
-    post = PIL.Image.open(path+"postpc.png")
+    post = PIL.Image.open(path+"postpc1.png")
     #post.show(title="New")
     norm = post.convert("RGB")
     width, height = post.size
 
-    pre = PIL.Image.open(path+"prepc.png")
+    pre = PIL.Image.open(path+"prepc1.png")
     pre = pre.convert("RGB")
     #pre.show(title="Original")
     ##show_color(R,G,B)

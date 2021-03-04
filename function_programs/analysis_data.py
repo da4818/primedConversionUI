@@ -4,23 +4,24 @@ import skimage.io
 import skimage.viewer
 from scipy.signal import find_peaks
 import cv2
-from function_programs.colour_conversion import hex_to_BGR, hex_to_RGB
+from function_programs.colour_conversion import hex_to_RGB
 def get_thresholds():
-    t_Values = np.linspace(0, 1.0, num=10)
-    colours = ('#01003F','#0000ff', '#bb00ff', '#7B0003','#ff00ff','#45C3C0', '#51C333','#00ffff','#FFDC42','#ffff00')
+    t_Values = np.linspace(0, 1.0, num=10) #Can modify thresholds to meaningful values
+    colours = ('#01003F', '#0000ff', '#bb00ff', '#7B0003', '#ff00ff', '#45C3C0', '#51C333', '#00ffff', '#FFDC42', '#ffff00')
     return t_Values, colours
+
 def export_images(filename):
     image = skimage.io.imread(filename)
     masked = masked_image(filename)
     return image, masked
 
-def histogram(filename):
+def generate_histogram(filename):
     image = skimage.io.imread(filename, as_gray=True)
     histogram, bin_edges = np.histogram(image, bins=256, range=(0, 1))
     return histogram, bin_edges
 
 def obtain_peaks(t, d, histogram, bin_edges):
-    peaks, _ = find_peaks(histogram,threshold=t, distance=d)
+    peaks, _ = find_peaks(histogram, threshold=t, distance=d)
     return bin_edges[peaks], histogram[peaks]
 
 
@@ -28,7 +29,7 @@ def masked_image(filename):
     t_Values, colours = get_thresholds()
     image = skimage.io.imread(filename, as_gray=True)
     gray = cv2.imread(filename)
-    masks = [] #We want to create a mask for each threshold value to allow us to 'colour in' the parts of the image that meet the threshold criteria
+    masks = [] #Create a mask for thresholds to 'colour in' the parts of the image that meet the threshold criteria
     sigma = 2 #blurring factor
     blur = skimage.color.rgb2gray(image)# blur and grayscale before thresholding
     blur = skimage.filters.gaussian(blur, sigma=sigma)
