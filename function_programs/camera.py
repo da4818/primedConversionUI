@@ -1,7 +1,7 @@
 #Using rasp pi camera
 import os
 import re
-#from picamera import PiCamera
+from picamera import PiCamera
 from time import sleep
 
 
@@ -16,12 +16,8 @@ def get_paths(state):
     return path
 
 
-
-
-
-
 def take_photo(state, num):
-    path,num = get_paths(state, num)
+    path = get_paths(state)
     camera = PiCamera()
     camera.start_preview(alpha=200) #alpha give transparency to the image to detect errors
     sleep(5)

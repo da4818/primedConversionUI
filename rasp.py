@@ -1,10 +1,14 @@
-def getMAC(interface='eth0'):
-    # Return the MAC address of the specified interface
-    try:
-        str = open('/sys/class/net/%s/address' %interface).read()
-    except:
-        str = "00:00:00:00:00:00"
-    return str[0:17]
+
+
+def count(n):
+    if n%2 == 0:
+        response ="even"
+    else:
+        response = "odd"
+    n=n+1
+    return response, n
 
 if __name__ == "__main__":
-    print(getMAC())
+    t = 0;
+    resp, t = count(t)
+    print (resp)
