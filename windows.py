@@ -8,8 +8,8 @@ import PIL
 from PIL import Image, ImageTk
 from PIL.Image import ANTIALIAS
 from function_programs.skimage_image_analysis import get_files
-
-from function_programs.analysis_data import *
+from function_programs.image_analysis import *
+from function_programs.files import *
 root = Tk()
 root.title("Primed Conversion Testing Stage")
 root.geometry("650x600")
@@ -194,7 +194,7 @@ class analysisPage(Frame):
 
     def show_graph(self, c, fig, distance, filename):
         thresholds, colours = get_thresholds()
-        hist, bin_edges = histogram(filename)
+        hist, bin_edges = generate_histogram(filename)
         c.plot(bin_edges[0:-1], hist)
 
         for t, col in zip(thresholds, colours):

@@ -1,11 +1,10 @@
 
-from PIL import Image
 from function_programs.image_normalisation import *
 import os
 import re
 
 
-def save_analysis_images(state,type):
+def save_analysis_images(state, type):
     if state == "red":
         prefilepath = '/Users/debbie/python/GroupProject/raw_images/red/'
         postfilepath = prefilepath
