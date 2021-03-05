@@ -10,6 +10,6 @@ def normalise_image(pre, post):
             R, G, B = pre.getpixel((x, y))
             norm.putpixel((x, y), (old_R-R, old_B-B, old_G-G))
 
-    pre.show(title="Original")
-    norm.show(title="Normalised")
+    #pre.show(title="Original")
+    #norm.show(title="Normalised")
     return norm

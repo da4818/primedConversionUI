@@ -11,6 +11,7 @@ from PIL.Image import ANTIALIAS
 from function_programs.raspigpio import raspi_connection
 from function_programs.image_analysis import *
 from function_programs.files import *
+from function_programs.camera import *
 from OldFiles.skimage_image_analysis import get_files
 root = Tk()
 root.title("Primed Conversion Testing Stage")
@@ -19,9 +20,9 @@ root.geometry("650x600")
 Buttons are displayed in order of 
 'Home','Regular Excitation','Photo Conversion','Primed Conversion', 'Load Previous Data'
 '''
+
 #START PAGE
 class startPage(Frame):
-
     def __init__(self):
         super().__init__()
         self.master.title("Home")
@@ -29,38 +30,44 @@ class startPage(Frame):
         frame.pack(fill="both", expand=True)
         self.pack(fill="both", expand=True)
 
-        excitationButton = Button(self, text="Regular Excitation", command=lambda: (self.destroy(), excitationPage()))
-        excitationButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-        photoButton = Button(self, text="Photo Conversion", command=lambda: (self.destroy(), photoPage()))
+        '''excitationButton = Button(self, text="Regular Excitation", command=lambda: (self.destroy(), excitationPage()))
+        excitationButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)'''
+
+        photoButton = Button(self, text="Photo Conversion", command=lambda: (self.destroy(), excitationPage("pc")))
         photoButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-        primedButton = Button(self, text="Primed Conversion", command=lambda: (self.destroy(), primedPage()))
+        primedButton = Button(self, text="Primed Conversion", command=lambda: (self.destroy(), excitationPage("pr")))
         primedButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         dataButton = Button(self, text="Load Previous Data", command=lambda: (self.destroy(), dataPage()))
         dataButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
 
 #EXCITATION PAGE
 class excitationPage(Frame):
-
-    def __init__(self):
+    def __init__(self, method):
         super().__init__()
-        self.master.title("Regular Excitation")
+        if method == "pc":
+            title = "Photo Conversion"
+        elif method == "pr":
+            title = "Primed Conversion"
+        self.master.title("Regular Excitation: " + title)
         exFrame = Frame(self, relief=RAISED, borderwidth=1)
         exFrame.pack(fill="both", expand=True)
 
-        redButton = Button(exFrame, text="Red Excitation", command=lambda: (self.destroy(), colourExcitationPage("red_excitation")))
+        redButton = Button(exFrame, text="Red Excitation", command=lambda: (self.destroy(), colourExcitationPage("red_excitation", method)))
         redButton.pack(side="top", fill="both", expand=True, padx=5, pady=10)
-        greenButton = Button(exFrame, text="Green Excitation",
-                             command=lambda: (self.destroy(), colourExcitationPage('green_excitation')))
+
+        greenButton = Button(exFrame, text="Green Excitation",command=lambda: (self.destroy(), colourExcitationPage("green_excitation", method)))
         greenButton.pack(side="top", fill="both", expand=True, padx=5, pady=10)
 
         self.pack(fill="both", expand=True)
 
         home = Button(self, text="Home", command=lambda: (self.destroy(), startPage()))
         home.pack(side="left", fill="both", expand=True, padx=5, pady=5)
+        '''
+        
         photoButton = Button(self, text="Photo Conversion", command=lambda: (self.destroy(), photoPage())) #Closes the current page and calls the next page to appear within the same frame
         photoButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         primedButton = Button(self, text="Primed Conversion", command=lambda: (self.destroy(), primedPage()))
-        primedButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
+        primedButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)'''
         dataButton = Button(self, text="Load Previous Data", command=lambda: (self.destroy(), dataPage()))
         dataButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
 
@@ -72,68 +79,33 @@ Here, a validation check is used to confirm whether red or green excitation occu
 appropriate functions will be added accordingly
 '''
 class colourExcitationPage(Frame):
-    def __init__(self, colour):
+    def __init__(self, colour, method):
         super().__init__()
         if colour == 'red_excitation':
             print('Red Excitation')
-            self.master.title("Red Excitation - (Post PC)")
+            self.master.title("Red Excitation - " + str(method))
+
         elif colour == 'green_excitation':
             print('Green Excitation')
-            self.master.title("Green Excitation - (Pre PC)")
+            self.master.title("Green Excitation - " + str(method))
+
 
         frame = Frame(self, relief="raised", borderwidth=1)
         frame.pack(fill="both", expand=True)
         self.pack(fill="both", expand=True)
-        #, frame.after(4000, analysisPage(frame, "sample.png"))
+
         #raspi_connection(colour),
-        startButton = Button(self, text="Start Excitation", command=lambda: (display_LED_message(self, frame))) #Closes the current page and calls the next page to appear within the same frame
+        f = files(colour, method)
+        c = camera(f)
+
+        cameraButton = Button(self, text="Take initial photo", command=lambda: c.take_photo("pre"))
+        cameraButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
+        startButton = Button(self, text="Start Excitation", command=lambda: (display_LED_message(self, frame), c.take_photo("post"))) #Closes the current page and calls the next page to appear within the same frame
         startButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-        stopButton = Button(self, text="Stop")
-        stopButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-        backButton = Button(self, text="Back", command=lambda: (self.destroy(), excitationPage()))
+        backButton = Button(self, text="Back", command=lambda: (self.destroy(), excitationPage(method)))
         backButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         #Closes the current page and calls the next page to appear within the same frame
 
-#PRIMED CONVERSION PAGE
-class primedPage(Frame):
-    def __init__(self):
-        super().__init__()
-        self.master.title("Primed Conversion")
-        prFrame = Frame(self, relief=RAISED, borderwidth=1)
-        prFrame.pack(fill="both", expand=True)
-        self.pack(fill="both", expand=True)
-
-        startButton = Button(prFrame, text="Start Primed Conversion", command=lambda: raspi_connection('PC'))
-
-        startButton.pack(fill="both", expand=True, padx=5, pady=5)
-        home = Button(self, text="Home", command=lambda: (self.destroy(), startPage()))
-        home.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-        excitationButton = Button(self, text="Regular Excitation", command=lambda: (self.destroy(), excitationPage()))
-        excitationButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-        photoButton = Button(self, text="Photo Conversion", command=lambda: (self.destroy(), photoPage()))
-        photoButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-        dataButton = Button(self, text="Load Previous Data", command=lambda: (self.destroy(), dataPage()))
-        dataButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-#PHOTO CONVERSION PAGE
-class photoPage(Frame):
-    def __init__(self):
-        super().__init__()
-        self.master.title("Photo Conversion")
-        pcFrame = Frame(self, relief=RAISED, borderwidth=1)
-        pcFrame.pack(fill="both", expand=True)
-        self.pack(fill="both", expand=True)
-        #raspi_connection('UV'),
-        startButton = Button(pcFrame, text="Start Photo Conversion", command=lambda: (startButton.forget(), analysisPage(pcFrame,"sample.png")))
-        startButton.pack(fill="both", expand=True, padx=5, pady=5)
-
-        home = Button(self, text="Home", command=lambda: (self.destroy(), startPage()))
-        home.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-        excitationButton = Button(self, text="Regular Excitation", command=lambda: (self.destroy(), excitationPage()))
-        excitationButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-        primedButton = Button(self, text="Primed Conversion", command=lambda: (self.destroy(), primedPage()))
-        primedButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-        dataButton = Button(self, text="Load previous data", command=lambda: (self.destroy(), dataPage()))
-        dataButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
 #PREVIOUS DATA PAGE
 class dataPage(Frame):
     def __init__(self):
@@ -155,12 +127,10 @@ class dataPage(Frame):
         self.pack(fill="both", expand=True)
         home = Button(self, text="Home", command=lambda: (self.destroy(), startPage()))
         home.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-        excitationButton = Button(self, text="Regular Excitation", command=lambda: (self.destroy(), excitationPage()))
-        excitationButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-        primedButton = Button(self, text="Primed Conversion", command=lambda: (self.destroy(), primedPage()))
-        primedButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-        photoButton = Button(self, text="Photo Conversion", command=lambda: (self.destroy(), photoPage()))
+        photoButton = Button(self, text="Photo Conversion", command=lambda: (self.destroy(), excitationPage("Photo Conversion")))
         photoButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
+        primedButton = Button(self, text="Primed Conversion", command=lambda: (self.destroy(), excitationPage("Primed Conversion")))
+        primedButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
 
 #DATA ANALYSIS PAGE
 class analysisPage(Frame):
@@ -192,10 +162,6 @@ class analysisPage(Frame):
         adjust_peak.pack(side="top", fill="both", expand=True, padx=5, pady=5)
         max_peak = Button(frame, text='Get highest value')
         max_peak.pack(side="top", fill="both", expand=True, padx=5, pady=5)
-
-
-
-
 
     def show_graph(self, c, fig, distance, filename):
         thresholds, colours = get_thresholds()

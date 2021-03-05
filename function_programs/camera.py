@@ -21,30 +21,33 @@ class camera:
         self.state = ""
         self.pre_path = ""
         self.post_path = ""
-        print("Preparing images for", f.excitation, "excitation...")
+        print("Camera on")
+
         #camera = PiCamera() #initiatilse camera
 
     def take_photo(self, state):
+        print("Preparing camera for", self.files.excitation, "channel...")
         names = self.files.get_file_names()
         self.state = state
         #placeholder whilst picamera isn't connected
-        img = Image.new(mode = "RGB", size = (50, 50), color = (153, 153, 255))
-        img1 = Image.new(mode = "RGB", size = (50, 50), color = (255, 153, 255)) #post will undergo normalisation
-        '''
-       camera.vflip = True #Sometimes the image is flipped upside down
+
+        '''camera.vflip = True #Sometimes the image is flipped upside down
        #camera.capture(filename)
        #camera.startrecord
        camera.start_preview(alpha=200) #alpha give transparency to the image to detect errors
        sleep(5)
        camera.stop_preview()'''
         if state == "pre":
+            img = Image.new(mode = "RGB", size = (50, 50), color = (153, 153, 255))
             self.filename = names[0]
-            self.pre_path = os.path.join(self.files.get_raw_path(f.excitation), self.filename)
+            self.pre_path = os.path.join(self.files.get_raw_path(), self.filename)
             img.save(self.pre_path)
             print(names[0], "saved")
+
         elif state == "post":
+            img1 = Image.new(mode = "RGB", size = (50, 50), color = (255, 153, 255)) #post will undergo normalisation
             self.filename = names[1]
-            self.post_path = os.path.join(self.files.get_raw_path(f.excitation), self.filename)
+            self.post_path = os.path.join(self.files.get_raw_path(), self.filename)
             print(names[1], "saved")
             img1.save(self.post_path)
             self.save_analysed_photos()
@@ -54,21 +57,21 @@ class camera:
         pre = PIL.Image.open(self.pre_path)
         post = PIL.Image.open(self.post_path)
         norm = normalise_image(pre, post)
-        norm_directory = f.get_analysis_path(f.excitation)
-        norm_name = f.names[2] #generate_file_ID() gives 1x4 vector of files names: index 2 holds normalised image filename
+        norm_directory = self.files.get_analysis_path()
+        norm_name = self.files.names[2] #generate_file_ID() gives 1x4 vector of files names: index 2 holds normalised image filename
         norm_path = os.path.join(norm_directory, norm_name)
-        print("normalised image: ", norm_path)
+        print(norm_name, "saved")
         norm.save(norm_path)
 
         #Create and save masked image
         masked = Image.fromarray(masked_image(norm_path))
-        masked_path = os.path.join(norm_directory, f.names[3])
-        print("masked image:", masked_path)
+        masked_path = os.path.join(norm_directory, self.files.names[3])
+        print(self.files.names[3],"saved")
         masked.save(masked_path)
 
 
-if __name__ == "__main__":
-    f = files("green", "pc")
+'''if __name__ == "__main__":
+    f = files("green_excitation", "pc")
     c = camera(f)
-    c.take_photo("pre")
-    c.take_photo("post")
+    c.take_photo("pre")'''
+    #c.take_photo("post")
