@@ -7,7 +7,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg#, NavigationTool
 import PIL
 from PIL import Image, ImageTk
 from PIL.Image import ANTIALIAS
-from function_programs.skimage_image_analysis import get_files
+from test_files.skimage_image_analysis import get_files
 from function_programs.image_analysis import *
 from function_programs.files import *
 root = Tk()
@@ -138,7 +138,7 @@ class dataPage(Frame):
         dataFrame = Frame(self, relief=RAISED, borderwidth=1)
         dataFrame.pack(fill="both", expand=True)
 
-        imageinfo = get_files()
+        imageinfo = get_files() #Will modify this to use files.py
         canvas = tk.Canvas(dataFrame, width = 300, height = 500, bg='gray92')
         canvas.pack(fill="both", expand=True, pady=5)
         for i in range(len(imageinfo)):

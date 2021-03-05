@@ -1,5 +1,13 @@
 import os
 import re
+'''
+FILES CLASS FUNCTIONALITY
+- returns path of existing raw images (taken with camera) --> will be used in windows.py when loading previous data
+- generates a new (unique) ID number for all filenames in the current session --> finds the largest existing ID number and increments it by 1
+- creates filenames using the ID number for pre, post, normalised and masked images: 
+e.g., post_pr_green4.png - 4th raw image of green excitation after undergoing primed conversion
+- various variables are saved --> this is useful in camera.py
+'''
 class files:
     def __init__(self, excitation, method):
         self.excitation = excitation #Whether saving to red channel or green channel

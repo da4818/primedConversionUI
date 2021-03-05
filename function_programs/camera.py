@@ -1,4 +1,5 @@
 #from picamera import PiCamera
+import PIL
 from PIL import Image
 from function_programs.files import *
 from function_programs.image_normalisation import *
@@ -8,7 +9,7 @@ Raspberry pi ribbon should have blue side facing towards ethernet port
 '''
 #Note - do not call this file picamera.py as this will cause errors
 
-''' CODE FUNCTIONALITY:
+''' CAMERA CLASS FUNCTIONALITY:
 - takes and saves 2 raw photos in the correct directory: 1) pre conversion and 2) post conversion
 - saves 2 analysed photos in the correct directory: 3) normalised and 4) masked
 - returns images 1) and 4) to display to tkinter
@@ -27,9 +28,15 @@ class camera:
         names = self.files.get_file_names()
         self.state = state
         #placeholder whilst picamera isn't connected
-        img = Image.new(mode = "RGB", size = (50, 50),color = (153, 153, 255))
-        img1 = Image.new(mode = "RGB", size = (50, 50),color = (255, 153, 255)) #post will undergo normalisation
-
+        img = Image.new(mode = "RGB", size = (50, 50), color = (153, 153, 255))
+        img1 = Image.new(mode = "RGB", size = (50, 50), color = (255, 153, 255)) #post will undergo normalisation
+        '''
+       camera.vflip = True #Sometimes the image is flipped upside down
+       #camera.capture(filename)
+       #camera.startrecord
+       camera.start_preview(alpha=200) #alpha give transparency to the image to detect errors
+       sleep(5)
+       camera.stop_preview()'''
         if state == "pre":
             self.filename = names[0]
             self.pre_path = os.path.join(self.files.get_raw_path(f.excitation), self.filename)
@@ -41,15 +48,6 @@ class camera:
             print(names[1], "saved")
             img1.save(self.post_path)
             self.save_analysed_photos()
-
-
-        '''
-        camera.vflip = True #Sometimes the image is flipped upside down
-        #camera.capture(filename)
-        #camera.startrecord
-        camera.start_preview(alpha=200) #alpha give transparency to the image to detect errors
-        sleep(5)
-        camera.stop_preview()'''
         
     def save_analysed_photos(self):
         #Create and save normalised image
@@ -59,7 +57,7 @@ class camera:
         norm_directory = f.get_analysis_path(f.excitation)
         norm_name = f.names[2] #generate_file_ID() gives 1x4 vector of files names: index 2 holds normalised image filename
         norm_path = os.path.join(norm_directory, norm_name)
-        print("normalised image: ",norm_path)
+        print("normalised image: ", norm_path)
         norm.save(norm_path)
 
         #Create and save masked image
