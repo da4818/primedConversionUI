@@ -7,10 +7,10 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg#, NavigationTool
 import PIL
 from PIL import Image, ImageTk
 from PIL.Image import ANTIALIAS
-from PIL.ImageTk import PhotoImage
+
 from raspigpio import raspi_connection
-from arduino import arduino_connection
-from function_programs.analysis_data import *
+from function_programs.image_analysis import *
+from function_programs.files import *
 from skimage_image_analysis import get_files
 root = Tk()
 root.title("Primed Conversion Testing Stage")
@@ -86,8 +86,8 @@ class colourExcitationPage(Frame):
         frame.pack(fill="both", expand=True)
         self.pack(fill="both", expand=True)
 
-
-        startButton = Button(self, text="Start Excitation", command=lambda: (raspi_connection(colour),display_LED_message(frame), frame.after(4000, analysisPage(frame, "Images/sample.jpg")))) #Closes the current page and calls the next page to appear within the same frame
+        #raspi_connection(colour),
+        startButton = Button(self, text="Start Excitation", command=lambda: (display_LED_message(frame), frame.after(4000, analysisPage(frame, "Images/sample.jpg")))) #Closes the current page and calls the next page to appear within the same frame
 
         startButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         stopButton = Button(self, text="Stop", command=lambda:analysisPage(frame, "Images/sample.jpg") )
@@ -139,14 +139,13 @@ class photoPage(Frame):
         dataButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
 #PREVIOUS DATA PAGE
 class dataPage(Frame):
-
     def __init__(self):
         super().__init__()
         self.master.title("Previous Data")
         dataFrame = Frame(self, relief=RAISED, borderwidth=1)
         dataFrame.pack(fill="both", expand=True)
 
-        imageinfo = get_files()
+        imageinfo = get_files() #Will modify this to use files.py
         canvas = tk.Canvas(dataFrame, width = 300, height = 500, bg='gray92')
         canvas.pack(fill="both", expand=True, pady=5)
         for i in range(len(imageinfo)):
@@ -171,17 +170,18 @@ class analysisPage(Frame):
     def __init__(self, frame, filename):
         super().__init__()
         self.master.title("Image Analysis")
+        d = 25
         img, img1 = export_images(filename)
         fig = plt.figure(constrained_layout=True)
         spec = fig.add_gridspec(2, 2)
         a = fig.add_subplot(spec[0, 0])
         a.imshow(img)
         a.axis('off')
-        a.set_title("Before")
+        a.set_title("Normalised")
         b = fig.add_subplot(spec[0, 1])
         b.imshow(img1)
         b.axis('off')
-        b.set_title("After")
+        b.set_title("Masked")
         c = fig.add_subplot(spec[1, 0:2])
         self.show_graph(c, fig, 25, filename)
         canvas = FigureCanvasTkAgg(fig, frame)
@@ -191,12 +191,18 @@ class analysisPage(Frame):
         number = tk.StringVar()
         peak_criteria_entry = Entry(frame, textvariable=number, width=2)
         peak_criteria_entry.pack(side="left", fill="both", expand=True)
-        adjust_peak = Button(frame, text='Adjust peak detection', command=lambda: (self.submit(number, c, fig, filename)))
+        adjust_peak = Button(frame, text='Adjust peak detection', command=lambda: (self.submit(number, c, fig, d)))
         adjust_peak.pack(side="top", fill="both", expand=True, padx=5, pady=5)
+        max_peak = Button(frame, text='Get highest value')
+        max_peak.pack(side="top", fill="both", expand=True, padx=5, pady=5)
+
+
+
+
 
     def show_graph(self, c, fig, distance, filename):
         thresholds, colours = get_thresholds()
-        hist, bin_edges = histogram(filename)
+        hist, bin_edges = generate_histogram(filename)
         c.plot(bin_edges[0:-1], hist)
 
         for t, col in zip(thresholds, colours):
@@ -208,30 +214,34 @@ class analysisPage(Frame):
         c.set_ylabel('Number of pixels')
         c.set_title("Graph")
         fig.canvas.draw()
+        print("Highest greyscale value:",x[-1])
 
-    def submit(self, number, c, fig, filename):
+
+    def submit(self, number, c, fig, d):
         if only_numbers(number.get()):
             d = int(number.get()) #the smaller the number, the more peaks or detected
             print(d)
             c.cla()
-            self.show_graph(c, fig, d, filename)
+            self.show_graph(c, fig, d, "sample.png")
         else:
             print("Invalid entry, try again")
 
 def only_numbers(char):
     return char.isdigit()
+
 def message(self, frame, label):
     label['text'] = "LED off..."
     frame.after(1000, remove_message, self, label, frame)
+
 def remove_message(self, label, frame):
     label.forget()
     #self.destroy()
     analysisPage(frame, "sample.png")
+
 def display_LED_message(self, frame):
     label = Label(frame, text="LED on...", bg='gray92')
     label.pack()
     frame.after(1000, message, self, frame, label)
-
 
 
 if __name__ == "__main__":
