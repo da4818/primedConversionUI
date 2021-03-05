@@ -73,12 +73,12 @@ appropriate functions will be added accordingly
 class colourExcitationPage(Frame):
     def __init__(self, colour):
         super().__init__()
-        if colour == 'red':
-            print('Red light')
-            self.master.title("Excitation - Red LED")
-        elif colour == 'green':
-            print('Green light')
-            self.master.title("Excitation - Green LED")
+        if colour == 'red_excitation':
+            print('Red Excitation')
+            self.master.title("Red Excitation - (Post PC)")
+        elif colour == 'green_excitation':
+            print('Green Excitation')
+            self.master.title("Green Excitation - (Pre PC)")
 
         frame = Frame(self, relief="raised", borderwidth=1)
         frame.pack(fill="both", expand=True)
@@ -111,7 +111,7 @@ class primedPage(Frame):
         photoButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         dataButton = Button(self, text="Load Previous Data", command=lambda: (self.destroy(), dataPage()))
         dataButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-
+#PHOTO CONVERSION PAGE
 class photoPage(Frame):
     def __init__(self):
         super().__init__()
@@ -130,7 +130,7 @@ class photoPage(Frame):
         primedButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         dataButton = Button(self, text="Load previous data", command=lambda: (self.destroy(), dataPage()))
         dataButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-
+#PREVIOUS DATA PAGE
 class dataPage(Frame):
     def __init__(self):
         super().__init__()
@@ -158,6 +158,7 @@ class dataPage(Frame):
         photoButton = Button(self, text="Photo Conversion", command=lambda: (self.destroy(), photoPage()))
         photoButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
 
+#DATA ANALYSIS PAGE
 class analysisPage(Frame):
     def __init__(self, frame, filename):
         super().__init__()
@@ -218,15 +219,18 @@ class analysisPage(Frame):
         else:
             print("Invalid entry, try again")
 
-
 def only_numbers(char):
     return char.isdigit()
+
 def message(self, frame, label):
     label['text'] = "LED off..."
     frame.after(1000, remove_message, self, label, frame)
+
 def remove_message(self, label, frame):
     label.forget()
+    #self.destroy()
     analysisPage(frame, "sample.png")
+
 def display_LED_message(self, frame):
     label = Label(frame, text="LED on...", bg='gray92')
     label.pack()
