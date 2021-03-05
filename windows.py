@@ -8,10 +8,10 @@ import PIL
 from PIL import Image, ImageTk
 from PIL.Image import ANTIALIAS
 
-from raspigpio import raspi_connection
+from function_programs.raspigpio import raspi_connection
 from function_programs.image_analysis import *
 from function_programs.files import *
-from skimage_image_analysis import get_files
+from OldFiles.skimage_image_analysis import get_files
 root = Tk()
 root.title("Primed Conversion Testing Stage")
 root.geometry("650x600")
@@ -19,7 +19,6 @@ root.geometry("650x600")
 Buttons are displayed in order of 
 'Home','Regular Excitation','Photo Conversion','Primed Conversion', 'Load Previous Data'
 '''
-
 #START PAGE
 class startPage(Frame):
 
@@ -85,12 +84,11 @@ class colourExcitationPage(Frame):
         frame = Frame(self, relief="raised", borderwidth=1)
         frame.pack(fill="both", expand=True)
         self.pack(fill="both", expand=True)
-
+        #, frame.after(4000, analysisPage(frame, "sample.png"))
         #raspi_connection(colour),
-        startButton = Button(self, text="Start Excitation", command=lambda: (display_LED_message(frame), frame.after(4000, analysisPage(frame, "Images/sample.jpg")))) #Closes the current page and calls the next page to appear within the same frame
-
+        startButton = Button(self, text="Start Excitation", command=lambda: (display_LED_message(self, frame))) #Closes the current page and calls the next page to appear within the same frame
         startButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-        stopButton = Button(self, text="Stop", command=lambda:analysisPage(frame, "Images/sample.jpg") )
+        stopButton = Button(self, text="Stop")
         stopButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         backButton = Button(self, text="Back", command=lambda: (self.destroy(), excitationPage()))
         backButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
@@ -124,9 +122,8 @@ class photoPage(Frame):
         pcFrame = Frame(self, relief=RAISED, borderwidth=1)
         pcFrame.pack(fill="both", expand=True)
         self.pack(fill="both", expand=True)
-
-        startButton = Button(pcFrame, text="Start Photo Conversion", command=lambda: (raspi_connection('UV'), startButton.forget(), analysisPage(pcFrame, "Images/sample.jpg")))
-
+        #raspi_connection('UV'),
+        startButton = Button(pcFrame, text="Start Photo Conversion", command=lambda: (startButton.forget(), analysisPage(pcFrame,"sample.png")))
         startButton.pack(fill="both", expand=True, padx=5, pady=5)
 
         home = Button(self, text="Home", command=lambda: (self.destroy(), startPage()))
