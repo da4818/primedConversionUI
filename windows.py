@@ -115,23 +115,29 @@ class dataPage(Frame):
         self.master.title("Previous Data")
         dataFrame = Frame(self, relief=RAISED, borderwidth=1)
         dataFrame.pack(fill="both", expand=True)
-        f = files("green_excitation", "pc") # Here the type of excitation and method isn't really important - it's just to access the files
-        previous = f.get_raw_images()
-        pc_list = []
-        for names in previous:
-            if "pc" in names:
-                pc_list.append(names)
-        print("Primed conversion")
+        f = files("green_excitation", "pc") #Here the type of excitation and method isn't really important - it's just to access the files
+        #Obtain a directory of previous raw images - currently separates
+        previous, numbers, methods = f.get_raw_images()
+        print(previous)
+        print(numbers)
+        print(methods)
+        if len(previous) == 0:
+            l = Label(dataFrame, text="No previous data")
+            l.pack(fill="both", expand=True)
 
-        imageinfo = get_files() #Will modify this to use files.py
-        canvas = tk.Canvas(dataFrame, width = 300, height = 500, bg='gray92')
-        canvas.pack(fill="both", expand=True, pady=5)
-        for i, filename in enumerate(pc_list):
-            photo = PIL.Image.open(filename).resize((150, 150), ANTIALIAS)
-            render = ImageTk.PhotoImage(photo)
-            img = Label(canvas, text="Test "+str(i+1), image=render, compound="bottom")
-            img.image = render
-            img.pack(side="left", anchor=NW, fill="none", expand=True, padx=5, pady=5)
+        elif len(previous) > 0:
+            pc_list = []
+            for names in previous:
+                pc_list.append(names)
+
+            canvas = tk.Canvas(dataFrame, width = 300, height = 500, bg='gray92')
+            canvas.pack(fill="both", expand=True, pady=5)
+            for i, j, filename in zip(numbers, methods, pc_list):
+                photo = PIL.Image.open(filename).resize((150, 150), ANTIALIAS)
+                render = ImageTk.PhotoImage(photo)
+                img = Label(canvas, text=str(j) + " Test " + str(i), image=render, compound="bottom")
+                img.image = render
+                img.pack(side="left", anchor=NW, fill="none", expand=True, padx=5, pady=5)
 
         self.pack(fill="both", expand=True)
         home = Button(self, text="Home", command=lambda: (self.destroy(), startPage()))
@@ -147,7 +153,11 @@ class analysisPage(Frame):
         super().__init__()
         self.master.title("Image Analysis")
         d = 25
-        img, img1 = export_images(filename)
+
+        #img, img1 = export_images(filename)
+        f = files("green_excitation", "pc")
+        img, img1 = f.export_files()
+
         fig = plt.figure(constrained_layout=True)
         spec = fig.add_gridspec(2, 2)
         a = fig.add_subplot(spec[0, 0])

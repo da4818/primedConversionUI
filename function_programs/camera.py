@@ -37,15 +37,25 @@ class camera:
        camera.start_preview(alpha=200) #alpha give transparency to the image to detect errors
        sleep(5)
        camera.stop_preview()'''
+
         if state == "pre":
-            img = Image.new(mode = "RGB", size = (50, 50), color = (153, 153, 255))
+            if self.files.excitation == "green_excitation":
+                img = Image.open("green_test_before.png")
+            elif self.files.excitation == "red_excitation":
+                img = Image.open("red_test_before.png")
+            #img = Image.new(mode = "RGB", size = (50, 50), color = (153, 153, 255))
             self.filename = names[0]
             self.pre_path = os.path.join(self.files.get_raw_path(), self.filename)
             img.save(self.pre_path)
             print(names[0], "saved")
 
-        elif state == "post":
-            img1 = Image.new(mode = "RGB", size = (50, 50), color = (255, 153, 255)) #post will undergo normalisation
+
+        if state == "post":
+            if self.files.excitation == "green_excitation":
+                img1 = Image.open("green_test_after.png")
+            elif self.files.excitation == "red_excitation":
+                img1 = Image.open("red_test_after.png")
+            #img1 = Image.new(mode = "RGB", size = (50, 50), color = (255, 153, 255)) #post will undergo normalisation
             self.filename = names[1]
             self.post_path = os.path.join(self.files.get_raw_path(), self.filename)
             print(names[1], "saved")

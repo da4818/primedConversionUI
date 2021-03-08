@@ -1,5 +1,6 @@
 import os
 import re
+import skimage.io
 '''
 FILES CLASS FUNCTIONALITY
 - returns path of existing raw images (taken with camera) --> will be used in windows.py when loading previous data
@@ -16,17 +17,26 @@ class files:
         self.excitation = excitation #Whether saving to red channel or green channel
         self.method = method #Whether primed conversion (pr) or photo conversion (pc)
         self.root = __file__ #Path of files.py --> useful in finding relative directory of image
-        self.fileID = 0
+        self.new_file_ID = 0
         self.curr_path = ""
         self.names = self.generate_file_ID()
 
     def get_raw_images(self):
         path = root_path + '/GroupProject/raw_images'
         raw_files_list = []
+        methods = []
         for root, directories, filenames in os.walk(path):
             for name in filenames:
-                raw_files_list.append(os.path.join(root, name))
-        return raw_files_list
+                if 'post' in name and 'green' in name:
+                    raw_files_list.append(os.path.join(root, name))
+                    if 'pc' in name:
+                        methods.append('Photo Conversion')
+                    elif 'pr' in name:
+                        methods.append('Primed Conversion')
+        res = re.findall(r'\d+', str(raw_files_list))
+        numbers = list(map(int, res))
+
+        return raw_files_list, numbers, methods
 
     def get_raw_path(self):
         colour = self.excitation[:-11] #removes '_excitation' from the string
@@ -45,22 +55,45 @@ class files:
         files_list = []
         for root, directories, filenames in os.walk(path):
             for name in filenames:
-                files_list.append((root, name))
+                if self.method in name:
+                 files_list.append((root, name))
         for i in path, path1:
             for root, directories, filenames in os.walk(i):
                 for name in filenames:
-                    files_list.append((i, name))
+                    if self.method in name:
+                        files_list.append((i, name))
         n = find_max(files_list)
-        self.fileID = n+1 #Create ID number that is increment of most recent fileID number
+        self.new_file_ID = n+1 #Create ID number that is increment of most recent fileID number
         names = self.get_file_names()
         return names
 
     def get_file_names(self):
-        pre_filename = "pre_"+str(self.method)+"_"+str(self.excitation)+str(self.fileID)+".png"
-        post_filename = "post_"+str(self.method)+"_"+str(self.excitation)+str(self.fileID)+".png"
-        normalised_filename = "norm_"+str(self.method)+"_"+str(self.excitation)+str(self.fileID)+".png"
-        masked_filename = "masked_"+str(self.method)+"_"+str(self.excitation)+str(self.fileID)+".png"
+        pre_filename = "pre_"+str(self.method)+"_"+str(self.excitation)+str(self.new_file_ID)+".png"
+        post_filename = "post_"+str(self.method)+"_"+str(self.excitation)+str(self.new_file_ID)+".png"
+        normalised_filename = "norm_"+str(self.method)+"_"+str(self.excitation)+str(self.new_file_ID)+".png"
+        masked_filename = "masked_"+str(self.method)+"_"+str(self.excitation)+str(self.new_file_ID)+".png"
         return pre_filename, post_filename, normalised_filename, masked_filename
+
+    def get_normalised_image(self):
+        path = self.get_analysis_path()
+
+        for root, directories, filenames in os.walk(path):
+            for name in filenames:
+                if 'norm' in name and str(self.new_file_ID-1) in name:
+                    norm_file = (os.path.join(root, name))
+        return norm_file
+
+    def export_files(self):
+        path = self.get_analysis_path()
+        for root, directories, filenames in os.walk(path):
+            for name in filenames:
+                if 'norm' in name and str(self.new_file_ID-1) in name:
+                    norm = skimage.io.imread(os.path.join(root, name))
+                if 'masked' in name and str(self.new_file_ID-1) in name:
+                    masked = skimage.io.imread(os.path.join(root, name))
+        return norm, masked
+
+
 
 def find_max(name): #Find the largest filename ID number
     numbers = re.findall(r'\d+', str(name)) #Finds all the names listed in each file name
@@ -70,7 +103,12 @@ def find_max(name): #Find the largest filename ID number
     return max(res)
 
 
+if __name__ == "__main__":
+    f = files("green_excitation", "pc")
+    print(f.get_normalised_image())
+
 '''if __name__ == "__main__":
     f = files("green_excitation", "pc")
-    print(f.fileID)
-    print(f.get_raw_images())'''
+    print(f.new_file_ID)
+    print(f.get_raw_images())
+    print(f.get_normalised_image())'''

@@ -2,7 +2,7 @@
 def normalise_image(pre, post):
     pre = pre.convert("RGB")
     norm = post.convert("RGB")
-    width, height = post.size
+    width, height = norm.size
 
     for x in range(width):
         for y in range(height):
