@@ -3,12 +3,14 @@ import re
 '''
 FILES CLASS FUNCTIONALITY
 - returns path of existing raw images (taken with camera) --> will be used in windows.py when loading previous data
-- generates a new (unique) ID number for all filenames in the current session --> finds the largest existing ID number and increments it by 1
+- generates a new (unique) ID number for all filenames in the current session 
+--> finds the largest existing ID number and increments it by 1
 - creates filenames using the ID number for pre, post, normalised and masked images: 
 e.g., post_pr_green4.png - 4th raw image of green excitation after undergoing primed conversion
 - various variables are saved --> this is useful in camera.py
 '''
 #NOTE - relative path doesn't seem to work on tkinter - will use absolute path for time being
+root_path = "/Users/debbie/python"
 class files:
     def __init__(self, excitation, method):
         self.excitation = excitation #Whether saving to red channel or green channel
@@ -19,27 +21,22 @@ class files:
         self.names = self.generate_file_ID()
 
     def get_raw_images(self):
-        path = "raw_images"
-        relative_path = os.path.relpath(path, self.root)
+        path = root_path + '/GroupProject/raw_images'
         raw_files_list = []
-        for root, directories, filenames in os.walk(relative_path):
+        for root, directories, filenames in os.walk(path):
             for name in filenames:
                 raw_files_list.append(os.path.join(root, name))
-        '''for root, directories, filenames in os.walk(path, relative_path):
-            for name in filenames:
-                if 'pre' in name:
-                    raw_files_list.append((path, name))'''
         return raw_files_list
 
     def get_raw_path(self):
         colour = self.excitation[:-11] #removes '_excitation' from the string
-        relative_path = '/Users/debbie/python/GroupProject/raw_images/'+str(colour)
-        return relative_path #ValueError currently doesn't check if method input is valid
+        absolute_path = root_path + '/GroupProject/raw_images/'+str(colour)
+        return absolute_path #ValueError currently doesn't check if method input is valid
 
     def get_analysis_path(self):
         colour = self.excitation[:-11]
-        relative_path = '/Users/debbie/python/GroupProject/analysis_images/'+str(colour)
-        return relative_path #ValueError currently doesn't check if method input is valid
+        absolute_path = root_path + '/GroupProject/analysis_images/'+str(colour)
+        return absolute_path #ValueError currently doesn't check if method input is valid
 
     def generate_file_ID(self):
         path = self.get_raw_path()
@@ -72,10 +69,6 @@ def find_max(name): #Find the largest filename ID number
         res = [0]
     return max(res)
 
-if __name__ == "__main__":
-    f = files("green_excitation", "pc")
-    print(f.fileID)
-    print(f.get_raw_images())
 
 '''if __name__ == "__main__":
     f = files("green_excitation", "pc")

@@ -1,10 +1,8 @@
-import os
 import tkinter as tk
 from tkinter import *
 from tkinter.ttk import Frame, Button, Entry
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg#, NavigationToolbar2Tk
-import PIL
 from PIL import Image, ImageTk
 from PIL.Image import ANTIALIAS
 
@@ -17,8 +15,19 @@ root = Tk()
 root.title("Primed Conversion Testing Stage")
 root.geometry("650x600")
 '''
+CODE FUNCTIONALITY:
 Buttons are displayed in order of 
-'Home','Regular Excitation','Photo Conversion','Primed Conversion', 'Load Previous Data'
+('Home',) 'Photo Conversion','Primed Conversion', 'Load Previous Data'
+Photo conversion/Primed conversion pages will essentially perform the same code, except for the LED control
+On photo conversion page:
+- The user can then choose to capture images for the green or red channel
+- On green channel, the user can take an initial phot --> this will be saved as the pre photoconversion photo for the green channel
+- When if the user is satisfied, they can then then start green excitation and capture an image
+* Need to perform normalisation for green channel
+The user should then go to the red channel option (where photo conversion will occur)
+- Similar to the green channel, they can take an initial photo
+- They can then undergo photo conversion, red excitation and capture an image
+- This will then normalise the red channel images and display the data
 '''
 
 #START PAGE
@@ -30,9 +39,7 @@ class startPage(Frame):
         frame.pack(fill="both", expand=True)
         self.pack(fill="both", expand=True)
 
-        '''excitationButton = Button(self, text="Regular Excitation", command=lambda: (self.destroy(), excitationPage()))
-        excitationButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)'''
-
+        #Displays 3 menu options: Photoconversion, PRimed Conversion and previous data
         photoButton = Button(self, text="Photo Conversion", command=lambda: (self.destroy(), excitationPage("pc")))
         photoButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         primedButton = Button(self, text="Primed Conversion", command=lambda: (self.destroy(), excitationPage("pr")))
@@ -54,7 +61,6 @@ class excitationPage(Frame):
 
         redButton = Button(exFrame, text="Red Excitation", command=lambda: (self.destroy(), colourExcitationPage("red_excitation", method)))
         redButton.pack(side="top", fill="both", expand=True, padx=5, pady=10)
-
         greenButton = Button(exFrame, text="Green Excitation",command=lambda: (self.destroy(), colourExcitationPage("green_excitation", method)))
         greenButton.pack(side="top", fill="both", expand=True, padx=5, pady=10)
 
@@ -63,7 +69,6 @@ class excitationPage(Frame):
         home = Button(self, text="Home", command=lambda: (self.destroy(), startPage()))
         home.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         '''
-        
         photoButton = Button(self, text="Photo Conversion", command=lambda: (self.destroy(), photoPage())) #Closes the current page and calls the next page to appear within the same frame
         photoButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         primedButton = Button(self, text="Primed Conversion", command=lambda: (self.destroy(), primedPage()))
@@ -71,13 +76,7 @@ class excitationPage(Frame):
         dataButton = Button(self, text="Load Previous Data", command=lambda: (self.destroy(), dataPage()))
         dataButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
 
-
-'''
-The red and green excitation will perform similar commands, 
-but will vary in terms of the title name and the type of light to turn on and off
-Here, a validation check is used to confirm whether red or green excitation occurs - 
-appropriate functions will be added accordingly
-'''
+#EXCITATION PAGE
 class colourExcitationPage(Frame):
     def __init__(self, colour, method):
         super().__init__()
@@ -94,17 +93,20 @@ class colourExcitationPage(Frame):
         frame.pack(fill="both", expand=True)
         self.pack(fill="both", expand=True)
 
-        #raspi_connection(colour),
         f = files(colour, method)
         c = camera(f)
 
         cameraButton = Button(self, text="Take initial photo", command=lambda: c.take_photo("pre"))
         cameraButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-        startButton = Button(self, text="Start Excitation", command=lambda: (display_LED_message(self, frame), c.take_photo("post"))) #Closes the current page and calls the next page to appear within the same frame
+        '''This code will be used to undergo LED excitation - I've removed it as I don't have the rasp pi connected and will return an error
+        startButton = Button(self, text="Start Excitation", command=lambda: (raspi_connection(colour),display_LED_message(self, frame), c.take_photo("post")))
+        '''
+
+        startButton = Button(self, text="Start Excitation", command=lambda: (display_LED_message(self, frame), c.take_photo("post")))
         startButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         backButton = Button(self, text="Back", command=lambda: (self.destroy(), excitationPage(method)))
         backButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-        #Closes the current page and calls the next page to appear within the same frame
+        # self.destroy() Closes the current page and calls the next page to appear within the same frame
 
 #PREVIOUS DATA PAGE
 class dataPage(Frame):
@@ -113,12 +115,19 @@ class dataPage(Frame):
         self.master.title("Previous Data")
         dataFrame = Frame(self, relief=RAISED, borderwidth=1)
         dataFrame.pack(fill="both", expand=True)
+        f = files("green_excitation", "pc") # Here the type of excitation and method isn't really important - it's just to access the files
+        previous = f.get_raw_images()
+        pc_list = []
+        for names in previous:
+            if "pc" in names:
+                pc_list.append(names)
+        print("Primed conversion")
 
         imageinfo = get_files() #Will modify this to use files.py
         canvas = tk.Canvas(dataFrame, width = 300, height = 500, bg='gray92')
         canvas.pack(fill="both", expand=True, pady=5)
-        for i in range(len(imageinfo)):
-            photo = PIL.Image.open(os.path.join(imageinfo[i].path, imageinfo[i].name)).resize((150, 150), ANTIALIAS)
+        for i, filename in enumerate(pc_list):
+            photo = PIL.Image.open(filename).resize((150, 150), ANTIALIAS)
             render = ImageTk.PhotoImage(photo)
             img = Label(canvas, text="Test "+str(i+1), image=render, compound="bottom")
             img.image = render
@@ -178,7 +187,6 @@ class analysisPage(Frame):
         c.set_title("Graph")
         fig.canvas.draw()
         print("Highest greyscale value:",x[-1])
-
 
     def submit(self, number, c, fig, d):
         if only_numbers(number.get()):
