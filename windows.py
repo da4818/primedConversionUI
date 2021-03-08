@@ -100,7 +100,7 @@ class colourExcitationPage(Frame):
 
         cameraButton = Button(self, text="Take initial photo", command=lambda: c.take_photo("pre"))
         cameraButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-        startButton = Button(self, text="Start Excitation", command=lambda: (display_LED_message(self, frame), c.take_photo("post"))) #Closes the current page and calls the next page to appear within the same frame
+        startButton = Button(self, text="Start Excitation", command=lambda: (raspi_connection(colour),display_LED_message(self, frame), c.take_photo("post"))) #Closes the current page and calls the next page to appear within the same frame
         startButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         backButton = Button(self, text="Back", command=lambda: (self.destroy(), excitationPage(method)))
         backButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
