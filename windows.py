@@ -102,7 +102,7 @@ class colourExcitationPage(Frame):
         startButton = Button(self, text="Start Excitation", command=lambda: (raspi_connection(colour),display_LED_message(self, frame), c.take_photo("post")))
         '''
 
-        startButton = Button(self, text="Start Excitation", command=lambda: (display_LED_message(self, frame), c.take_photo("post")))
+        startButton = Button(self, text="Start Excitation", command=lambda: (display_LED_message(self, colour, frame), c.take_photo("post")))
         startButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         backButton = Button(self, text="Back", command=lambda: (self.destroy(), excitationPage(method)))
         backButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
@@ -117,9 +117,9 @@ class dataPage(Frame):
         dataFrame.pack(fill="both", expand=True)
         f = files("green_excitation", "pc") #Here the type of excitation and method isn't really important - it's just to access the files
         #Obtain a directory of previous raw images - currently separates
-        previous, numbers, methods = f.get_raw_images()
+        previous, IDs, methods = f.get_raw_images()
         print(previous)
-        print(numbers)
+        print(IDs)
         print(methods)
         if len(previous) == 0:
             l = Label(dataFrame, text="No previous data")
@@ -130,9 +130,10 @@ class dataPage(Frame):
             for names in previous:
                 pc_list.append(names)
 
-            canvas = tk.Canvas(dataFrame, width = 300, height = 500, bg='gray92')
+            canvas = tk.Canvas(dataFrame, width=300, height=500, bg='gray92')
             canvas.pack(fill="both", expand=True, pady=5)
-            for i, j, filename in zip(numbers, methods, pc_list):
+            #will amend so that the images can be displayed in a grid format
+            for i, j, filename in zip(IDs, methods, pc_list):
                 photo = PIL.Image.open(filename).resize((150, 150), ANTIALIAS)
                 render = ImageTk.PhotoImage(photo)
                 img = Label(canvas, text=str(j) + " Test " + str(i), image=render, compound="bottom")
@@ -149,15 +150,13 @@ class dataPage(Frame):
 
 #DATA ANALYSIS PAGE
 class analysisPage(Frame):
-    def __init__(self, frame, filename):
+    def __init__(self, frame, colour):
         super().__init__()
         self.master.title("Image Analysis")
         d = 25
-
         #img, img1 = export_images(filename)
-        f = files("green_excitation", "pc")
-        img, img1 = f.export_files()
-
+        f = files(colour, "pc")
+        img, img1, masked_path = f.export_files()
         fig = plt.figure(constrained_layout=True)
         spec = fig.add_gridspec(2, 2)
         a = fig.add_subplot(spec[0, 0])
@@ -169,7 +168,7 @@ class analysisPage(Frame):
         b.axis('off')
         b.set_title("Masked")
         c = fig.add_subplot(spec[1, 0:2])
-        self.show_graph(c, fig, 25, filename)
+        self.show_graph(c, fig, 25, masked_path)
         canvas = FigureCanvasTkAgg(fig, frame)
 
         plot_widget = canvas.get_tk_widget()
@@ -210,19 +209,19 @@ class analysisPage(Frame):
 def only_numbers(char):
     return char.isdigit()
 
-def message(self, frame, label):
+def message(self, frame, label, colour):
     label['text'] = "LED off..."
-    frame.after(1000, remove_message, self, label, frame)
+    frame.after(1000, remove_message, self, label, frame, colour)
 
-def remove_message(self, label, frame):
+def remove_message(self, label, frame, colour):
     label.forget()
     #self.destroy()
-    analysisPage(frame, "sample.png")
+    analysisPage(frame, colour)
 
-def display_LED_message(self, frame):
+def display_LED_message(self, colour, frame):
     label = Label(frame, text="LED on...", bg='gray92')
     label.pack()
-    frame.after(1000, message, self, frame, label)
+    frame.after(1000, message, self, frame, label, colour)
 
 
 if __name__ == "__main__":

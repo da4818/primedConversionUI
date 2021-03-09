@@ -51,7 +51,6 @@ class files:
     def generate_file_ID(self):
         path = self.get_raw_path()
         path1 = self.get_analysis_path()
-
         files_list = []
         for root, directories, filenames in os.walk(path):
             for name in filenames:
@@ -85,14 +84,13 @@ class files:
 
     def export_files(self):
         path = self.get_analysis_path()
-        for root, directories, filenames in os.walk(path):
-            for name in filenames:
-                if 'norm' in name and str(self.new_file_ID-1) in name:
-                    norm = skimage.io.imread(os.path.join(root, name))
-                if 'masked' in name and str(self.new_file_ID-1) in name:
-                    masked = skimage.io.imread(os.path.join(root, name))
-        return norm, masked
-
+        filename = "/norm_"+str(self.method)+"_"+str(self.excitation)+str(self.new_file_ID-1)+".png"
+        filename1 = "/masked_"+str(self.method)+"_"+str(self.excitation)+str(self.new_file_ID-1)+".png"
+        norm = skimage.io.imread(path+filename)
+        masked = skimage.io.imread(path+filename1)
+        masked_path = path+filename1
+        print(masked_path)
+        return norm, masked, masked_path
 
 
 def find_max(name): #Find the largest filename ID number
