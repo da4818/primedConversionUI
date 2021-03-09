@@ -13,7 +13,7 @@ from function_programs.camera import *
 from OldFiles.skimage_image_analysis import get_files
 root = Tk()
 root.title("Primed Conversion Testing Stage")
-root.geometry("650x600")
+root.geometry("700x600")
 '''
 CODE FUNCTIONALITY:
 Buttons are displayed in order of 
@@ -132,13 +132,17 @@ class dataPage(Frame):
 
             canvas = tk.Canvas(dataFrame, width=300, height=500, bg='gray92')
             canvas.pack(fill="both", expand=True, pady=5)
-            #will amend so that the images can be displayed in a grid format
-            for i, j, filename in zip(IDs, methods, pc_list):
+
+            #Previous images displayed in a grid format - .grid() can only be in frames that also use only .grid()
+            col_num = 4 #Set to 4 columns
+            for i,(num, method, filename) in enumerate(zip(IDs, methods, pc_list)):
+                r = int(i/col_num) #Calculates row number
+                c = i % col_num #Calculates column number
                 photo = PIL.Image.open(filename).resize((150, 150), ANTIALIAS)
                 render = ImageTk.PhotoImage(photo)
-                img = Label(canvas, text=str(j) + " Test " + str(i), image=render, compound="bottom")
+                img = Label(canvas, text=str(method) + " Test " + str(num), image=render, compound="bottom")
                 img.image = render
-                img.pack(side="left", anchor=NW, fill="none", expand=True, padx=5, pady=5)
+                img.grid(row=r, column=c, padx=5, pady=5)
 
         self.pack(fill="both", expand=True)
         home = Button(self, text="Home", command=lambda: (self.destroy(), startPage()))
