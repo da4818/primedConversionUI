@@ -126,16 +126,16 @@ class dataPage(Frame):
             l.pack(fill="both", expand=True)
 
         elif len(previous) > 0:
-            pc_list = []
+            prev_data_list = []
             for names in previous:
-                pc_list.append(names)
+                prev_data_list.append(names)
 
             canvas = tk.Canvas(dataFrame, width=300, height=500, bg='gray92')
             canvas.pack(fill="both", expand=True, pady=5)
 
             #Previous images displayed in a grid format - .grid() can only be in frames that also use only .grid()
             col_num = 4 #Set to 4 columns
-            for i,(num, method, filename) in enumerate(zip(IDs, methods, pc_list)):
+            for i,(num, method, filename) in enumerate(zip(IDs, methods, prev_data_list)):
                 r = int(i/col_num) #Calculates row number
                 c = i % col_num #Calculates column number
                 photo = PIL.Image.open(filename).resize((150, 150), ANTIALIAS)
