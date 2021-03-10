@@ -8,7 +8,7 @@ import PIL
 from PIL import Image, ImageTk
 from PIL.Image import ANTIALIAS
 
-from function_programs.raspigpio import raspi_connection
+#from function_programs.raspigpio import raspi_connection
 from function_programs.image_analysis import *
 from function_programs.files import *
 from function_programs.camera import *
@@ -100,7 +100,7 @@ class colourExcitationPage(Frame):
 
         cameraButton = Button(self, text="Take initial photo", command=lambda: c.take_photo("pre"))
         cameraButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-        startButton = Button(self, text="Start Excitation", command=lambda: (raspi_connection(colour),display_LED_message(self, frame), c.take_photo("post"))) #Closes the current page and calls the next page to appear within the same frame
+        startButton = Button(self, text="Start Excitation", command=lambda: (display_LED_message(self, frame), c.take_photo("post"))) #Closes the current page and calls the next page to appear within the same frame
         startButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         backButton = Button(self, text="Back", command=lambda: (self.destroy(), excitationPage(method)))
         backButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
@@ -151,6 +151,9 @@ class analysisPage(Frame):
         b.set_title("Masked")
         c = fig.add_subplot(spec[1, 0:2])
         self.show_graph(c, fig, 25, filename)
+
+        self.show_sampleinfo(filename)
+
         canvas = FigureCanvasTkAgg(fig, frame)
 
         plot_widget = canvas.get_tk_widget()
@@ -188,6 +191,19 @@ class analysisPage(Frame):
             self.show_graph(c, fig, d, "sample.png")
         else:
             print("Invalid entry, try again")
+
+    def show_sampleinfo(self, filename):
+        sampleinfo = quantify(filename)
+        if len(sampleinfo)==1:
+            print(str(len(sampleinfo))+" sample found")
+            print(sampleinfo[0])
+        elif len(sampleinfo)>1:
+            print(str(len(sampleinfo))+" samples found")
+            print(sampleinfo[0])
+        else:
+            print("No samples found. uh oh")
+
+
 
 def only_numbers(char):
     return char.isdigit()
