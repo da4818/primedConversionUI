@@ -1,38 +1,50 @@
-def raspi_connection(var):
+def raspi_turnon(colour, gpio_class):
+    from gpiozero import DigitalOutputDevice
+    for led in gpio_class.leds:
+        # will need to make sure red_priming is referenced when priming so loop can turn both priming leds on
+        if colour == led[0]:
+            # if statement turns 494nm LED and 630nm LED on for primed conversion
+            if colour == "red_priming":
+                gpio_class.leds[1][1].on()    # leds[1] is the 494nm LED.
+            # turning UV LED on or pin output at HIGH (~3.3V)
+            led[1].on()
+            # program stops for 2 seconds then turns the led off
 
-    from gpiozero import PWMOutputDevice
+
+def raspi_turnoff(gpio_class):
+    for led in gpio_class.leds:
+        # will need to make sure red_priming is referenced when priming so loop can turn both priming leds on
+        led[1].off()
+
+'''
+old function
+def raspi_connection(var,gpio_class):
+
+    from gpiozero import DigitalOutputDevice
     from time import sleep
-    # assigning integers representing GPIO pins (in broadcam representation)
-    UV405 = 17
-    blue494 = 27
-    red630 = 22
-    lime540 = 23
-
+    # initializing output pins and setting them LOW to ensure transistor gates are all closed on startup
     if(var == 'UV'):
-        # initializing Pin connected to transistor controlling current to UV LED circuit
-        # initial value is 1 or on at full. Duty cycle is then 1->0->1 at X frequency
-        # can choose different duty cycle start e.g., initial_value=0.9: 0.9->0.1->0.9 at X frequency
-        # chose to have pin on HIGH at initialisation and turn it off after 2sec for faster/shorter code
-        led = PWMOutputDevice(UV405,initial_value=1,frequency=1000) # need to check frequency capabilities of 2N7000 transistor
+        # turning UV LED on or pin output at HIGH (~3.3V)
+        UV405.on()
         # program stops for 2 seconds then turns the led off
         sleep(2)
-        led.off()
+        UV405.off()
 
     elif(var =='PC'):
         # same process as above but for primed conversion LEDs
-        blue_priming = PWMOutputDevice(blue494,initial_value=1,frequency=1000)
-        red_converting = PWMOutputDevice(red630,initial_value=1,frequency=1000)
+        blue494.on()
+        red630.on()
         sleep(2)
-        blue_priming.off()
-        red_converting.off()
+        blue494.off()
+        red630.off()
     elif(var =='green_excitation'):
-        led = PWMOutputDevice(blue494,initial_value=1,frequency=1000)
+        blue494.on()
         sleep(2)
-        led.off()
+        blue494.off()
     elif(var =='red_excitation'):
-        led = PWMOutputDevice(lime540,initial_value=1,frequency=1000)
+        lime540.on()
         sleep(2)
-        led.off()
-
+        lime540.off()
+'''
 if __name__ == "__main__":
     raspi_connection('red_connection')
