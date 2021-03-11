@@ -11,6 +11,7 @@ To make the user interface functional, multiple libaries must be installed:
 -gpiozero, to allow the program to interact with the RaspberryPi.
 -scikit-image, for image processing in Python.
 -Servo Motor Library- WHAT IS IIIIIIIIIIIIIIIIIIIIIIT
+-cv2, a Python library used to solve computer vision problems.
 
 
 
