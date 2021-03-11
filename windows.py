@@ -6,7 +6,8 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg#, NavigationTool
 from PIL import Image, ImageTk
 from PIL.Image import ANTIALIAS
 
-from function_programs.raspigpio import raspi_connection
+from gpiozero import DigitalOutputDevice
+from function_programs.raspigpio import raspi_turnon, raspi_turnoff
 from function_programs.image_analysis import *
 from function_programs.files import *
 from function_programs.camera import *
@@ -94,7 +95,7 @@ class colourExcitationPage(Frame):
         self.pack(fill="both", expand=True)
 
         f = files(colour, method)
-        c = camera(f)
+        c = camera(f, gpio)
 
         cameraButton = Button(self, text="Take initial photo", command=lambda: c.take_photo("pre"))
         cameraButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
@@ -226,6 +227,21 @@ def display_LED_message(self, colour, frame):
     label = Label(frame, text="LED on...", bg='gray92')
     label.pack()
     frame.after(1000, message, self, frame, label, colour)
+
+# raspberry pi GPIO class, needed in main program to ensure that the pins stay in correct voltage at all times, even when exiting external
+# modules that alter their state
+class raspi:
+    def __init__(self):
+        # initializing output pins and setting them LOW to ensure transistor gates are all closed on startup, thus all LEDs start off
+        # leds are each a tuple with identifying name at index 0 and digitaloutputdevice object at index 1
+        self.leds = [None]*4
+        self.leds[0] = ("UV", DigitalOutputDevice(17,initial_value=0))
+        self.leds[1] = ("green_excitation", DigitalOutputDevice(27,initial_value=0))
+        self.leds[2] = ("red_priming", DigitalOutputDevice(22,initial_value=0))
+        self.leds[3] = ("red_excitation", DigitalOutputDevice(23,initial_value=0))
+    # had to put here to have leds as global variables, since they need to be at specific constant outputs at all times
+# Could instead initialize led list in global space at start of code
+gpio = raspi()
 
 
 if __name__ == "__main__":
