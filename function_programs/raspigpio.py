@@ -1,3 +1,4 @@
+import time,
 def raspi_turnon(colour, gpio_class):
     from gpiozero import DigitalOutputDevice
     for led in gpio_class.leds:
@@ -5,7 +6,7 @@ def raspi_turnon(colour, gpio_class):
         if colour == led[0]:
             # if statement turns 494nm LED and 630nm LED on for primed conversion
             if colour == "red_priming":
-                gpio_class.leds[1][1].on()    # leds[1] is the 494nm LED.
+                gpio_class.leds[1][1].on()  , delay(t)  # leds[1] is the 494nm LED.
             # turning UV LED on or pin output at HIGH (~3.3V)
             led[1].on()
             # program stops for 2 seconds then turns the led off
