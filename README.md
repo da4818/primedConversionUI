@@ -4,5 +4,16 @@ Our user interface has multiple aims. First, facilitate the operation of the pla
 
 For the interface, we used the Tkinter package (Tk intarface). It is built into the Python standard library which makes it even easier for the user. It can works on Windows, MacOS and Linux. It is powerful, user-friendly and cross-platform, which is why we decided to use this framework.
 
-STUFFS TO TALK ABOUT:
-Image Analysis
+To make the user interface functional, multiple libaries must be installed:
+-Tkinter, to create the user interface.
+-Matplotlib, to create visualisations in Python.
+-PIL, or Python Imaging Library, to visualise images.
+-gpiozero, to allow the program to interact with the RaspberryPi.
+-scikit-image, for image processing in Python.
+-Servo Motor Library- WHAT IS IIIIIIIIIIIIIIIIIIIIIIT
+
+
+
+
+
+
