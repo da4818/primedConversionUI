@@ -60,9 +60,9 @@ class excitationPage(Frame):
         exFrame = Frame(self, relief=RAISED, borderwidth=1)
         exFrame.pack(fill="both", expand=True)
 
-        redButton = Button(exFrame, text="Red Excitation", command=lambda: (self.destroy(), colourExcitationPage("red_excitation", method)))
+        redButton = Button(exFrame, text="Red Excitation", command=lambda: (self.destroy(), ask time()))
         redButton.pack(side="top", fill="both", expand=True, padx=5, pady=10)
-        greenButton = Button(exFrame, text="Green Excitation",command=lambda: (self.destroy(), colourExcitationPage("green_excitation", method)))
+        greenButton = Button(exFrame, text="Green Excitation",command=lambda: (self.destroy(), asktime())
         greenButton.pack(side="top", fill="both", expand=True, padx=5, pady=10)
 
         self.pack(fill="both", expand=True)
@@ -76,6 +76,32 @@ class excitationPage(Frame):
         primedButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)'''
         dataButton = Button(self, text="Load Previous Data", command=lambda: (self.destroy(), dataPage()))
         dataButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
+        
+#ASK THE TIME PAGE. #This should open once the PhotoConversion button has been clicked
+class asktime(Frame):  
+     def getTime ():  
+     global t #T should be used with the raspberry pi so it should be global
+     t = entry1.get()
+    
+
+     def __init__(self, colour, method):
+        super().__init__()
+        self.master.title("Regular Excitation: " + title)
+        exFrame = Frame(self, relief=RAISED, borderwidth=1)
+        exFrame.pack(fill="both", expand=True)
+        
+        TimeButton = Button(exFrame, text="How long should the LED be on (in seconds)?",command=getTime)     
+        #The time Button shoud let you have an input
+        #Source: https://datatofish.com/entry-box-tkinter/
+        TimeButton.pack(side="top", fill="both", expand=True, padx=5, pady=10) #The time should be stored in the variable t
+        
+                             
+        redButton = Button(exFrame, text="Red Excitation", command=lambda: (self.destroy(), colourExcitationPage("red_excitation", method)))
+        redButton.pack(side="top", fill="both", expand=True, padx=5, pady=10)
+        greenButton = Button(exFrame, text="Green Excitation",command=lambda: (self.destroy(), colourExcitationPage("green_excitation", method)))
+        greenButton.pack(side="top", fill="both", expand=True, padx=5, pady=10)
+        
+        
 
 #EXCITATION PAGE
 class colourExcitationPage(Frame):
@@ -102,7 +128,8 @@ class colourExcitationPage(Frame):
         '''This code will be used to undergo LED excitation - I've removed it as I don't have the rasp pi connected and will return an error
         startButton = Button(self, text="Start Excitation", command=lambda: (raspi_connection(colour),display_LED_message(self, frame), c.take_photo("post")))
         '''
-
+        
+   
         startButton = Button(self, text="Start Excitation", command=lambda: (display_LED_message(self, colour, frame), c.take_photo("post")))
         startButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         backButton = Button(self, text="Back", command=lambda: (self.destroy(), excitationPage(method)))
