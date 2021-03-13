@@ -6,6 +6,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg#, NavigationTool
 from PIL import Image, ImageTk
 from PIL.Image import ANTIALIAS
 
+
 from gpiozero import DigitalOutputDevice
 from function_programs.raspigpio import raspi_turnon, raspi_turnoff
 from function_programs.image_analysis import *
@@ -173,6 +174,7 @@ class analysisPage(Frame):
         b.axis('off')
         b.set_title("Masked")
         c = fig.add_subplot(spec[1, 0:2])
+        self.show_sampleinfo(filename)
         self.show_graph(c, fig, 25, masked_path)
         canvas = FigureCanvasTkAgg(fig, frame)
 
@@ -210,6 +212,19 @@ class analysisPage(Frame):
             self.show_graph(c, fig, d, "sample.png")
         else:
             print("Invalid entry, try again")
+
+    def show_sampleinfo(self, filename):
+        sampleinfo = quantify(filename)
+        if len(sampleinfo)==1:
+            print(str(len(sampleinfo))+" sample found")
+            print(sampleinfo[0])
+        elif len(sampleinfo)>1:
+            print(str(len(sampleinfo))+" samples found")
+            print(sampleinfo[0])
+        else:
+            print("No samples found. uh oh")
+
+
 
 def only_numbers(char):
     return char.isdigit()

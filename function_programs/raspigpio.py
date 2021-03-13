@@ -11,6 +11,7 @@ def raspi_turnon(colour, gpio_class):
             # program stops for 2 seconds then turns the led off
 
 
+
 def raspi_turnoff(gpio_class):
     for led in gpio_class.leds:
         # will need to make sure red_priming is referenced when priming so loop can turn both priming leds on
@@ -45,6 +46,8 @@ def raspi_connection(var,gpio_class):
         lime540.on()
         sleep(2)
         lime540.off()
+
 '''
+
 if __name__ == "__main__":
     raspi_connection('red_connection')
