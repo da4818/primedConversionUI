@@ -11,7 +11,8 @@ e.g., post_pr_green4.png - 4th raw image of green excitation after undergoing pr
 - various variables are saved --> this is useful in camera.py
 '''
 #NOTE - relative path doesn't seem to work on tkinter - will use absolute path for time being
-root_path = "C:\IdeaProjects"
+root_path = "/Users/debbie/python"
+
 class files:
     def __init__(self, excitation, method):
         self.excitation = excitation #Whether saving to red channel or green channel
@@ -22,7 +23,9 @@ class files:
         self.names = self.generate_file_ID()
 
     def get_raw_images(self):
-        path = root_path + '\primedConversionUI\raw_images'
+
+        path = root_path + '/GroupProject/raw_images'
+
         raw_files_list = []
         methods = []
         for root, directories, filenames in os.walk(path):
@@ -40,12 +43,16 @@ class files:
 
     def get_raw_path(self):
         colour = self.excitation[:-11] #removes '_excitation' from the string
-        absolute_path = root_path + '\primedConversionUI\\raw_images\\'+str(colour)
+
+        absolute_path = root_path + '/GroupProject/raw_images/'+str(colour)
+
         return absolute_path #ValueError currently doesn't check if method input is valid
 
     def get_analysis_path(self):
         colour = self.excitation[:-11]
-        absolute_path = root_path + '\primedConversionUI\\analysis_images\\'+str(colour)
+
+        absolute_path = root_path + '/GroupProject/analysis_images/'+str(colour)
+
         return absolute_path #ValueError currently doesn't check if method input is valid
 
     def generate_file_ID(self):
