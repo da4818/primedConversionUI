@@ -4,6 +4,7 @@ from PIL import Image
 from function_programs.files import *
 from function_programs.image_normalisation import *
 from function_programs.image_analysis import *
+from function_programs.raspigpio import raspi_turnon, raspi_turnoff
 '''
 Raspberry pi ribbon should have blue side facing towards ethernet port
 '''
@@ -15,12 +16,15 @@ Raspberry pi ribbon should have blue side facing towards ethernet port
 - returns images 1) and 4) to display to tkinter
 '''
 class camera:
-    def __init__(self, files_class):
+    def __init__(self, files_class, gpio_class):
         self.files = files_class
+        self.gpio = gpio_class
         self.filename = ""
         self.state = ""
         self.pre_path = ""
         self.post_path = ""
+        self.norm_path = ""
+        self.masked_path = ""
         print("Camera on")
 
         #camera = PiCamera() #initiatilse camera
@@ -31,21 +35,33 @@ class camera:
         self.state = state
         #placeholder whilst picamera isn't connected
 
+        raspi_turnon(self.files.excitation, self.gpio)
         '''camera.vflip = True #Sometimes the image is flipped upside down
        #camera.capture(filename)
        #camera.startrecord
        camera.start_preview(alpha=200) #alpha give transparency to the image to detect errors
        sleep(5)
        camera.stop_preview()'''
+        raspi_turnoff(self.gpio)
+
         if state == "pre":
-            img = Image.new(mode = "RGB", size = (50, 50), color = (153, 153, 255))
+            if self.files.excitation == "green_excitation":
+                img = Image.open("green_test_before.png")
+            elif self.files.excitation == "red_excitation":
+                img = Image.open("red_test_before.png")
+            #img = Image.new(mode = "RGB", size = (50, 50), color = (153, 153, 255))
             self.filename = names[0]
             self.pre_path = os.path.join(self.files.get_raw_path(), self.filename)
             img.save(self.pre_path)
             print(names[0], "saved")
 
-        elif state == "post":
-            img1 = Image.new(mode = "RGB", size = (50, 50), color = (255, 153, 255)) #post will undergo normalisation
+
+        if state == "post":
+            if self.files.excitation == "green_excitation":
+                img1 = Image.open("P1.png")
+            elif self.files.excitation == "red_excitation":
+                img1 = Image.open("P2.png")
+            #img1 = Image.new(mode = "RGB", size = (50, 50), color = (255, 153, 255)) #post will undergo normalisation
             self.filename = names[1]
             self.post_path = os.path.join(self.files.get_raw_path(), self.filename)
             print(names[1], "saved")
@@ -69,6 +85,13 @@ class camera:
         masked_path = os.path.join(norm_directory, self.files.names[3])
         print(self.files.names[3],"saved")
         masked.save(masked_path)
+        self.norm_path = norm_path
+        self.masked_path = masked_path
+        
+    def export_files(self):
+        norm = skimage.io.imread(self.norm_path)
+        mask = skimage.io.imread(self.masked_path)
+        return norm, mask
 
 
 '''if __name__ == "__main__":

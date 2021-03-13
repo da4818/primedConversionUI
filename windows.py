@@ -1,24 +1,35 @@
-import os
 import tkinter as tk
 from tkinter import *
 from tkinter.ttk import Frame, Button, Entry
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg#, NavigationToolbar2Tk
-import PIL
 from PIL import Image, ImageTk
 from PIL.Image import ANTIALIAS
 
-#from function_programs.raspigpio import raspi_connection
+
+from gpiozero import DigitalOutputDevice
+from function_programs.raspigpio import raspi_turnon, raspi_turnoff
 from function_programs.image_analysis import *
 from function_programs.files import *
 from function_programs.camera import *
 from OldFiles.skimage_image_analysis import get_files
 root = Tk()
 root.title("Primed Conversion Testing Stage")
-root.geometry("650x600")
+root.geometry("700x600")
 '''
+CODE FUNCTIONALITY:
 Buttons are displayed in order of 
-'Home','Regular Excitation','Photo Conversion','Primed Conversion', 'Load Previous Data'
+('Home',) 'Photo Conversion','Primed Conversion', 'Load Previous Data'
+Photo conversion/Primed conversion pages will essentially perform the same code, except for the LED control
+On photo conversion page:
+- The user can then choose to capture images for the green or red channel
+- On green channel, the user can take an initial phot --> this will be saved as the pre photoconversion photo for the green channel
+- When if the user is satisfied, they can then then start green excitation and capture an image
+* Need to perform normalisation for green channel
+The user should then go to the red channel option (where photo conversion will occur)
+- Similar to the green channel, they can take an initial photo
+- They can then undergo photo conversion, red excitation and capture an image
+- This will then normalise the red channel images and display the data
 '''
 
 #START PAGE
@@ -30,9 +41,7 @@ class startPage(Frame):
         frame.pack(fill="both", expand=True)
         self.pack(fill="both", expand=True)
 
-        '''excitationButton = Button(self, text="Regular Excitation", command=lambda: (self.destroy(), excitationPage()))
-        excitationButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)'''
-
+        #Displays 3 menu options: Photoconversion, PRimed Conversion and previous data
         photoButton = Button(self, text="Photo Conversion", command=lambda: (self.destroy(), excitationPage("pc")))
         photoButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         primedButton = Button(self, text="Primed Conversion", command=lambda: (self.destroy(), excitationPage("pr")))
@@ -54,7 +63,6 @@ class excitationPage(Frame):
 
         redButton = Button(exFrame, text="Red Excitation", command=lambda: (self.destroy(), colourExcitationPage("red_excitation", method)))
         redButton.pack(side="top", fill="both", expand=True, padx=5, pady=10)
-
         greenButton = Button(exFrame, text="Green Excitation",command=lambda: (self.destroy(), colourExcitationPage("green_excitation", method)))
         greenButton.pack(side="top", fill="both", expand=True, padx=5, pady=10)
 
@@ -63,7 +71,6 @@ class excitationPage(Frame):
         home = Button(self, text="Home", command=lambda: (self.destroy(), startPage()))
         home.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         '''
-        
         photoButton = Button(self, text="Photo Conversion", command=lambda: (self.destroy(), photoPage())) #Closes the current page and calls the next page to appear within the same frame
         photoButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         primedButton = Button(self, text="Primed Conversion", command=lambda: (self.destroy(), primedPage()))
@@ -71,13 +78,7 @@ class excitationPage(Frame):
         dataButton = Button(self, text="Load Previous Data", command=lambda: (self.destroy(), dataPage()))
         dataButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
 
-
-'''
-The red and green excitation will perform similar commands, 
-but will vary in terms of the title name and the type of light to turn on and off
-Here, a validation check is used to confirm whether red or green excitation occurs - 
-appropriate functions will be added accordingly
-'''
+#EXCITATION PAGE
 class colourExcitationPage(Frame):
     def __init__(self, colour, method):
         super().__init__()
@@ -94,17 +95,20 @@ class colourExcitationPage(Frame):
         frame.pack(fill="both", expand=True)
         self.pack(fill="both", expand=True)
 
-        #raspi_connection(colour),
         f = files(colour, method)
-        c = camera(f)
+        c = camera(f, gpio)
 
         cameraButton = Button(self, text="Take initial photo", command=lambda: c.take_photo("pre"))
         cameraButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-        startButton = Button(self, text="Start Excitation", command=lambda: (display_LED_message(self, frame), c.take_photo("post"))) #Closes the current page and calls the next page to appear within the same frame
+        '''This code will be used to undergo LED excitation - I've removed it as I don't have the rasp pi connected and will return an error
+        startButton = Button(self, text="Start Excitation", command=lambda: (raspi_connection(colour),display_LED_message(self, frame), c.take_photo("post")))
+        '''
+
+        startButton = Button(self, text="Start Excitation", command=lambda: (display_LED_message(self, colour, frame), c.take_photo("post")))
         startButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         backButton = Button(self, text="Back", command=lambda: (self.destroy(), excitationPage(method)))
         backButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-        #Closes the current page and calls the next page to appear within the same frame
+        # self.destroy() Closes the current page and calls the next page to appear within the same frame
 
 #PREVIOUS DATA PAGE
 class dataPage(Frame):
@@ -113,16 +117,34 @@ class dataPage(Frame):
         self.master.title("Previous Data")
         dataFrame = Frame(self, relief=RAISED, borderwidth=1)
         dataFrame.pack(fill="both", expand=True)
+        f = files("green_excitation", "pc") #Here the type of excitation and method isn't really important - it's just to access the files
+        #Obtain a directory of previous raw images - currently separates
+        previous, IDs, methods = f.get_raw_images()
+        print(previous)
+        print(IDs)
+        print(methods)
+        if len(previous) == 0:
+            l = Label(dataFrame, text="No previous data")
+            l.pack(fill="both", expand=True)
 
-        imageinfo = get_files() #Will modify this to use files.py
-        canvas = tk.Canvas(dataFrame, width = 300, height = 500, bg='gray92')
-        canvas.pack(fill="both", expand=True, pady=5)
-        for i in range(len(imageinfo)):
-            photo = PIL.Image.open(os.path.join(imageinfo[i].path, imageinfo[i].name)).resize((150, 150), ANTIALIAS)
-            render = ImageTk.PhotoImage(photo)
-            img = Label(canvas, text="Test "+str(i+1), image=render, compound="bottom")
-            img.image = render
-            img.pack(side="left", anchor=NW, fill="none", expand=True, padx=5, pady=5)
+        elif len(previous) > 0:
+            prev_data_list = []
+            for names in previous:
+                prev_data_list.append(names)
+
+            canvas = tk.Canvas(dataFrame, width=300, height=500, bg='gray92')
+            canvas.pack(fill="both", expand=True, pady=5)
+
+            #Previous images displayed in a grid format - .grid() can only be in frames that also use only .grid()
+            col_num = 4 #Set to 4 columns
+            for i,(num, method, filename) in enumerate(zip(IDs, methods, prev_data_list)):
+                r = int(i/col_num) #Calculates row number
+                c = i % col_num #Calculates column number
+                photo = PIL.Image.open(filename).resize((150, 150), ANTIALIAS)
+                render = ImageTk.PhotoImage(photo)
+                img = Label(canvas, text=str(method) + " Test " + str(num), image=render, compound="bottom")
+                img.image = render
+                img.grid(row=r, column=c, padx=5, pady=5)
 
         self.pack(fill="both", expand=True)
         home = Button(self, text="Home", command=lambda: (self.destroy(), startPage()))
@@ -134,11 +156,13 @@ class dataPage(Frame):
 
 #DATA ANALYSIS PAGE
 class analysisPage(Frame):
-    def __init__(self, frame, filename):
+    def __init__(self, frame, colour):
         super().__init__()
         self.master.title("Image Analysis")
         d = 25
-        img, img1 = export_images(filename)
+        #img, img1 = export_images(filename)
+        f = files(colour, "pc")
+        img, img1, masked_path = f.export_files()
         fig = plt.figure(constrained_layout=True)
         spec = fig.add_gridspec(2, 2)
         a = fig.add_subplot(spec[0, 0])
@@ -150,10 +174,8 @@ class analysisPage(Frame):
         b.axis('off')
         b.set_title("Masked")
         c = fig.add_subplot(spec[1, 0:2])
-        self.show_graph(c, fig, 25, filename)
-
         self.show_sampleinfo(filename)
-
+        self.show_graph(c, fig, 25, masked_path)
         canvas = FigureCanvasTkAgg(fig, frame)
 
         plot_widget = canvas.get_tk_widget()
@@ -182,7 +204,6 @@ class analysisPage(Frame):
         fig.canvas.draw()
         print("Highest greyscale value:",x[-1])
 
-
     def submit(self, number, c, fig, d):
         if only_numbers(number.get()):
             d = int(number.get()) #the smaller the number, the more peaks or detected
@@ -208,19 +229,34 @@ class analysisPage(Frame):
 def only_numbers(char):
     return char.isdigit()
 
-def message(self, frame, label):
+def message(self, frame, label, colour):
     label['text'] = "LED off..."
-    frame.after(1000, remove_message, self, label, frame)
+    frame.after(1000, remove_message, self, label, frame, colour)
 
-def remove_message(self, label, frame):
+def remove_message(self, label, frame, colour):
     label.forget()
     #self.destroy()
-    analysisPage(frame, "sample.png")
+    analysisPage(frame, colour)
 
-def display_LED_message(self, frame):
+def display_LED_message(self, colour, frame):
     label = Label(frame, text="LED on...", bg='gray92')
     label.pack()
-    frame.after(1000, message, self, frame, label)
+    frame.after(1000, message, self, frame, label, colour)
+
+# raspberry pi GPIO class, needed in main program to ensure that the pins stay in correct voltage at all times, even when exiting external
+# modules that alter their state
+class raspi:
+    def __init__(self):
+        # initializing output pins and setting them LOW to ensure transistor gates are all closed on startup, thus all LEDs start off
+        # leds are each a tuple with identifying name at index 0 and digitaloutputdevice object at index 1
+        self.leds = [None]*4
+        self.leds[0] = ("UV", DigitalOutputDevice(17,initial_value=0))
+        self.leds[1] = ("green_excitation", DigitalOutputDevice(27,initial_value=0))
+        self.leds[2] = ("red_priming", DigitalOutputDevice(22,initial_value=0))
+        self.leds[3] = ("red_excitation", DigitalOutputDevice(23,initial_value=0))
+    # had to put here to have leds as global variables, since they need to be at specific constant outputs at all times
+# Could instead initialize led list in global space at start of code
+gpio = raspi()
 
 
 if __name__ == "__main__":
