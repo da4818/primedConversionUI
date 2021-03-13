@@ -16,9 +16,10 @@ Raspberry pi ribbon should have blue side facing towards ethernet port
 - returns images 1) and 4) to display to tkinter
 '''
 class camera:
-    def __init__(self, files_class, gpio_class):
+    #def __init__(self, files_class, gpio_class):
+    def __init__(self, files_class):
         self.files = files_class
-        self.gpio = gpio_class
+        #self.gpio = gpio_class
         self.filename = ""
         self.state = ""
         self.pre_path = ""
@@ -35,14 +36,14 @@ class camera:
         self.state = state
         #placeholder whilst picamera isn't connected
 
-        raspi_turnon(self.files.excitation, self.gpio)
+        #raspi_turnon(self.files.excitation, self.gpio)
         '''camera.vflip = True #Sometimes the image is flipped upside down
        #camera.capture(filename)
        #camera.startrecord
        camera.start_preview(alpha=200) #alpha give transparency to the image to detect errors
        sleep(5)
        camera.stop_preview()'''
-        raspi_turnoff(self.gpio)
+        #raspi_turnoff(self.gpio)
 
         if state == "pre":
             if self.files.excitation == "green_excitation":
