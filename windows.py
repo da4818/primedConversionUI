@@ -82,7 +82,7 @@ class methodPage(Frame):
         rcameraButton = Button(optionsFrame, text="Take Photo", command=lambda: (fluo_camera("green_excitation", method)))
         rcameraButton.grid(row=2, column=1, padx=5, pady=5)
 
-        analysisButton = Button(optionsFrame, text="View Image Analysis")
+        analysisButton = Button(optionsFrame, text="View Image Analysis", command=lambda: analyse_images("green_excitation", method))
         analysisButton.grid(row=3, column=1, padx=5, pady=5, sticky=N+S+E+W)
 
         '''for i in range(10):
@@ -110,10 +110,11 @@ def fluo_camera(colour, method):
     c = camera(f)
     c.take_photo("post")
 
-def analyse_images(method):
-    f = files("green_excitation", method)
+def analyse_images(colour, method):
+    f = files(colour, method)
     c = camera(f)
-    c.save_analysed_photos()
+    c.get_photos()
+    #c.save_analysed_photos()
 
 #EXCITATION PAGE
 class excitationPage(Frame):
@@ -130,11 +131,11 @@ class excitationPage(Frame):
         self.display_LED_message(colour, exFrame, method)
         self.pack(fill="both", expand=True)
 
-        home = Button(self, text="Home", command=lambda: (self.destroy(), startPage()))
+        '''home = Button(self, text="Home", command=lambda: (self.destroy(), startPage()))
         home.pack(side="left", fill="both", expand=True, padx=5, pady=5)
 
         dataButton = Button(self, text="Load Previous Data", command=lambda: (self.destroy(), dataPage()))
-        dataButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
+        dataButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)'''
 
     def display_LED_message(self, colour, frame, method):
         if colour == 'green_excitation':
@@ -146,10 +147,9 @@ class excitationPage(Frame):
         elif colour == 'pr':
             description ="Primed Conversion" +": "
 
-        label = Label(frame, text=description+"LED on...", bg='gray92')
+        label = Label(self.exFrame, text=description+"LED on...", bg='gray92')
         label.grid(row=4, column=4)
         frame.after(1000, self.message(frame, label, colour, method))
-
 
     def message(self, frame, label, colour, method):
         label['text'] = "LED off..."
@@ -157,7 +157,6 @@ class excitationPage(Frame):
 
     def remove_message(self, label, method):
         label.grid_forget()
-
         methodPage(method)
         #analysisPage(frame, colour)
 

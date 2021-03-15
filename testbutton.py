@@ -58,7 +58,7 @@ class methodPage(Frame):
 def y(event):
 
     # for every label.
-    entry=event.widget
+    entry = event.widget
     pad = 0
     pad += int(str(entry['bd']))
     pad += int(str(entry['padx']))

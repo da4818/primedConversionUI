@@ -17,7 +17,7 @@ class files:
         self.excitation = excitation #Whether saving to red channel or green channel
         self.method = method #Whether primed conversion (pr) or photo conversion (pc)
         self.root = __file__ #Path of files.py --> useful in finding relative directory of image
-        self.new_file_ID = 0
+        self.curr_file_ID = 0
         self.curr_path = ""
         self.names = self.generate_file_ID()
 
@@ -62,15 +62,15 @@ class files:
                     if self.method in name:
                         files_list.append((i, name))
         n = find_max(files_list)
-        self.new_file_ID = n+1 #Create ID number that is increment of most recent fileID number
+        self.curr_file_ID = n #Create ID number that is increment of most recent fileID number
         names = self.get_file_names()
         return names
 
     def get_file_names(self):
-        pre_filename = "pre_"+str(self.method)+"_"+str(self.excitation)+str(self.new_file_ID)+".png"
-        post_filename = "post_"+str(self.method)+"_"+str(self.excitation)+str(self.new_file_ID)+".png"
-        normalised_filename = "norm_"+str(self.method)+"_"+str(self.excitation)+str(self.new_file_ID)+".png"
-        masked_filename = "masked_"+str(self.method)+"_"+str(self.excitation)+str(self.new_file_ID)+".png"
+        pre_filename = "pre_"+str(self.method)+"_"+str(self.excitation)+str(self.curr_file_ID+1)+".png"
+        post_filename = "post_"+str(self.method)+"_"+str(self.excitation)+str(self.curr_file_ID+1)+".png"
+        normalised_filename = "norm_"+str(self.method)+"_"+str(self.excitation)+str(self.curr_file_ID+1)+".png"
+        masked_filename = "masked_"+str(self.method)+"_"+str(self.excitation)+str(self.curr_file_ID+1)+".png"
         return pre_filename, post_filename, normalised_filename, masked_filename
 
     def get_normalised_image(self):
@@ -78,14 +78,14 @@ class files:
 
         for root, directories, filenames in os.walk(path):
             for name in filenames:
-                if 'norm' in name and str(self.new_file_ID-1) in name:
+                if 'norm' in name and str(self.curr_file_ID) in name:
                     norm_file = (os.path.join(root, name))
         return norm_file
 
     def export_files(self):
         path = self.get_analysis_path()
-        filename = "/norm_"+str(self.method)+"_"+str(self.excitation)+str(self.new_file_ID-1)+".png"
-        filename1 = "/masked_"+str(self.method)+"_"+str(self.excitation)+str(self.new_file_ID-1)+".png"
+        filename = "/norm_"+str(self.method)+"_"+str(self.excitation)+str(self.curr_file_ID)+".png"
+        filename1 = "/masked_"+str(self.method)+"_"+str(self.excitation)+str(self.curr_file_ID)+".png"
         norm = skimage.io.imread(path+filename)
         masked = skimage.io.imread(path+filename1)
         masked_path = path+filename1
@@ -107,6 +107,6 @@ if __name__ == "__main__":
 
 '''if __name__ == "__main__":
     f = files("green_excitation", "pc")
-    print(f.new_file_ID)
+    print(f.curr_file_ID)
     print(f.get_raw_images())
     print(f.get_normalised_image())'''

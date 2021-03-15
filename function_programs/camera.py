@@ -67,7 +67,7 @@ class camera:
             self.post_path = os.path.join(self.files.get_raw_path(), self.filename)
             print(names[1], "saved")
             img1.save(self.post_path)
-            self.save_analysed_photos()
+            #self.save_analysed_photos()
         
     def save_analysed_photos(self):
         #Create and save normalised image
@@ -87,6 +87,40 @@ class camera:
         masked.save(masked_path)
         self.norm_path = norm_path
         self.masked_path = masked_path
+
+
+    def get_photos(self):
+        raw = self.files.get_raw_path()
+        names = self.files.generate_file_ID()
+        pre_path = os.path.join(raw, names[0])
+        post_path = os.path.join(raw, names[1])
+        print(pre_path, post_path)
+        if (os.path.isdir(pre_path) == False):
+            print("Pre file doesn't exist")
+        if (os.path.isdir(post_path) == False):
+            print("Post file doesn't exist")
+        if(os.path.isdir(pre_path) == True and os.path.isdir(post_path) == True):
+            pre = PIL.Image.open(pre_path)
+            post = PIL.Image.open(post_path)
+            pre.show()
+            post.show()
+            norm = normalise_image(pre, post)
+            norm_directory = self.files.get_analysis_path()
+            norm_name = self.files.names[2] #generate_file_ID() gives 1x4 vector of files names: index 2 holds normalised image filename
+            norm_path = os.path.join(norm_directory, norm_name)
+            print(norm_name, "saved")
+            norm.save(norm_path)
+
+            #Create and save masked image
+            masked = Image.fromarray(masked_image(norm_path))
+            masked_path = os.path.join(norm_directory, self.files.names[3])
+            print(self.files.names[3], "saved")
+            masked.save(masked_path)
+            self.norm_path = norm_path
+            self.masked_path = masked_path
+
+
+
 
     def export_files(self):
         norm = skimage.io.imread(self.norm_path)
