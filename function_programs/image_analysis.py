@@ -8,7 +8,7 @@ from function_programs.colour_conversion import hex_to_RGB
 #This performs the main image analysis - masking and plotting
 def get_thresholds():
     t_Values = np.linspace(0, 1.0, num=10) #Can modify thresholds to meaningful values
-    colours = ('#01003F', '#0000ff', '#bb00ff', '#7B0003', '#ff00ff', '#45C3C0', '#51C333', '#00ffff', '#FFDC42', '#ffff00')
+    colours = ('#000000', '#0000FF', '#1F38F0', '#72BCF5', '#96F7F4', '#95F4B3', '#A1F359', '#DFF860', '#F7FA63', '#FFFF00')
     return t_Values, colours
 
 def export_images(filename):

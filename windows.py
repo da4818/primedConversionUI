@@ -180,18 +180,7 @@ class analysisPage(Frame):
         canvas = FigureCanvasTkAgg(fig, frame)
 
         plot_widget = canvas.get_tk_widget()
-        plot_widget.pack(side="top", fill="both", expand=False, padx=5, pady=5)
-        number = tk.StringVar()
-        peak_criteria_entry = Entry(frame, textvariable=number, width=2)
-        peak_criteria_entry.pack(side="left", fill="both", expand=True)
-        adjust_peak = Button(frame, text='Adjust peak detection', command=lambda: (self.submit(number, c, fig, d)))
-        adjust_peak.pack(side="top", fill="both", expand=True, padx=5, pady=5)
-        max_peak = Button(frame, text='Get highest value')
-        max_peak.pack(side="top", fill="both", expand=True, padx=5, pady=5)
-
-
-
-
+        plot_widget.pack(side="top", fill="both", expand=True, padx=5, pady=5)
 
     def show_graph(self, c, fig, distance, filename):
         thresholds, colours = get_thresholds()
@@ -201,13 +190,10 @@ class analysisPage(Frame):
         for t, col in zip(thresholds, colours):
             c.axvline(x=t, color=col, label='line at x = {}'.format(t))
 
-        x, y = obtain_peaks(20, distance, hist, bin_edges)
-        c.plot(x, y, 'x')
         c.set_xlabel('Greyscale value')
         c.set_ylabel('Number of pixels')
         c.set_title("Graph")
         fig.canvas.draw()
-        print("Highest greyscale value:",x[-1])
 
 
     def submit(self, number, c, fig, d):
