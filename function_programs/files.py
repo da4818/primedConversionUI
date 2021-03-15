@@ -68,9 +68,10 @@ class files:
 
     def get_file_names(self):
         pre_filename = "pre_"+str(self.method)+"_"+str(self.excitation)+str(self.curr_file_ID+1)+".png"
-        post_filename = "post_"+str(self.method)+"_"+str(self.excitation)+str(self.curr_file_ID+1)+".png"
-        normalised_filename = "norm_"+str(self.method)+"_"+str(self.excitation)+str(self.curr_file_ID+1)+".png"
-        masked_filename = "masked_"+str(self.method)+"_"+str(self.excitation)+str(self.curr_file_ID+1)+".png"
+        #In the modular function, the subsequent file names should have the previous ID number
+        post_filename = "post_"+str(self.method)+"_"+str(self.excitation)+str(self.curr_file_ID)+".png"
+        normalised_filename = "norm_"+str(self.method)+"_"+str(self.excitation)+str(self.curr_file_ID)+".png"
+        masked_filename = "masked_"+str(self.method)+"_"+str(self.excitation)+str(self.curr_file_ID)+".png"
         return pre_filename, post_filename, normalised_filename, masked_filename
 
     def get_normalised_image(self):

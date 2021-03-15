@@ -34,17 +34,6 @@ class camera:
         print("Preparing camera for", self.files.excitation, "channel...")
         names = self.files.get_file_names()
         self.state = state
-        #placeholder whilst picamera isn't connected
-
-        #raspi_turnon(self.files.excitation, self.gpio)
-        '''camera.vflip = True #Sometimes the image is flipped upside down
-       #camera.capture(filename)
-       #camera.startrecord
-       camera.start_preview(alpha=200) #alpha give transparency to the image to detect errors
-       sleep(5)
-       camera.stop_preview()'''
-        #raspi_turnoff(self.gpio)
-
         if state == "pre":
             if self.files.excitation == "green_excitation":
                 img = Image.open("green_test_before.png")
@@ -62,9 +51,9 @@ class camera:
                 img1 = Image.open("P1.png")
             elif self.files.excitation == "red_excitation":
                 img1 = Image.open("P2.png")
-            #img1 = Image.new(mode = "RGB", size = (50, 50), color = (255, 153, 255)) #post will undergo normalisation
             self.filename = names[1]
             self.post_path = os.path.join(self.files.get_raw_path(), self.filename)
+
             print(names[1], "saved")
             img1.save(self.post_path)
             #self.save_analysed_photos()

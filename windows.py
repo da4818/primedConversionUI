@@ -147,7 +147,7 @@ class excitationPage(Frame):
         elif colour == 'pr':
             description ="Primed Conversion" +": "
 
-        label = Label(self.exFrame, text=description+"LED on...", bg='gray92')
+        label = Label(frame, text=description+"LED on...", bg='gray92')
         label.grid(row=4, column=4)
         frame.after(1000, self.message(frame, label, colour, method))
 
