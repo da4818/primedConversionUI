@@ -60,7 +60,7 @@ e.g., modulating_functions is used for troubleshooting the component integration
 by modulating each function
 
 
-*gpiozero can normally only work on Raspberry Pi devices or the Raspbian desktop OS. A workaround exists: to run the code on any other OS, the user must havelthe lines below at the top of the windows.py file. Note that this fix doesn't work everytime.  
+*gpiozero can normally only work on Raspberry Pi devices or the Raspbian desktop OS. A workaround exists: to run the code on any other OS, the user must have the lines below at the top of the windows.py file. Note that this fix doesn't work every time.  
 import os
 os.environ['GPIOZERO_PIN_FACTORY'] = os.environ.get('GPIOZERO_PIN_FACTORY', 'mock')
 import gpiozero
