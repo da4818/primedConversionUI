@@ -5,16 +5,16 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg#, NavigationToolbar2Tk
 from PIL import Image, ImageTk
 from PIL.Image import ANTIALIAS
-
 from gpiozero import DigitalOutputDevice
 from function_programs.raspigpio import raspi_turnon, raspi_turnoff
 from function_programs.image_analysis import *
 from function_programs.files import *
 from function_programs.camera import *
-from OldFiles.skimage_image_analysis import get_files
+
 root = Tk()
 root.title("Primed Conversion Testing Stage")
 root.geometry("700x600")
+
 '''
 CODE FUNCTIONALITY:
 Buttons are displayed in order of 
@@ -22,13 +22,14 @@ Buttons are displayed in order of
 Photo conversion/Primed conversion pages will essentially perform the same code, except for the LED control
 On photo conversion page:
 - The user can then choose to capture images for the green or red channel
-- On green channel, the user can take an initial phot --> this will be saved as the pre photoconversion photo for the green channel
+- On green channel, the user can take an initial photo --> this will be saved as the pre photoconversion photo for the green channel
 - When if the user is satisfied, they can then then start green excitation and capture an image
-* Need to perform normalisation for green channel
 The user should then go to the red channel option (where photo conversion will occur)
 - Similar to the green channel, they can take an initial photo
 - They can then undergo photo conversion, red excitation and capture an image
 - This will then normalise the red channel images and display the data
+
+Note that this code will not load if the correct raspberry pi has been connected --> please use modulate_functions branch instead
 '''
 
 #START PAGE
@@ -40,7 +41,7 @@ class startPage(Frame):
         frame.pack(fill="both", expand=True)
         self.pack(fill="both", expand=True)
 
-        #Displays 3 menu options: Photoconversion, PRimed Conversion and previous data
+        #Displays 3 menu options: Photoconversion, Primed Conversion and previous data
         photoButton = Button(self, text="Photo Conversion", command=lambda: (self.destroy(), excitationPage("pc")))
         photoButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         primedButton = Button(self, text="Primed Conversion", command=lambda: (self.destroy(), excitationPage("pr")))
@@ -62,18 +63,14 @@ class excitationPage(Frame):
 
         redButton = Button(exFrame, text="Red Excitation", command=lambda: (self.destroy(), colourExcitationPage("red_excitation", method)))
         redButton.pack(side="top", fill="both", expand=True, padx=5, pady=10)
-        greenButton = Button(exFrame, text="Green Excitation",command=lambda: (self.destroy(), colourExcitationPage("green_excitation", method)))
+        greenButton = Button(exFrame, text="Green Excitation", command=lambda: (self.destroy(), colourExcitationPage("green_excitation", method)))
         greenButton.pack(side="top", fill="both", expand=True, padx=5, pady=10)
 
         self.pack(fill="both", expand=True)
 
         home = Button(self, text="Home", command=lambda: (self.destroy(), startPage()))
         home.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-        '''
-        photoButton = Button(self, text="Photo Conversion", command=lambda: (self.destroy(), photoPage())) #Closes the current page and calls the next page to appear within the same frame
-        photoButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-        primedButton = Button(self, text="Primed Conversion", command=lambda: (self.destroy(), primedPage()))
-        primedButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)'''
+
         dataButton = Button(self, text="Load Previous Data", command=lambda: (self.destroy(), dataPage()))
         dataButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
 
@@ -99,6 +96,7 @@ class colourExcitationPage(Frame):
 
         cameraButton = Button(self, text="Take initial photo", command=lambda: c.take_photo("pre"))
         cameraButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
+
         '''This code will be used to undergo LED excitation - I've removed it as I don't have the rasp pi connected and will return an error
         startButton = Button(self, text="Start Excitation", command=lambda: (raspi_connection(colour),display_LED_message(self, frame), c.take_photo("post")))
         '''
@@ -136,7 +134,7 @@ class dataPage(Frame):
 
             #Previous images displayed in a grid format - .grid() can only be in frames that also use only .grid()
             col_num = 4 #Set to 4 columns
-            for i,(num, method, filename) in enumerate(zip(IDs, methods, prev_data_list)):
+            for i, (num, method, filename) in enumerate(zip(IDs, methods, prev_data_list)):
                 r = int(i/col_num) #Calculates row number
                 c = i % col_num #Calculates column number
                 photo = PIL.Image.open(filename).resize((150, 150), ANTIALIAS)
@@ -158,7 +156,6 @@ class analysisPage(Frame):
     def __init__(self, frame, colour):
         super().__init__()
         self.master.title("Image Analysis")
-        d = 25
         #img, img1 = export_images(filename)
         f = files(colour, "pc")
         img, img1, masked_path = f.export_files()
@@ -179,7 +176,7 @@ class analysisPage(Frame):
         plot_widget = canvas.get_tk_widget()
         plot_widget.pack(side="top", fill="both", expand=True, padx=5, pady=5)
 
-    def show_graph(self, c, fig, distance, filename):
+    def show_graph(self, c, fig, filename):
         thresholds, colours = get_thresholds()
         hist, bin_edges = generate_histogram(filename)
         c.plot(bin_edges[0:-1], hist)
@@ -187,8 +184,6 @@ class analysisPage(Frame):
         for t, col in zip(thresholds, colours):
             c.axvline(x=t, color=col, label='line at x = {}'.format(t))
 
-        '''x, y = obtain_peaks(20, distance, hist, bin_edges)
-        c.plot(x, y, 'x')'''
         c.set_xlabel('Greyscale value')
         c.set_ylabel('Number of pixels')
         c.set_title("Graph")

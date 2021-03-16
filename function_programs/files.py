@@ -39,14 +39,14 @@ class files:
         return raw_files_list, numbers, methods
 
     def get_raw_path(self):
-        colour = self.excitation[:-11] #removes '_excitation' from the string
+        colour = self.excitation[:-11] #Removes '_excitation' from the string to give 'red' or 'green'
         absolute_path = root_path + '/GroupProject/raw_images/'+str(colour)
-        return absolute_path #ValueError currently doesn't check if method input is valid
+        return absolute_path
 
     def get_analysis_path(self):
         colour = self.excitation[:-11]
         absolute_path = root_path + '/GroupProject/analysis_images/'+str(colour)
-        return absolute_path #ValueError currently doesn't check if method input is valid
+        return absolute_path
 
     def generate_file_ID(self):
         path = self.get_raw_path()
@@ -67,6 +67,7 @@ class files:
         return names
 
     def get_file_names(self):
+        #All file names will have a similar format, the only variables are if it is primed conversion(pr) or photoconverion (pc) method, red or green (excitation), the test iteration (ID) number
         pre_filename = "pre_"+str(self.method)+"_"+str(self.excitation)+str(self.new_file_ID)+".png"
         post_filename = "post_"+str(self.method)+"_"+str(self.excitation)+str(self.new_file_ID)+".png"
         normalised_filename = "norm_"+str(self.method)+"_"+str(self.excitation)+str(self.new_file_ID)+".png"
@@ -75,20 +76,21 @@ class files:
 
     def get_normalised_image(self):
         path = self.get_analysis_path()
-
+        #Looks through a directory to obtain every files within it
         for root, directories, filenames in os.walk(path):
             for name in filenames:
+                #Saves all file paths of normalised images into a list, to be accessed later
                 if 'norm' in name and str(self.new_file_ID-1) in name:
                     norm_file = (os.path.join(root, name))
         return norm_file
 
     def export_files(self):
         path = self.get_analysis_path()
-        filename = "/norm_"+str(self.method)+"_"+str(self.excitation)+str(self.new_file_ID-1)+".png"
-        filename1 = "/masked_"+str(self.method)+"_"+str(self.excitation)+str(self.new_file_ID-1)+".png"
-        norm = skimage.io.imread(path+filename)
-        masked = skimage.io.imread(path+filename1)
-        masked_path = path+filename1
+        n_filename = "/norm_"+str(self.method)+"_"+str(self.excitation)+str(self.new_file_ID-1)+".png"
+        m_filename = "/masked_"+str(self.method)+"_"+str(self.excitation)+str(self.new_file_ID-1)+".png"
+        norm = skimage.io.imread(path+n_filename)
+        masked = skimage.io.imread(path+m_filename)
+        masked_path = path+m_filename
         print(masked_path)
         return norm, masked, masked_path
 
@@ -105,6 +107,8 @@ if __name__ == "__main__":
     f = files("green_excitation", "pc")
     print(f.get_normalised_image())
 
+
+#Testing files class, to observe if functions work as expected (not needed for final program)
 '''if __name__ == "__main__":
     f = files("green_excitation", "pc")
     print(f.new_file_ID)

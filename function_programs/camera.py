@@ -33,23 +33,24 @@ class camera:
         print("Preparing camera for", self.files.excitation, "channel...")
         names = self.files.get_file_names()
         self.state = state
-        #placeholder whilst picamera isn't connected
-
         raspi_turnon(self.files.excitation, self.gpio)
-        '''camera.vflip = True #Sometimes the image is flipped upside down
-       #camera.capture(filename)
-       #camera.startrecord
-       camera.start_preview(alpha=200) #alpha give transparency to the image to detect errors
-       sleep(5)
-       camera.stop_preview()'''
+        '''
+        camera.vflip = True #Sometimes the image is flipped upside down
+        camera.capture(filename)
+        camera.startrecord
+        camera.start_preview(alpha=200) #alpha give transparency to the image to detect errors
+        sleep(5)
+        camera.stop_preview()
+        '''
         raspi_turnoff(self.gpio)
 
         if state == "pre":
+            #This is placeholder code to simulate taking an image - here it opens a previously saved image (actual code is in speech marks above)
             if self.files.excitation == "green_excitation":
-                img = Image.open("green_test_before.png")
+                img = Image.open("test_images/green_test_before.png")
             elif self.files.excitation == "red_excitation":
-                img = Image.open("red_test_before.png")
-            #img = Image.new(mode = "RGB", size = (50, 50), color = (153, 153, 255))
+                img = Image.open("test_images/red_test_before.png")
+
             self.filename = names[0]
             self.pre_path = os.path.join(self.files.get_raw_path(), self.filename)
             img.save(self.pre_path)
