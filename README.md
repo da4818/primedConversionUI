@@ -14,7 +14,7 @@ To make the user interface functional, multiple libaries must be installed:
 -cv2, a Python library used to solve computer vision problems.
 
 
-** This was the README file I had in a different branch, will need to update it as necessary **
+
 Using image_normalisation.py to normalise/subtract the 'before' image to the 'after' and saving a 'normalised' image to the project area
 Detect the brightness (and thus fluorescence of the normalised image):
 
