@@ -14,7 +14,6 @@ from function_programs.camera import *
 root = Tk()
 root.title("Primed Conversion Testing Stage")
 root.geometry("700x600")
-
 '''
 CODE FUNCTIONALITY:
 Buttons are displayed in order of 
@@ -30,7 +29,13 @@ The user should then go to the red channel option (where photo conversion will o
 - This will then normalise the red channel images and display the data
 
 Note that this code will not load if the correct raspberry pi has been connected --> please use modulate_functions branch instead
+
+To load code on anything other than a raspberry Pi device or OS, add these lines to the top of the file:
+    import os
+    os.environ['GPIOZERO_PIN_FACTORY'] = os.environ.get('GPIOZERO_PIN_FACTORY', 'mock')
+    import gpiozero
 '''
+
 
 #START PAGE
 class startPage(Frame):
@@ -156,6 +161,7 @@ class analysisPage(Frame):
     def __init__(self, frame, colour):
         super().__init__()
         self.master.title("Image Analysis")
+        d = 25
         #img, img1 = export_images(filename)
         f = files(colour, "pc")
         img, img1, masked_path = f.export_files()
@@ -170,7 +176,7 @@ class analysisPage(Frame):
         b.axis('off')
         b.set_title("Masked")
         c = fig.add_subplot(spec[1, 0:2])
-        self.show_graph(c, fig, 25, masked_path)
+        self.show_graph(c, fig, masked_path)
         canvas = FigureCanvasTkAgg(fig, frame)
 
         plot_widget = canvas.get_tk_widget()
