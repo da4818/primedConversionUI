@@ -68,7 +68,7 @@ class methodPage(Frame):
         gblankButton.grid(row=0, column=0, padx=5, pady=5)
         greenButton = Button(optionsFrame, text="Green Excitation", command=lambda: (self.destroy(), excitationPage("green_excitation", method)))
         greenButton.grid(row=1, column=0, padx=5, pady=5)
-        gcameraButton = Button(optionsFrame, text="Take Photo", command=lambda: (fluo_camera("green_excitation", method)))
+        gcameraButton = Button(optionsFrame, text="Take Green Channel Photo", command=lambda: (fluo_camera("green_excitation", method)))
         gcameraButton.grid(row=2, column=0, padx=5, pady=5)
 
         methodButton = Button(optionsFrame, text="Undergo " + title, command=lambda: (self.destroy(), excitationPage(method, method)))
@@ -79,7 +79,7 @@ class methodPage(Frame):
 
         redButton = Button(optionsFrame, text="Red Excitation", command=lambda: (self.destroy(), excitationPage("red_excitation", method)))
         redButton.grid(row=1, column=1, padx=5, pady=5)
-        rcameraButton = Button(optionsFrame, text="Take Photo", command=lambda: (fluo_camera("green_excitation", method)))
+        rcameraButton = Button(optionsFrame, text="Take Red Channel Photo", command=lambda: (fluo_camera("red_excitation", method)))
         rcameraButton.grid(row=2, column=1, padx=5, pady=5)
 
         analysisButton = Button(optionsFrame, text="View Image Analysis", command=lambda: analyse_images("green_excitation", method))
@@ -103,7 +103,6 @@ def blank_camera(colour, method):
     f = files(colour, method)
     c = camera(f)
     c.take_photo("pre")
-
 
 def fluo_camera(colour, method):
     f = files(colour, method)

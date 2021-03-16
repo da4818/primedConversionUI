@@ -17,9 +17,10 @@ class files:
         self.excitation = excitation #Whether saving to red channel or green channel
         self.method = method #Whether primed conversion (pr) or photo conversion (pc)
         self.root = __file__ #Path of files.py --> useful in finding relative directory of image
-        self.curr_file_ID = 0
-        self.curr_path = ""
-        self.names = self.generate_file_ID()
+
+        self.raw_path = self.get_raw_path()
+        self.analysis_path = self.get_analysis_path()
+        self.curr_file_ID = self.generate_file_ID()
 
     def get_raw_images(self):
         path = root_path + '/GroupProject/raw_images'
@@ -27,7 +28,7 @@ class files:
         methods = []
         for root, directories, filenames in os.walk(path):
             for name in filenames:
-                if 'post' in name and 'green' in name:
+                if self.excitation[:-11] in name:
                     raw_files_list.append(os.path.join(root, name))
                     if 'pc' in name:
                         methods.append('Photo Conversion')
@@ -35,7 +36,6 @@ class files:
                         methods.append('Primed Conversion')
         res = re.findall(r'\d+', str(raw_files_list))
         numbers = list(map(int, res))
-
         return raw_files_list, numbers, methods
 
     def get_raw_path(self):
@@ -49,30 +49,32 @@ class files:
         return absolute_path #ValueError currently doesn't check if method input is valid
 
     def generate_file_ID(self):
+        g = self.method
         path = self.get_raw_path()
         path1 = self.get_analysis_path()
         files_list = []
         for root, directories, filenames in os.walk(path):
             for name in filenames:
-                if self.method in name:
+                if self.method+str("_") in name:
                  files_list.append((root, name))
         for i in path, path1:
             for root, directories, filenames in os.walk(i):
                 for name in filenames:
-                    if self.method in name:
+                    if self.method+str("_") in name:
                         files_list.append((i, name))
         n = find_max(files_list)
-        self.curr_file_ID = n #Create ID number that is increment of most recent fileID number
-        names = self.get_file_names()
-        return names
+        if (n == None or n == 0):
+            n = 0  #Create ID number that is increment of most recent fileID number
+        return n
+        '''names = self.get_file_names()
+        return names'''
 
-    def get_file_names(self):
+    '''def get_file_names(self):
         pre_filename = "pre_"+str(self.method)+"_"+str(self.excitation)+str(self.curr_file_ID+1)+".png"
-        #In the modular function, the subsequent file names should have the previous ID number
         post_filename = "post_"+str(self.method)+"_"+str(self.excitation)+str(self.curr_file_ID)+".png"
         normalised_filename = "norm_"+str(self.method)+"_"+str(self.excitation)+str(self.curr_file_ID)+".png"
         masked_filename = "masked_"+str(self.method)+"_"+str(self.excitation)+str(self.curr_file_ID)+".png"
-        return pre_filename, post_filename, normalised_filename, masked_filename
+        return pre_filename, post_filename, normalised_filename, masked_filename'''
 
     def get_normalised_image(self):
         path = self.get_analysis_path()

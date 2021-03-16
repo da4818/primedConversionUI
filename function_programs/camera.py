@@ -20,41 +20,38 @@ class camera:
     def __init__(self, files_class):
         self.files = files_class
         #self.gpio = gpio_class
-        self.filename = ""
         self.state = ""
         self.pre_path = ""
         self.post_path = ""
         self.norm_path = ""
         self.masked_path = ""
-        print("Camera on")
 
         #camera = PiCamera() #initiatilse camera
 
     def take_photo(self, state):
+        print("Camera on")
         print("Preparing camera for", self.files.excitation, "channel...")
-        names = self.files.get_file_names()
         self.state = state
         if state == "pre":
             if self.files.excitation == "green_excitation":
                 img = Image.open("green_test_before.png")
             elif self.files.excitation == "red_excitation":
                 img = Image.open("red_test_before.png")
-            #img = Image.new(mode = "RGB", size = (50, 50), color = (153, 153, 255))
-            self.filename = names[0]
-            self.pre_path = os.path.join(self.files.get_raw_path(), self.filename)
-            img.save(self.pre_path)
-            print(names[0], "saved")
+            filename = self.generate_file_name("pre")
 
+            self.pre_path = os.path.join(self.files.get_raw_path(), filename)
+            img.save(self.pre_path)
+            print(filename, "saved")
 
         if state == "post":
             if self.files.excitation == "green_excitation":
                 img1 = Image.open("P1.png")
             elif self.files.excitation == "red_excitation":
                 img1 = Image.open("P2.png")
-            self.filename = names[1]
-            self.post_path = os.path.join(self.files.get_raw_path(), self.filename)
+            filename = self.generate_file_name("post")
 
-            print(names[1], "saved")
+            self.post_path = os.path.join(self.files.get_raw_path(), filename)
+            print(filename, "saved")
             img1.save(self.post_path)
             #self.save_analysed_photos()
         
@@ -79,12 +76,28 @@ class camera:
 
 
     def get_photos(self):
+
         raw = self.files.get_raw_path()
-        names = self.files.generate_file_ID()
-        pre_path = os.path.join(raw, names[0])
-        post_path = os.path.join(raw, names[1])
-        print(pre_path, post_path)
-        if (os.path.isdir(pre_path) == False):
+        #analysis = self.files.get_analysis_path()
+        raw_files_list, numbers, methods = self.files.get_raw_images()
+        if (not raw_files_list):
+            print("No previously save photos")
+        else:
+            pre, post = self.get_file_name()
+            #print("Looking for", pre, "and", post)
+            p1=os.path.join(raw,pre)
+            p2=os.path.join(raw,post)
+
+            print(os.path.isfile(p1))
+            print(os.path.isfile(p2))
+
+
+
+
+
+
+
+        '''if (os.path.isdir(pre_path) == False):
             print("Pre file doesn't exist")
         if (os.path.isdir(post_path) == False):
             print("Post file doesn't exist")
@@ -106,9 +119,25 @@ class camera:
             print(self.files.names[3], "saved")
             masked.save(masked_path)
             self.norm_path = norm_path
-            self.masked_path = masked_path
+            self.masked_path = masked_path'''
 
 
+    def generate_file_name(self, state):
+        if state == "pre":
+            filename = "pre_"+str(self.files.method)+"_"+str(self.files.excitation)+str(self.files.curr_file_ID+1)+".png"
+        elif state == "post":
+            filename = "post_"+str(self.files.method)+"_"+str(self.files.excitation)+str(self.files.curr_file_ID)+".png"
+        elif state == "norm":
+            filename = "norm_"+str(self.files.method)+"_"+str(self.files.excitation)+str(self.files.curr_file_ID)+".png"
+        elif state == "masked":
+            filename = "masked_"+str(self.files.method)+"_"+str(self.files.excitation)+str(self.files.curr_file_ID)+".png"
+        return filename
+
+    def get_file_name(self):
+        pre_filename = "pre_"+str(self.files.method)+"_"+str(self.files.excitation)+str(self.files.curr_file_ID)+".png"
+        post_filename = "post_"+str(self.files.method)+"_"+str(self.files.excitation)+str(self.files.curr_file_ID)+".png"
+
+        return pre_filename, post_filename
 
 
     def export_files(self):
