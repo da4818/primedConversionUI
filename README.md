@@ -19,10 +19,7 @@ To make the user interface functional, multiple libaries must be installed:
 - Servo Motor Library 
 - cv2, a Python library used to solve computer image problems.
 
-*gpiozero can normally only work on Raspberry Pi devices or the Raspbian desktop OS. A workaround exists: to run the code on any other OS, the user must havelthe lines below at the top of the windows.py file. Note that this fix doesn't work everytime.  
-import os
-os.environ['GPIOZERO_PIN_FACTORY'] = os.environ.get('GPIOZERO_PIN_FACTORY', 'mock')
-import gpiozero
+
 
 The user has an option to undergo analysis for primed conversion or photo conversion.
 Then they can take an initial photo (a control image - non converted samples).
@@ -63,4 +60,7 @@ e.g., modulating_functions is used for troubleshooting the component integration
 by modulating each function
 
 
-
+*gpiozero can normally only work on Raspberry Pi devices or the Raspbian desktop OS. A workaround exists: to run the code on any other OS, the user must havelthe lines below at the top of the windows.py file. Note that this fix doesn't work everytime.  
+import os
+os.environ['GPIOZERO_PIN_FACTORY'] = os.environ.get('GPIOZERO_PIN_FACTORY', 'mock')
+import gpiozero
