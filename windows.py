@@ -1,11 +1,10 @@
 import tkinter as tk
 from tkinter import *
-from tkinter.ttk import Frame, Button, Entry
+from tkinter.ttk import Frame, Button
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg#, NavigationToolbar2Tk
 from PIL import Image, ImageTk
 from PIL.Image import ANTIALIAS
-
 from gpiozero import DigitalOutputDevice
 from function_programs.raspigpio import raspi_turnon, raspi_turnoff
 from function_programs.image_analysis import *
@@ -15,21 +14,7 @@ from OldFiles.skimage_image_analysis import get_files
 root = Tk()
 root.title("Primed Conversion Testing Stage")
 root.geometry("700x600")
-'''
-CODE FUNCTIONALITY:
-Buttons are displayed in order of 
-('Home',) 'Photo Conversion','Primed Conversion', 'Load Previous Data'
-Photo conversion/Primed conversion pages will essentially perform the same code, except for the LED control
-On photo conversion page:
-- The user can then choose to capture images for the green or red channel
-- On green channel, the user can take an initial phot --> this will be saved as the pre photoconversion photo for the green channel
-- When if the user is satisfied, they can then then start green excitation and capture an image
-* Need to perform normalisation for green channel
-The user should then go to the red channel option (where photo conversion will occur)
-- Similar to the green channel, they can take an initial photo
-- They can then undergo photo conversion, red excitation and capture an image
-- This will then normalise the red channel images and display the data
-'''
+
 
 #START PAGE
 class startPage(Frame):
