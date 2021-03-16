@@ -81,13 +81,14 @@ class camera:
         norm.save(norm_path)
 
         #Create and save masked image
-        masked = Image.fromarray(masked_image(norm_path))
+        masked, _ = masked_image(norm_path)
+        masked = Image.fromarray(masked)
         masked_path = os.path.join(norm_directory, self.files.names[3])
-        print(self.files.names[3], "saved")
+        print(self.files.names[3],"saved")
         masked.save(masked_path)
         self.norm_path = norm_path
         self.masked_path = masked_path
-
+        
     def export_files(self):
         norm = skimage.io.imread(self.norm_path)
         mask = skimage.io.imread(self.masked_path)
