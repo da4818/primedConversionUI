@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg#, NavigationToolbar2Tk
 from PIL import Image, ImageTk
 from PIL.Image import ANTIALIAS
-from gpiozero import DigitalOutputDevice
+from gpiozero import DigitalOutputDevice, Servo
 from function_programs.raspigpio import raspi_turnon, raspi_turnoff
 from function_programs.image_analysis import *
 from function_programs.files import *
@@ -223,6 +223,7 @@ class raspi:
         self.leds[1] = ("green_excitation", DigitalOutputDevice(27,initial_value=0))
         self.leds[2] = ("red_priming", DigitalOutputDevice(22,initial_value=0))
         self.leds[3] = ("red_excitation", DigitalOutputDevice(23,initial_value=0))
+        self.servo = Servo(18)
     # had to put here to have leds as global variables, since they need to be at specific constant outputs at all times
 # Could instead initialize led list in global space at start of code
 gpio = raspi()
