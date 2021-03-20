@@ -6,7 +6,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg#, NavigationTool
 from PIL import Image, ImageTk
 from PIL.Image import ANTIALIAS
 from gpiozero import DigitalOutputDevice, Servo
-from function_programs.raspigpio import raspi_turnon, raspi_turnoff
+from function_programs.raspigpio import excitation_on, raspi_turnoff
 from function_programs.image_analysis import *
 from function_programs.files import *
 from function_programs.camera import *
@@ -219,11 +219,15 @@ class raspi:
         # initializing output pins and setting them LOW to ensure transistor gates are all closed on startup, thus all LEDs start off
         # leds are each a tuple with identifying name at index 0 and digitaloutputdevice object at index 1
         self.leds = [None]*4
-        self.leds[0] = ("UV", DigitalOutputDevice(17,initial_value=0))
-        self.leds[1] = ("green_excitation", DigitalOutputDevice(27,initial_value=0))
-        self.leds[2] = ("red_priming", DigitalOutputDevice(22,initial_value=0))
-        self.leds[3] = ("red_excitation", DigitalOutputDevice(23,initial_value=0))
+        self.leds[0] = DigitalOutputDevice(17,initial_value=0) # UV
+        self.leds[1] = DigitalOutputDevice(27,initial_value=0) # green_excitation
+        self.leds[2] = DigitalOutputDevice(22,initial_value=0) # priming/converting i can't remember at this point
+        self.leds[3] = DigitalOutputDevice(23,initial_value=0) # red_excitation
         self.servo = Servo(18)
+        self.excitation_leds = {"green_excitation": self.leds[1],
+                                "red_excitation": self.leds[3]}
+        self.conversion_leds = {"pc": self.leds[0],
+                                "pr": [self.leds[1], self.leds[2]]}
     # had to put here to have leds as global variables, since they need to be at specific constant outputs at all times
 # Could instead initialize led list in global space at start of code
 gpio = raspi()
