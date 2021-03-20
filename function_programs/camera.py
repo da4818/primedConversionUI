@@ -1,10 +1,12 @@
+from time import sleep
 #from picamera import PiCamera
 import PIL
 from PIL import Image
 from function_programs.files import *
 from function_programs.image_normalisation import *
 from function_programs.image_analysis import *
-from function_programs.raspigpio import raspi_turnon, raspi_turnoff
+from function_programs.raspigpio import excitation_on, raspi_turnoff
+
 '''
 Raspberry pi ribbon should have blue side facing towards ethernet port
 '''
@@ -28,21 +30,33 @@ class camera:
         print("Camera on")
 
         #camera = PiCamera() #initiatilse camera
-
-    def take_photo(self, state):
-        print("Preparing camera for", self.files.excitation, "channel...")
+    """
+    def excitation_photos(self, excitation):
+        # changing files.excitation to force having both red and green photos taken
+        # by calling function twice in take_photos, each time with diff excitation.
+        # >>>> need to modify windows to not choose between green and red channel but just have an
+        # 'image excitation channels' button
+        self.files.excitation = excitation
         names = self.files.get_file_names()
-        self.state = state
-        raspi_turnon(self.files.excitation, self.gpio)
-        '''
-        camera.vflip = True #Sometimes the image is flipped upside down
-        camera.capture(filename)
+        self.filename = names[0]
+        # excitation light turns on
+        excitation_on(self.files.excitation, self.gpio.excitation_leds)
+        # camera.vflip = True #Sometimes the image is flipped upside down
+        # image is taken and saved
+        camera.capture(self.filename)
         camera.startrecord
         camera.start_preview(alpha=200) #alpha give transparency to the image to detect errors
         sleep(5)
         camera.stop_preview()
-        '''
-        raspi_turnoff(self.gpio)
+        # all leds turned off
+        raspi_turnoff()
+    """
+    def take_photo(self, state):
+        print("Preparing camera for", self.files.excitation, "channel...")
+        names = self.files.get_file_names()
+        self.state = state
+        # self.excitation_photos(self, 'red_excitation')
+        # self.excitation_photos(self, 'green_excitation')
 
         if state == "pre":
             #This is placeholder code to simulate taking an image - here it opens a previously saved image (actual code is in speech marks above)
