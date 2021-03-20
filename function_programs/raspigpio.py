@@ -6,6 +6,14 @@ def excitation_on(colour, excitation_leds):
 def raspi_turnoff(gpio_class):
     for led in gpio_class.leds:
         led.off()
+
+def set_filter(servo, filter_colour):
+    if filter_colour == "green_excitation":
+        servo.min()
+        print("Set to green filter")
+    elif filter_colour == "red_excitation":
+        servo.max()
+        print("Set to red filter")
 """
 # function currently unused, will be replaced by pc/primed conversion led function(s)
 def raspi_turnon(colour, gpio_class):
