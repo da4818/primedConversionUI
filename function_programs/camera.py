@@ -5,7 +5,7 @@ from PIL import Image
 from function_programs.files import *
 from function_programs.image_normalisation import *
 from function_programs.image_analysis import *
-from function_programs.raspigpio import excitation_on, raspi_turnoff
+from function_programs.raspigpio import excitation_on, raspi_turnoff, set_filter
 
 '''
 Raspberry pi ribbon should have blue side facing towards ethernet port
@@ -35,10 +35,12 @@ class camera:
         # changing files.excitation to force having both red and green photos taken
         # by calling function twice in take_photos, each time with diff excitation.
         # >>>> need to modify windows to not choose between green and red channel but just have an
-        # 'image excitation channels' button
+        # 'image excitation channels' button instead
         self.files.excitation = excitation
         names = self.files.get_file_names()
         self.filename = names[0]
+        # setting filter wheel to correct position through servo control
+        set_filter(excitation, self.gpio.servo)
         # excitation light turns on
         excitation_on(self.files.excitation, self.gpio.excitation_leds)
         # camera.vflip = True #Sometimes the image is flipped upside down
