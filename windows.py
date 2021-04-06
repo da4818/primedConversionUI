@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg#, NavigationToolbar2Tk
 from PIL import Image, ImageTk
 from PIL.Image import ANTIALIAS
+# from gpiozero.pins.pigpio import PiGPIOFactory  # From docs: "To reduce servo jitter, use the pigpio pin driver rather
+# than the default RPi.GPIO driver (pigpio uses DMA sampling for much more precise edge timing)"
 from gpiozero import DigitalOutputDevice, Servo
 from function_programs.raspigpio import excitation_on, raspi_turnoff
 from function_programs.image_analysis import *
@@ -34,6 +36,11 @@ To load code on anything other than a raspberry Pi device or OS, add these lines
     import os
     os.environ['GPIOZERO_PIN_FACTORY'] = os.environ.get('GPIOZERO_PIN_FACTORY', 'mock')
     import gpiozero
+    
+Or: 
+    from gpiozero import Device
+    from gpiozero.pins.mock import MockFactory
+    Device.pin_factory = MockFactory() 
 '''
 
 
@@ -151,9 +158,9 @@ class dataPage(Frame):
         self.pack(fill="both", expand=True)
         home = Button(self, text="Home", command=lambda: (self.destroy(), startPage()))
         home.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-        photoButton = Button(self, text="Photo Conversion", command=lambda: (self.destroy(), excitationPage("Photo Conversion")))
+        photoButton = Button(self, text="Photo Conversion", command=lambda: (self.destroy(), excitationPage("pc")))
         photoButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-        primedButton = Button(self, text="Primed Conversion", command=lambda: (self.destroy(), excitationPage("Primed Conversion")))
+        primedButton = Button(self, text="Primed Conversion", command=lambda: (self.destroy(), excitationPage("pr")))
         primedButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
 
 #DATA ANALYSIS PAGE
@@ -161,6 +168,10 @@ class analysisPage(Frame):
     def __init__(self, frame, colour):
         super().__init__()
         self.master.title("Image Analysis")
+        # for loop solves problem where canvas and label are repeated onto frame when clicking
+        # 'start excitation' button twice in a row. Only method I found to clear the objects successfully.
+        for key in list(frame.children.keys()):
+            frame.children[key].destroy()
         d = 25
         #img, img1 = export_images(filename)
         f = files(colour, "pc")
@@ -223,7 +234,7 @@ class raspi:
         self.leds[1] = DigitalOutputDevice(27,initial_value=0) # green_excitation
         self.leds[2] = DigitalOutputDevice(22,initial_value=0) # priming/converting i can't remember at this point
         self.leds[3] = DigitalOutputDevice(23,initial_value=0) # red_excitation
-        self.servo = Servo(18)
+        # self.servo = Servo(18, pin_factory=PiGPIOFactory) # FOR SERVO USE, DOCS SAY PIGPIO IS BEST FOR STABILITY
         self.excitation_leds = {"green_excitation": self.leds[1],
                                 "red_excitation": self.leds[3]}
         self.conversion_leds = {"pc": self.leds[0],
