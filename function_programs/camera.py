@@ -40,7 +40,7 @@ class camera:
         names = self.files.get_file_names()
         self.filename = names[0]
         # setting filter wheel to correct position through servo control
-        set_filter(excitation, self.gpio.servo)
+        set_filter(self.gpio.servo, excitation)
         # excitation light turns on
         excitation_on(self.files.excitation, self.gpio.excitation_leds)
         # camera.vflip = True #Sometimes the image is flipped upside down
@@ -57,6 +57,7 @@ class camera:
         print("Preparing camera for", self.files.excitation, "channel...")
         names = self.files.get_file_names()
         self.state = state
+        # code circumventing and automating red/green image acquisition experiment
         # self.excitation_photos(self, 'red_excitation')
         # self.excitation_photos(self, 'green_excitation')
 
@@ -75,9 +76,9 @@ class camera:
 
         if state == "post":
             if self.files.excitation == "green_excitation":
-                img1 = Image.open("P1.png")
+                img1 = Image.open("test_images/P1.png")
             elif self.files.excitation == "red_excitation":
-                img1 = Image.open("P2.png")
+                img1 = Image.open("test_images/P2.png")
             #img1 = Image.new(mode = "RGB", size = (50, 50), color = (255, 153, 255)) #post will undergo normalisation
             self.filename = names[1]
             self.post_path = os.path.join(self.files.get_raw_path(), self.filename)
