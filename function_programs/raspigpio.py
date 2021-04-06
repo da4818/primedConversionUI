@@ -8,10 +8,12 @@ def raspi_turnoff(gpio_class):
         led.off()
 
 def set_filter(servo, filter_colour):
-    if filter_colour == "green_excitation":
+    # Might change servo.value check to different values depending on precision of servo
+    # + can return 'None' value when no signal is sent.
+    if filter_colour == "green_excitation" and servo.value > -1:
         servo.min()
         print("Set to green filter")
-    elif filter_colour == "red_excitation":
+    elif filter_colour == "red_excitation"and servo.value < 1:
         servo.max()
         print("Set to red filter")
 """
