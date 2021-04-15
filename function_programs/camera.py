@@ -52,9 +52,25 @@ class Camera:
             self.post_path = os.path.join(self.files.get_raw_path(), filename)
             img1.save(self.post_path)
             print(filename, "saved")
-            #self.save_analysed_photos()
-        
-    def save_analysed_photos(self):
+
+
+    def check_recent_photos(self):
+        raw = self.files.get_raw_path()
+        #analysis = self.files.get_analysis_path()
+        raw_files_list, numbers, methods = self.files.get_raw_images()
+        if (not raw_files_list) or self.files.curr_file_ID == 0:
+            print("No previously saved photos")
+        else:
+            pre, post = self.get_file_name()
+            print("Looking for", pre, "and", post)
+            p1=os.path.join(raw,pre)
+            p2=os.path.join(raw,post)
+            self.pre_path = p1
+            self.post_path = p2
+            print(os.path.isfile(p1))
+            print(os.path.isfile(p2))
+
+    def generate_analysed_photos(self):
         #Create and save normalised image
         pre = PIL.Image.open(self.pre_path)
         post = PIL.Image.open(self.post_path)
@@ -72,21 +88,6 @@ class Camera:
         masked.save(masked_path)
         self.norm_path = norm_path
         self.masked_path = masked_path
-
-
-    def check_recent_photos(self):
-        raw = self.files.get_raw_path()
-        #analysis = self.files.get_analysis_path()
-        raw_files_list, numbers, methods = self.files.get_raw_images()
-        if (not raw_files_list):
-            print("No previously saved photos")
-        else:
-            pre, post = self.get_file_name()
-            #print("Looking for", pre, "and", post)
-            p1=os.path.join(raw,pre)
-            p2=os.path.join(raw,post)
-            print(os.path.isfile(p1))
-            print(os.path.isfile(p2))
 
     def get_file_name(self):
         pre_filename = "pre_"+str(self.files.method)+"_"+str(self.files.excitation[:-11])+"_"+str(self.files.curr_file_ID)+".png"

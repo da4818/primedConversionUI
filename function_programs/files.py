@@ -97,7 +97,7 @@ class Files:
         else:
             for root, directories, filenames in os.walk(path):
                 for name in filenames:
-                    if self.excitation[:-11] in name:
+                    if self.excitation[:-11] in name and self.method in name:
                         raw_files_list.append(name)
                         if 'pc' in name:
                             methods.append('Photo Conversion')

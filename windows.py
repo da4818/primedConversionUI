@@ -44,8 +44,8 @@ class methodPage(Frame):
         elif method == "pr":
             title = "Primed Conversion"
         self.master.title(title)
-        Grid.rowconfigure(self, 0, weight=1)
-        Grid.columnconfigure(self, 0, weight=1)
+        '''Grid.rowconfigure(self, 0, weight=1)
+        Grid.columnconfigure(self, 0, weight=1)'''
         optionsFrame = Frame(self, relief=RAISED, borderwidth=1)
         optionsFrame.pack(fill="both", expand=True)
         self.pack(fill="both", expand=True)
@@ -53,6 +53,7 @@ class methodPage(Frame):
 
         gblankButton = Button(optionsFrame, text="Take a Blank Photo (Green Channel)", command=lambda: (blank_camera("green_excitation", method)))
         gblankButton.grid(row=0, column=0, padx=5, pady=5)
+
         greenButton = Button(optionsFrame, text="Green Excitation", command=lambda: (self.destroy(), excitationPage("green_excitation", method)))
         greenButton.grid(row=1, column=0, padx=5, pady=5)
         gcameraButton = Button(optionsFrame, text="Take Green Channel Photo", command=lambda: (fluo_camera("green_excitation", method)))
@@ -61,22 +62,23 @@ class methodPage(Frame):
         methodButton = Button(optionsFrame, text="Undergo " + title, command=lambda: (self.destroy(), excitationPage(method, method)))
         methodButton.grid(row=3, column=0, padx=5, pady=5)
 
+        normaliseButton = Button(optionsFrame, text="Normalise&mask (green channel)", command=lambda: (modify_images("green_excitation",method)))
+        normaliseButton.grid(row=4, column=0, padx=5, pady=5)
+
         rblankButton = Button(optionsFrame, text="Take a Blank Photo (Red Channel)",  command=lambda: (blank_camera("red_excitation", method)))
         rblankButton.grid(row=0, column=1, padx=5, pady=5)
 
         redButton = Button(optionsFrame, text="Red Excitation", command=lambda: (self.destroy(), excitationPage("red_excitation", method)))
         redButton.grid(row=1, column=1, padx=5, pady=5)
+
         rcameraButton = Button(optionsFrame, text="Take Red Channel Photo", command=lambda: (fluo_camera("red_excitation", method)))
         rcameraButton.grid(row=2, column=1, padx=5, pady=5)
 
-        analysisButton = Button(optionsFrame, text="View Image Analysis", command=lambda: analyse_images("green_excitation", method))
-        analysisButton.grid(row=3, column=1, padx=5, pady=5, sticky=N+S+E+W)
+        normaliseButton = Button(optionsFrame, text="Normalise&mask (red channel)", command=lambda: (modify_images("red_excitation",method)))
+        normaliseButton.grid(row=3, column=1, padx=5, pady=5)
 
-        '''for i in range(10):
-  b = tk.Button(root, text = 'Button #%s' % i)
-  b.grid(row = i, column = 0)
-  # Bind to left click which generates an event object
-  b.bind("<Button-1>", onClick)...'''
+        analysisButton = Button(optionsFrame, text="View Image Analysis", command=lambda: analyse_images("green_excitation", method))
+        analysisButton.grid(row=4, column=1, padx=5, pady=5, sticky=N+S+E+W)
 
         self.pack(fill="both", expand=True)
 
@@ -96,10 +98,14 @@ def fluo_camera(colour, method):
     c = Camera(f)
     c.take_photo("post")
 
+def modify_images(colour, method):
+    f = Files(colour, method)
+    c = Camera(f)
+    c.check_recent_photos()
+
 def analyse_images(colour, method):
     f = Files(colour, method)
     c = Camera(f)
-    c.get_photos()
     #c.save_analysed_photos()
 
 #EXCITATION PAGE
