@@ -65,10 +65,13 @@ class Camera:
             print("Looking for", pre, "and", post)
             p1=os.path.join(raw,pre)
             p2=os.path.join(raw,post)
-            self.pre_path = p1
-            self.post_path = p2
             print(os.path.isfile(p1))
             print(os.path.isfile(p2))
+            if os.path.isfile(p1) and os.path.isfile(p2):
+                self.pre_path = p1
+                self.post_path = p2
+                self.generate_analysed_photos()
+
 
     def generate_analysed_photos(self):
         #Create and save normalised image
@@ -76,15 +79,15 @@ class Camera:
         post = PIL.Image.open(self.post_path)
         norm = normalise_image(pre, post)
         norm_directory = self.files.get_analysis_path()
-        norm_name = self.files.names[2] #generate_file_ID() gives 1x4 vector of files names: index 2 holds normalised image filename
+        norm_name = self.files.get_file_name("norm")
         norm_path = os.path.join(norm_directory, norm_name)
         print(norm_name, "saved")
         norm.save(norm_path)
-
         #Create and save masked image
         masked = Image.fromarray(masked_image(norm_path))
-        masked_path = os.path.join(norm_directory, self.files.names[3])
-        print(self.files.names[3], "saved")
+        masked_name = self.files.get_file_name("masked")
+        masked_path = os.path.join(norm_directory, masked_name)
+        print(masked_name, "saved")
         masked.save(masked_path)
         self.norm_path = norm_path
         self.masked_path = masked_path
