@@ -103,8 +103,8 @@ class Camera:
         return norm, mask
 
 
-if __name__ == "__main__":
+'''if __name__ == "__main__":
     f = Files("green_excitation", "pc")
     c = Camera(f)
     c.check_recent_photos()
-    #c.take_photo("post")
+    #c.take_photo("post")'''
