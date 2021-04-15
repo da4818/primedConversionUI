@@ -167,9 +167,9 @@ def compare_filenames(list):
     return file_info
 
 
-if __name__ == "__main__":
+'''if __name__ == "__main__":
     f = Files()
     prev_files, roots = f.get_prev_files()
     previous, IDs, methods = f.get_raw_images(prev_files, roots)
-    print(previous, IDs, methods)
+    print(previous, IDs, methods)'''
 

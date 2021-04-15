@@ -35,7 +35,7 @@ class methodPage(Frame):
         frame.pack(fill="both", expand=True)
         #frame.grid(row=0, column=0, sticky=N+S+E+W)
         self.pack(fill="both", expand=True)
-        #Create a 5x10 (rows x columns) grid of buttons inside the frame
+        #Create a (rows x columns) grid of buttons inside the frame
         buttons = ["Take a Blank Photo (Green Channel)", "Green Excitation", "Take Photo",
                    "Undergo ", "Take a Blank Photo (Red Channel)", "Red Excitation", "Take Photo", "View Image Analysis"]
         r=2

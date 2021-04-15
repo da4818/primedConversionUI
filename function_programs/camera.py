@@ -33,9 +33,9 @@ class Camera:
         self.state = state
         if state == "pre":
             if self.files.excitation == "green_excitation":
-                img = Image.open("../green_test_before.png")
+                img = Image.open("green_test_before.png")
             elif self.files.excitation == "red_excitation":
-                img = Image.open("/red_test_before.png")
+                img = Image.open("red_test_before.png")
             filename = self.files.get_file_name("pre")
 
             self.pre_path = os.path.join(self.files.get_raw_path(), filename)
@@ -44,9 +44,9 @@ class Camera:
 
         if state == "post":
             if self.files.excitation == "green_excitation":
-                img1 = Image.open("/green_test_after.png")
+                img1 = Image.open("green_test_after.png")
             elif self.files.excitation == "red_excitation":
-                img1 = Image.open("/red_test_after.png")
+                img1 = Image.open("red_test_after.png")
             filename = self.files.get_file_name("post")
 
             self.post_path = os.path.join(self.files.get_raw_path(), filename)

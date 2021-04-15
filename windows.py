@@ -11,6 +11,7 @@ from function_programs.image_analysis import *
 from function_programs.files import *
 from function_programs.camera import *
 from OldFiles.skimage_image_analysis import get_files
+from time import time
 root = Tk()
 root.title("Primed Conversion Testing Stage")
 root.geometry("700x600")
@@ -48,6 +49,7 @@ class methodPage(Frame):
         optionsFrame = Frame(self, relief=RAISED, borderwidth=1)
         optionsFrame.pack(fill="both", expand=True)
         self.pack(fill="both", expand=True)
+
 
         gblankButton = Button(optionsFrame, text="Take a Blank Photo (Green Channel)", command=lambda: (blank_camera("green_excitation", method)))
         gblankButton.grid(row=0, column=0, padx=5, pady=5)
@@ -111,71 +113,32 @@ class excitationPage(Frame):
         self.master.title("Regular Excitation: " + title)
         exFrame = Frame(self, relief=RAISED, borderwidth=1)
         exFrame.pack(fill="both", expand=True)
-
-        self.display_LED_message(colour, exFrame, method)
         self.pack(fill="both", expand=True)
-
-        '''home = Button(self, text="Home", command=lambda: (self.destroy(), startPage()))
-        home.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-
-        dataButton = Button(self, text="Load Previous Data", command=lambda: (self.destroy(), dataPage()))
-        dataButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)'''
+        self.after(0, self.display_LED_message, colour, exFrame, method)
 
     def display_LED_message(self, colour, frame, method):
         if colour == 'green_excitation':
-            description ="Green Excitation" +": "
+            description ="Green Excitation: "
         elif colour == 'red_excitation':
-            description ="Red Excitation" +": "
+            description ="Red Excitation: "
         elif colour == 'pc':
-            description ="Photo Conversion" +": "
+            description ="Photo Conversion: "
         elif colour == 'pr':
-            description ="Primed Conversion" +": "
-
+            description ="Primed Conversion: "
+        #Will lead to a raspi LED functions
         label = Label(frame, text=description+"LED on...", bg='gray92')
         label.grid(row=4, column=4)
-        frame.after(1000, self.message(frame, label, colour, method))
+        frame.after(1000, self.message, frame, label, colour, method)
 
     def message(self, frame, label, colour, method):
         label['text'] = "LED off..."
-        frame.after(1000, self.remove_message(label, method))
+        frame.after(1000, self.remove_message,label, method)
 
     def remove_message(self, label, method):
         label.grid_forget()
+        self.destroy()
         methodPage(method)
         #analysisPage(frame, colour)
-
-
-
-
-#EXCITATION PAGE
-'''class colourExcitationPage(Frame):
-    def __init__(self, colour, method):
-        super().__init__()
-        if colour == 'red_excitation':
-            print('Red Excitation')
-            self.master.title("Red Excitation - " + str(method))
-
-        elif colour == 'green_excitation':
-            print('Green Excitation')
-            self.master.title("Green Excitation - " + str(method))
-
-
-        frame = Frame(self, relief="raised", borderwidth=1)
-        frame.pack(fill="both", expand=True)
-        self.pack(fill="both", expand=True)
-
-        f = Files(colour, method)
-        c = camera(f)
-
-        cameraButton = Button(self, text="Take initial photo", command=lambda: c.take_photo("pre"))
-        cameraButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-
-        startButton = Button(self, text="Start Excitation", command=lambda: (display_LED_message(self, colour, frame), c.take_photo("post")))
-        startButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-        backButton = Button(self, text="Back", command=lambda: (self.destroy(), excitationPage(method)))
-        backButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)'''
-        # self.destroy() Closes the current page and calls the next page to appear within the same frame
-
 
 #PREVIOUS DATA PAGE
 class dataPage(Frame):
