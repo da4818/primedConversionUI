@@ -1,45 +1,38 @@
 import os
 import re
 import skimage.io
+from collections import Counter
 '''
-FILES CLASS FUNCTIONALITY
-- returns path of existing raw images (taken with camera) --> will be used in windows.py when loading previous data
-- generates a new (unique) ID number for all filenames in the current session 
---> finds the largest existing ID number and increments it by 1
-- creates filenames using the ID number for pre, post, normalised and masked images: 
-e.g., post_pr_green4.png - 4th raw image of green excitation after undergoing primed conversion
-- various variables are saved --> this is useful in camera.py
+method - primed conversion (pr) or photoconversion (pc)
+excitation - red channel (red_excitation) or green channel (green_excitation)
+
+FUNCTIONS:
+Generate file object for excitation&method, or neither (for opening previous files)
+Find id of pr-green, pr-red, pc-green, pc-red files
+generate file names for incoming images
+
 '''
+
 #NOTE - relative path doesn't seem to work on tkinter - will use absolute path for time being
 root_path = "/Users/debbie/python"
-class files:
-    def __init__(self, excitation, method):
-        self.excitation = excitation #Whether saving to red channel or green channel
-        self.method = method #Whether primed conversion (pr) or photo conversion (pc)
-        self.root = __file__ #Path of files.py --> useful in finding relative directory of image
 
-        self.raw_path = self.get_raw_path()
-        self.analysis_path = self.get_analysis_path()
-        self.curr_file_ID = self.generate_file_ID()
+class Files:
+    def __init__(self, excitation=None, method=None):
+        #self.root = __file__ #Path of files.py --> useful in finding relative directory of image
+        if excitation is not None and method is not None:
+            self.excitation = excitation #Whether saving to red channel or green channel
+            self.method = method #Whether primed conversion (pr) or photo conversion (pc)
+            self.raw_path = self.get_raw_path()
+            self.analysis_path = self.get_analysis_path()
+            self.curr_file_ID = self.get_file_ID()
+        else:
+            print("Load previous files")
+            self.get_prev_files()
 
-    def get_raw_images(self):
-        path = root_path + '/GroupProject/raw_images'
-        raw_files_list = []
-        methods = []
-        for root, directories, filenames in os.walk(path):
-            for name in filenames:
-                if self.excitation[:-11] in name:
-                    raw_files_list.append(os.path.join(root, name))
-                    if 'pc' in name:
-                        methods.append('Photo Conversion')
-                    elif 'pr' in name:
-                        methods.append('Primed Conversion')
-        res = re.findall(r'\d+', str(raw_files_list))
-        numbers = list(map(int, res))
-        return raw_files_list, numbers, methods
 
-    def get_raw_path(self):
-        colour = self.excitation[:-11] #removes '_excitation' from the string
+    def get_raw_path(self, colour=None):
+        if colour is None:
+            colour = self.excitation[:-11] #removes '_excitation' from the string
         absolute_path = root_path + '/GroupProject/raw_images/'+str(colour)
         return absolute_path #ValueError currently doesn't check if method input is valid
 
@@ -48,15 +41,14 @@ class files:
         absolute_path = root_path + '/GroupProject/analysis_images/'+str(colour)
         return absolute_path #ValueError currently doesn't check if method input is valid
 
-    def generate_file_ID(self):
-        g = self.method
+    def get_file_ID(self):
         path = self.get_raw_path()
         path1 = self.get_analysis_path()
         files_list = []
         for root, directories, filenames in os.walk(path):
             for name in filenames:
-                if self.method+str("_") in name:
-                 files_list.append((root, name))
+                if self.method+str("_") in name: #looks for pr or pc in filename
+                    files_list.append((path, name))
         for i in path, path1:
             for root, directories, filenames in os.walk(i):
                 for name in filenames:
@@ -64,21 +56,71 @@ class files:
                         files_list.append((i, name))
         n = find_max(files_list)
         if (n == None or n == 0):
-            n = 0  #Create ID number that is increment of most recent fileID number
+            n = 0  #Shows number of existing files of the existing experiments
         return n
-        '''names = self.get_file_names()
-        return names'''
+    #Finds existing normalised & masked files for a given experiment
+    # - if they both exist, then the experiment has been completed its raw image will exist
+    # We will generate the corresponding raw image file name to find
+    def get_prev_files(self):
+        path = root_path + '/GroupProject/analysis_images'
+        files_list = []
+        roots_list = []
+        for root, directories, filenames in os.walk(path):
+            for name in filenames:
+                if "green" in name:
+                    path = self.get_raw_path("green")
+                elif "red" in name:
+                    path = self.get_raw_path("red")
+                files_list.append(name)
+                roots_list.append(path)
+        if len(files_list) > 0:
+            prev_files = compare_filenames(files_list)
+            for i, attr in enumerate(prev_files):
+                prev_files[i] = "post_"+str(attr)+".png"
+        else:
+            print("No existing files")
+            prev_files = 0
+        return prev_files, roots_list
 
-    '''def get_file_names(self):
-        pre_filename = "pre_"+str(self.method)+"_"+str(self.excitation)+str(self.curr_file_ID+1)+".png"
-        post_filename = "post_"+str(self.method)+"_"+str(self.excitation)+str(self.curr_file_ID)+".png"
-        normalised_filename = "norm_"+str(self.method)+"_"+str(self.excitation)+str(self.curr_file_ID)+".png"
-        masked_filename = "masked_"+str(self.method)+"_"+str(self.excitation)+str(self.curr_file_ID)+".png"
-        return pre_filename, post_filename, normalised_filename, masked_filename'''
+    def get_raw_images(self, prev_list = None, roots_list=None):
+        path = root_path + '/GroupProject/raw_images'
+        raw_files_list = []
+        methods = []
+        if prev_list is not None and roots_list is not None:
+            raw_files_list = list(zip(roots_list,prev_list))
+            for i, name in enumerate(raw_files_list):
+                raw_files_list[i] = os.path.join(*name)
+                if 'pc' in raw_files_list[i]:
+                    methods.append('Photo Conversion')
+                elif 'pr' in raw_files_list[i]:
+                    methods.append('Primed Conversion')
+        else:
+            for root, directories, filenames in os.walk(path):
+                for name in filenames:
+                    if self.excitation[:-11] in name:
+                        raw_files_list.append(name)
+                        if 'pc' in name:
+                            methods.append('Photo Conversion')
+                        elif 'pr' in name:
+                            methods.append('Primed Conversion')
+        res = re.findall(r'\d+', str(raw_files_list))
+        numbers = list(map(int, res))
+        return list(raw_files_list), numbers, methods
+
+    def get_file_name(self, type):
+        if type == "pre":
+            self.curr_file_ID = self.curr_file_ID+1 #the pre image is the first photo in the analysis process and decides the ID number of subsequent files
+            filename = "pre_"+str(self.method)+"_"+str(self.excitation[:-11])+"_"+str(self.curr_file_ID)+".png"
+        elif type == "post":
+            filename = "post_"+str(self.method)+"_"+str(self.excitation[:-11])+"_"+str(self.curr_file_ID)+".png"
+        elif type == "norm":
+            filename = "norm_"+str(self.method)+"_"+str(self.excitation[:-11])+"_"+str(self.curr_file_ID)+".png"
+        elif type == "masked":
+            filename = "masked_"+str(self.method)+"_"+str(self.excitation[:-11])+"_"+str(self.curr_file_ID)+".png"
+        return filename
 
     def get_normalised_image(self):
         path = self.get_analysis_path()
-
         for root, directories, filenames in os.walk(path):
             for name in filenames:
                 if 'norm' in name and str(self.curr_file_ID) in name:
@@ -87,29 +129,47 @@ class files:
 
     def export_files(self):
         path = self.get_analysis_path()
-        filename = "/norm_"+str(self.method)+"_"+str(self.excitation)+str(self.curr_file_ID)+".png"
-        filename1 = "/masked_"+str(self.method)+"_"+str(self.excitation)+str(self.curr_file_ID)+".png"
+        filename = "/norm_"+str(self.method)+"_"+str(self.excitation)+"_"+str(self.curr_file_ID)+".png"
+        filename1 = "/masked_"+str(self.method)+"_"+str(self.excitation)+"_"+str(self.curr_file_ID)+".png"
         norm = skimage.io.imread(path+filename)
         masked = skimage.io.imread(path+filename1)
         masked_path = path+filename1
         print(masked_path)
         return norm, masked, masked_path
 
-
 def find_max(name): #Find the largest filename ID number
-    numbers = re.findall(r'\d+', str(name)) #Finds all the names listed in each file name
+    numbers = re.findall(r'\d+', str(name)) #Finds all the numbers listed in each file name
     res = list(map(int, numbers)) #Transforms into a list of type int
     if len(res) == 0: #Error check: if the folder of images is empty, set ID as 0
         res = [0]
     return max(res)
 
+def compare_filenames(list):
+    attributes = []
+    for names in list:
+        temp = names.replace("_", " ")
+        attr = re.findall(r'(\w+)', temp)
+        method = attr[1]
+        colour = attr[2]
+        ID = attr[3]
+        attributes.append([method, colour, ID])
+    counter = Counter([tuple(i) for i in attributes])
+    file_info=[]
+    for j in counter.items():
+        if j[1] == 2:
+            s = str(j[0])
+            s = s.replace("\'","")
+            s = s.replace(",","")
+            s = s.replace("(","")
+            s = s.replace(")","")
+            s = s.replace(" ","_")
+            file_info.append(s)
+    return file_info
+
 
 if __name__ == "__main__":
-    f = files("green_excitation", "pc")
-    print(f.get_normalised_image())
+    f = Files()
+    prev_files, roots = f.get_prev_files()
+    previous, IDs, methods = f.get_raw_images(prev_files, roots)
+    print(previous, IDs, methods)
 
-'''if __name__ == "__main__":
-    f = files("green_excitation", "pc")
-    print(f.curr_file_ID)
-    print(f.get_raw_images())
-    print(f.get_normalised_image())'''

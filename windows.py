@@ -85,18 +85,18 @@ class methodPage(Frame):
 
 
 def blank_camera(colour, method):
-    f = files(colour, method)
-    c = camera(f)
+    f = Files(colour, method)
+    c = Camera(f)
     c.take_photo("pre")
 
 def fluo_camera(colour, method):
-    f = files(colour, method)
-    c = camera(f)
+    f = Files(colour, method)
+    c = Camera(f)
     c.take_photo("post")
 
 def analyse_images(colour, method):
-    f = files(colour, method)
-    c = camera(f)
+    f = Files(colour, method)
+    c = Camera(f)
     c.get_photos()
     #c.save_analysed_photos()
 
@@ -164,7 +164,7 @@ class excitationPage(Frame):
         frame.pack(fill="both", expand=True)
         self.pack(fill="both", expand=True)
 
-        f = files(colour, method)
+        f = Files(colour, method)
         c = camera(f)
 
         cameraButton = Button(self, text="Take initial photo", command=lambda: c.take_photo("pre"))
@@ -177,13 +177,6 @@ class excitationPage(Frame):
         # self.destroy() Closes the current page and calls the next page to appear within the same frame
 
 
-
-
-
-
-
-
-
 #PREVIOUS DATA PAGE
 class dataPage(Frame):
     def __init__(self):
@@ -191,9 +184,9 @@ class dataPage(Frame):
         self.master.title("Previous Data")
         dataFrame = Frame(self, relief=RAISED, borderwidth=1)
         dataFrame.pack(fill="both", expand=True)
-        f = files("green_excitation", "pc") #Here the type of excitation and method isn't really important - it's just to access the files
-        #Obtain a directory of previous raw images - currently separates
-        previous, IDs, methods = f.get_raw_images()
+        f = Files()
+        prev_files, roots_list = f.get_prev_files()
+        previous, IDs, methods = f.get_raw_images(prev_files, roots_list)
         print(previous)
         print(IDs)
         print(methods)
@@ -239,7 +232,7 @@ class analysisPage(Frame):
         self.master.title("Image Analysis")
         d = 25
         #img, img1 = export_images(filename)
-        f = files(colour, "pc")
+        f = Files(colour, "pc")
         img, img1, masked_path = f.export_files()
         fig = plt.figure(constrained_layout=True)
         spec = fig.add_gridspec(2, 2)

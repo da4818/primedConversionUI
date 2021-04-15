@@ -15,3 +15,16 @@ B = Button(root, text="button", command=display)
 B.pack()
 
 root.mainloop()
+
+class Test:
+    def __init__(self,length,width=None):
+        if width is not None:
+            self.shape = "Square"
+            print(self.shape,"-l:"+str(length)+" w:"+str(width))
+        else:
+            self.shape = "Circle"
+            print(self.shape,"-r:"+str(length))
+
+if __name__ == "__main__":
+    t = Test(4,5)
+    p = Test(2)
