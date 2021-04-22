@@ -49,15 +49,19 @@ class methodPage(Frame):
         optionsFrame = Frame(self, relief=RAISED, borderwidth=1)
         optionsFrame.pack(fill="both", expand=True)
         self.pack(fill="both", expand=True)
+        #Takes green and red channel images in succession (automatically)
+        blankButton = Button(optionsFrame, text="Take a Blank Photo", command=lambda: (blank_camera("both", method)))
+        blankButton.grid(row=0, column=0, padx=5, pady=5)
+        cameraButton = Button(optionsFrame, text="Take Post Photo", command=lambda: (fluo_camera("both", method)))
+        cameraButton.grid(row=2, column=0, padx=5, pady=5)
 
-
-        gblankButton = Button(optionsFrame, text="Take a Blank Photo (Green Channel)", command=lambda: (blank_camera("green_excitation", method)))
-        gblankButton.grid(row=0, column=0, padx=5, pady=5)
+        #gblankButton = Button(optionsFrame, text="Take a Blank Photo (Green Channel)", command=lambda: (blank_camera("green_excitation", method)))
+        #gblankButton.grid(row=0, column=0, padx=5, pady=5)
 
         greenButton = Button(optionsFrame, text="Green Excitation", command=lambda: (self.destroy(), excitationPage("green_excitation", method)))
         greenButton.grid(row=1, column=0, padx=5, pady=5)
-        gcameraButton = Button(optionsFrame, text="Take Green Channel Photo", command=lambda: (fluo_camera("green_excitation", method)))
-        gcameraButton.grid(row=2, column=0, padx=5, pady=5)
+        #gcameraButton = Button(optionsFrame, text="Take Green Channel Photo", command=lambda: (fluo_camera("green_excitation", method)))
+        #gcameraButton.grid(row=2, column=0, padx=5, pady=5)
 
         methodButton = Button(optionsFrame, text="Undergo " + title, command=lambda: (self.destroy(), excitationPage(method, method)))
         methodButton.grid(row=3, column=0, padx=5, pady=5)
@@ -65,8 +69,8 @@ class methodPage(Frame):
         normaliseButton = Button(optionsFrame, text="Normalise&mask (green channel)", command=lambda: (modify_images("green_excitation",method)))
         normaliseButton.grid(row=4, column=0, padx=5, pady=5)
 
-        rblankButton = Button(optionsFrame, text="Take a Blank Photo (Red Channel)",  command=lambda: (blank_camera("red_excitation", method)))
-        rblankButton.grid(row=0, column=1, padx=5, pady=5)
+        #rblankButton = Button(optionsFrame, text="Take a Blank Photo (Red Channel)",  command=lambda: (blank_camera("red_excitation", method)))
+        #rblankButton.grid(row=0, column=1, padx=5, pady=5)
 
         redButton = Button(optionsFrame, text="Red Excitation", command=lambda: (self.destroy(), excitationPage("red_excitation", method)))
         redButton.grid(row=1, column=1, padx=5, pady=5)
@@ -89,14 +93,30 @@ class methodPage(Frame):
 
 
 def blank_camera(colour, method):
-    f = Files(colour, method)
-    c = Camera(f)
-    c.take_photo("pre")
+    if colour == "both":
+        g = Files("green_excitation", method)
+        r = Files("red_excitation", method)
+        c = Camera(g)
+        c.take_photo("pre")
+        c = Camera(r)
+        c.take_photo("pre")
+    else:
+        f = Files(colour, method)
+        c = Camera(f)
+        c.take_photo("pre")
 
 def fluo_camera(colour, method):
-    f = Files(colour, method)
-    c = Camera(f)
-    c.take_photo("post")
+    if colour == "both":
+        g = Files("green_excitation", method)
+        r = Files("red_excitation", method)
+        c = Camera(g)
+        c.take_photo("post")
+        c = Camera(r)
+        c.take_photo("post")
+    else:
+        f = Files(colour, method)
+        c = Camera(f)
+        c.take_photo("post")
 
 def modify_images(colour, method):
     f = Files(colour, method)
