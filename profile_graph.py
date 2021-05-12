@@ -17,7 +17,7 @@ mask = np.zeros(img.shape[:2], np.uint8)
 #the chosen masking area is a 1px thick line from x=100 to x=400
 mask[y:y+1, start_x:end_x] = 255
 #creates matrix of brightness for chosen pixels (forms a 3 column matrix - the first 2 column are irrelevant)
-pixel_brightnesses = img[start_x:end_x,y]
+pixel_brightnesses = img[y,start_x:end_x]
 #creates vector of the pixel location selection (e.g., x coord 1,2,3....)
 pixel_locations = np.arange(start_x,end_x)
 
