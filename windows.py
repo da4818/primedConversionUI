@@ -213,7 +213,6 @@ class dataPage(Frame):
 
 
 
-
 #DATA ANALYSIS PAGE
 class analysisPage(Frame):
     def __init__(self, frame, colour):
