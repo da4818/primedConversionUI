@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-
+import os
 def generate_brightness_profile(filename):
     img = cv2.imread(filename)
     width = img.shape[0]

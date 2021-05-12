@@ -19,26 +19,30 @@ root_path = "/Users/debbie/python"
 class Files:
     def __init__(self, excitation=None, method=None):
         #self.root = __file__ #Path of files.py --> useful in finding relative directory of image
+        self.curr_filename = None
+        self.curr_filepath = None
+        self.colour = None
         if excitation is not None and method is not None:
             self.excitation = excitation #Whether saving to red channel or green channel
+            self.colour = self.excitation[:-11]
             self.method = method #Whether primed conversion (pr) or photo conversion (pc)
             self.raw_path = self.get_raw_path()
             self.analysis_path = self.get_analysis_path()
             self.curr_file_ID = self.get_file_ID()
-        else:
+
+        '''else:
             print("Load previous files")
-            self.get_prev_files()
+            self.get_prev_files()'''
 
-
-    def get_raw_path(self, colour=None):
-        if colour is None:
-            colour = self.excitation[:-11] #removes '_excitation' from the string
-        absolute_path = root_path + '/GroupProject/raw_images/'+str(colour)
+    def get_raw_path(self):
+        if self.colour is not None:
+            absolute_path = root_path + '/GroupProject/raw_images/'+str(self.colour)
+        else:
+            absolute_path = root_path + '/GroupProject/raw_images/'
         return absolute_path #ValueError currently doesn't check if method input is valid
 
     def get_analysis_path(self):
-        colour = self.excitation[:-11]
-        absolute_path = root_path + '/GroupProject/analysis_images/'+str(colour)
+        absolute_path = root_path + '/GroupProject/analysis_images/'+str(self.colour)
         return absolute_path #ValueError currently doesn't check if method input is valid
 
     def get_file_ID(self):
@@ -63,24 +67,26 @@ class Files:
     # We will generate the corresponding raw image file name to find
     def get_prev_files(self):
         path = root_path + '/GroupProject/analysis_images'
+        raw_path = root_path + '/GroupProject/raw_images'
         files_list = []
         roots_list = []
         for root, directories, filenames in os.walk(path):
             for name in filenames:
-                if "green" in name:
-                    path = self.get_raw_path("green")
-                elif "red" in name:
-                    path = self.get_raw_path("red")
+                out = root.replace("analysis_images", "raw_images")
                 files_list.append(name)
-                roots_list.append(path)
         if len(files_list) > 0:
             prev_files = compare_filenames(files_list)
+
             for i, attr in enumerate(prev_files):
                 prev_files[i] = "post_"+str(attr)+".png"
+                if "green" in prev_files[i]:
+                    roots_list.append(raw_path+"/green")
+                elif "red" in prev_files[i]:
+                    roots_list.append(raw_path+"/red")
         else:
             print("No existing files")
             prev_files = 0
-        return prev_files, roots_list
+        return prev_files, roots_list #roots list hasnt been updated
 
     def get_raw_images(self, prev_list = None, roots_list=None):
         path = root_path + '/GroupProject/raw_images'
@@ -97,7 +103,7 @@ class Files:
         else:
             for root, directories, filenames in os.walk(path):
                 for name in filenames:
-                    if self.excitation[:-11] in name and self.method in name:
+                    if self.colour in name and self.method in name:
                         raw_files_list.append(name)
                         if 'pc' in name:
                             methods.append('Photo Conversion')
@@ -110,13 +116,13 @@ class Files:
     def get_file_name(self, type):
         if type == "pre":
             self.curr_file_ID = self.curr_file_ID+1 #the pre image is the first photo in the analysis process and decides the ID number of subsequent files
-            filename = "pre_"+str(self.method)+"_"+str(self.excitation[:-11])+"_"+str(self.curr_file_ID)+".png"
+            filename = "pre_"+str(self.method)+"_"+str(self.colour)+"_"+str(self.curr_file_ID)+".png"
         elif type == "post":
-            filename = "post_"+str(self.method)+"_"+str(self.excitation[:-11])+"_"+str(self.curr_file_ID)+".png"
+            filename = "post_"+str(self.method)+"_"+str(self.colour)+"_"+str(self.curr_file_ID)+".png"
         elif type == "norm":
-            filename = "norm_"+str(self.method)+"_"+str(self.excitation[:-11])+"_"+str(self.curr_file_ID)+".png"
+            filename = "norm_"+str(self.method)+"_"+str(self.colour)+"_"+str(self.curr_file_ID)+".png"
         elif type == "masked":
-            filename = "masked_"+str(self.method)+"_"+str(self.excitation[:-11])+"_"+str(self.curr_file_ID)+".png"
+            filename = "masked_"+str(self.method)+"_"+str(self.colour)+"_"+str(self.curr_file_ID)+".png"
         return filename
 
     def get_normalised_image(self):
@@ -129,8 +135,8 @@ class Files:
 
     def export_files(self):
         path = self.get_analysis_path()
-        filename = "/norm_"+str(self.method)+"_"+str(self.excitation)+"_"+str(self.curr_file_ID)+".png"
-        filename1 = "/masked_"+str(self.method)+"_"+str(self.excitation)+"_"+str(self.curr_file_ID)+".png"
+        filename = "/norm_"+str(self.method)+"_"+str(self.colour)+"_"+str(self.curr_file_ID)+".png"
+        filename1 = "/masked_"+str(self.method)+"_"+str(self.colour)+"_"+str(self.curr_file_ID)+".png"
         norm = skimage.io.imread(path+filename)
         masked = skimage.io.imread(path+filename1)
         masked_path = path+filename1

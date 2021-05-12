@@ -40,6 +40,8 @@ class Camera:
 
             self.pre_path = os.path.join(self.files.get_raw_path(), filename)
             img.save(self.pre_path)
+            self.files.curr_filename = filename
+            self.files.curr_filepath = self.pre_path
             print(filename, "saved")
 
         if state == "post":
@@ -51,6 +53,8 @@ class Camera:
 
             self.post_path = os.path.join(self.files.get_raw_path(), filename)
             img1.save(self.post_path)
+            self.files.curr_filename = filename
+            self.files.curr_filepath = self.post_path
             print(filename, "saved")
 
 
@@ -81,16 +85,19 @@ class Camera:
         norm_directory = self.files.get_analysis_path()
         norm_name = self.files.get_file_name("norm")
         norm_path = os.path.join(norm_directory, norm_name)
-        print(norm_name, "saved")
         norm.save(norm_path)
+        print(norm_name, "saved")
         #Create and save masked image
         masked = Image.fromarray(masked_image(norm_path))
         masked_name = self.files.get_file_name("masked")
         masked_path = os.path.join(norm_directory, masked_name)
-        print(masked_name, "saved")
         masked.save(masked_path)
+        print(masked_name, "saved")
         self.norm_path = norm_path
         self.masked_path = masked_path
+        self.files.curr_filename = norm_name
+        self.files.curr_filepath = norm_path
+
 
     def get_file_name(self):
         pre_filename = "pre_"+str(self.files.method)+"_"+str(self.files.excitation[:-11])+"_"+str(self.files.curr_file_ID)+".png"

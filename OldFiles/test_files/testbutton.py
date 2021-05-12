@@ -5,7 +5,6 @@ root = Tk()
 root.geometry("700x600")
 
 
-
 class startPage(Frame):
     def __init__(self):
         super().__init__()
