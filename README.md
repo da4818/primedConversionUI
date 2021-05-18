@@ -16,7 +16,7 @@ Each image filename is saved as "type_method_colour_ID.png"
 - **colour**: refers to green (pre-conversion) or red (post-conversion) channel 
 - **ID**: refers to the sample/test number 
 
-e.g., 
+Examples 
 * "norm_pc_red_5.png" is the _normalised_ image of _5th photo conversion_ sample test, 
 after undergoing photo conversion and exciting with _540nm LED_ 
 * "pre_pr_green_1.png" is the raw image of the _1st primed conversion_ sample test,
