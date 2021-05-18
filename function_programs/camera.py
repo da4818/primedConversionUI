@@ -12,9 +12,13 @@ Raspberry pi ribbon should have blue side facing towards ethernet port
 
 ''' CAMERA CLASS FUNCTIONALITY:
 - takes and saves 2 raw photos in the correct directory: 1) pre conversion and 2) post conversion
-- saves 2 analysed photos in the correct directory: 3) normalised and 4) masked
+- saves analysed photos in the correct directory: 3) normalised 
 - returns images 1) and 4) to display to tkinter
 '''
+
+'''UPDATE: the green and red channel imagesshould have the same ID number (and the analysis page will display 2 graphs)
+ 1) The fluorescence ability (green channel)
+ 2) The primed/photo convertible ability (red channel)'''
 class Camera:
     #def __init__(self, files_class, gpio_class):
     def __init__(self, files_class):
@@ -24,7 +28,7 @@ class Camera:
         self.pre_path = ""
         self.post_path = ""
         self.norm_path = ""
-        self.masked_path = ""
+        ##self.masked_path = ""
         #camera = PiCamera() #initiatilse camera
 
     def take_photo(self, state):
@@ -87,14 +91,14 @@ class Camera:
         norm_path = os.path.join(norm_directory, norm_name)
         norm.save(norm_path)
         print(norm_name, "saved")
-        #Create and save masked image
+        '''#Create and save masked image
         masked = Image.fromarray(masked_image(norm_path))
         masked_name = self.files.get_file_name("masked")
         masked_path = os.path.join(norm_directory, masked_name)
         masked.save(masked_path)
         print(masked_name, "saved")
+        self.masked_path = masked_path'''
         self.norm_path = norm_path
-        self.masked_path = masked_path
         self.files.curr_filename = norm_name
         self.files.curr_filepath = norm_path
 
@@ -103,12 +107,6 @@ class Camera:
         pre_filename = "pre_"+str(self.files.method)+"_"+str(self.files.excitation[:-11])+"_"+str(self.files.curr_file_ID)+".png"
         post_filename = "post_"+str(self.files.method)+"_"+str(self.files.excitation[:-11])+"_"+str(self.files.curr_file_ID)+".png"
         return pre_filename, post_filename
-
-    def export_files(self):
-        norm = skimage.io.imread(self.norm_path)
-        mask = skimage.io.imread(self.masked_path)
-        return norm, mask
-
 
 '''if __name__ == "__main__":
     f = Files("green_excitation", "pc")

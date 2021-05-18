@@ -68,7 +68,7 @@ class methodPage(Frame):
         methodButton = Button(optionsFrame, text="Undergo " + title, command=lambda: (self.destroy(), excitationPage(method, method)))
         methodButton.grid(row=3, column=0, padx=5, pady=5)
 
-        normaliseButton = Button(optionsFrame, text="Normalise&mask (green channel)", command=lambda: (modify_images("green_excitation",method)))
+        normaliseButton = Button(optionsFrame, text="Normalise (green channel)", command=lambda: (modify_images("green_excitation",method)))
         normaliseButton.grid(row=4, column=0, padx=5, pady=5)
 
         rblankButton = Button(optionsFrame, text="Take a Blank Photo (Red Channel)",  command=lambda: (blank_camera("red_excitation", method)))
@@ -80,7 +80,7 @@ class methodPage(Frame):
         rcameraButton = Button(optionsFrame, text="Take Red Channel Photo", command=lambda: (fluo_camera("red_excitation", method)))
         rcameraButton.grid(row=2, column=1, padx=5, pady=5)
 
-        normaliseButton = Button(optionsFrame, text="Normalise&mask (red channel)", command=lambda: (modify_images("red_excitation",method)))
+        normaliseButton = Button(optionsFrame, text="Normalise (red channel)", command=lambda: (modify_images("red_excitation",method)))
         normaliseButton.grid(row=3, column=1, padx=5, pady=5)
 
         analysisButton = Button(optionsFrame, text="View Image Analysis", command=lambda: self.analyse_images())
@@ -184,16 +184,25 @@ class analysisPage(Frame):
         self.master.title("Image Analysis")
         analysisFrame = Frame(self, relief=RAISED, borderwidth=1)
         analysisFrame.pack(fill="both", expand=True)
-
+        
         fig = plt.figure(constrained_layout=True)
         spec = fig.add_gridspec(2, 2)
-        norm_img, brightness_profile = generate_brightness_profile(f.curr_filepath)
+        #Generate equivalent sample images' filepath (e.g. paths for green and red pc test ID 2)
+        green_path, red_path = get_equiv_file(f.curr_filepath)
+        #Plot green channel and red channel together
+        green_norm_img, green_brightness_profile = generate_brightness_profile(green_path)
+        red_norm_img, red_brightness_profile = generate_brightness_profile(red_path)
         a = fig.add_subplot(spec[0, 0])
-        a.imshow(norm_img)
+        a.imshow(green_norm_img)
         a.axis('off')
-        a.set_title("Normalised")
+        a.set_title("Normalised (Green Channel)")
+        b = fig.add_subplot(spec[0, 1])
+        b.imshow(red_norm_img)
+        b.axis('off')
+        b.set_title("Normalised (Red Channel)")
         c = fig.add_subplot(spec[1, 0:2])
-        c.plot(brightness_profile[:,2])
+        c.plot(green_brightness_profile[:], color="green")
+        c.plot(red_brightness_profile[:], color="red")
         c.set_xlabel('Pixel location')
         c.set_ylabel('Brightness')
         c.set_title("Brightness profile")
@@ -218,35 +227,35 @@ class dataPage(Frame):
         dataFrame.pack(fill="both", expand=True)
         f = Files() #here f is not global as the current files are irrelevant
         prev_files, roots_list = f.get_prev_files()
-        previous, IDs, methods = f.get_raw_images(prev_files, roots_list)
-        if len(previous) == 0:
+        if prev_files == 0:
             l = Label(dataFrame, text="No previous data")
             l.pack(fill="both", expand=True)
+        else:
+            previous, IDs, methods = f.get_raw_images(prev_files, roots_list)
+            if len(previous) > 0:
+                prev_data_list = []
+                for names in previous:
+                    prev_data_list.append(names)
+                canvas = tk.Canvas(dataFrame, width=300, height=500, bg='gray92')
+                canvas.pack(fill="both", expand=True, pady=5)
 
-        elif len(previous) > 0:
-            prev_data_list = []
-            for names in previous:
-                prev_data_list.append(names)
-            canvas = tk.Canvas(dataFrame, width=300, height=500, bg='gray92')
-            canvas.pack(fill="both", expand=True, pady=5)
-
-            #Previous images displayed in a grid format - .grid() can only be in frames that also use only .grid()
-            col_num = 4 #Set to 4 columns
-            for i,(num, method, filename) in enumerate(zip(IDs, methods, prev_data_list)):
-                r = int(i/col_num) #Calculates row number
-                c = i % col_num #Calculates column number
-                photo = PIL.Image.open(filename).resize((150, 150), ANTIALIAS)
-                render = ImageTk.PhotoImage(photo)
-                img = Label(canvas, text=str(method) + " Test " + str(num), image=render, compound="bottom")
-                img.image = render
-                img.grid(row=r, column=c, padx=5, pady=5)
+                #Previous images displayed in a grid format - .grid() can only be in frames that also use only .grid()
+                col_num = 4 #Set to 4 columns
+                for i,(num, method, filename) in enumerate(zip(IDs, methods, prev_data_list)):
+                    r = int(i/col_num) #Calculates row number
+                    c = i % col_num #Calculates column number
+                    photo = PIL.Image.open(filename).resize((150, 150), ANTIALIAS)
+                    render = ImageTk.PhotoImage(photo)
+                    img = Label(canvas, text=str(method) + " Test " + str(num), image=render, compound="bottom")
+                    img.image = render
+                    img.grid(row=r, column=c, padx=5, pady=5)
 
         self.pack(fill="both", expand=True)
         home = Button(self, text="Home", command=lambda: (self.destroy(), startPage()))
         home.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-        photoButton = Button(self, text="Photo Conversion", command=lambda: (self.destroy(), excitationPage("Photo Conversion")))
+        photoButton = Button(self, text="Photo Conversion", command=lambda: (self.destroy(), methodPage("pc")))
         photoButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-        primedButton = Button(self, text="Primed Conversion", command=lambda: (self.destroy(), excitationPage("Primed Conversion")))
+        primedButton = Button(self, text="Primed Conversion", command=lambda: (self.destroy(), methodPage("pr")))
         primedButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
 
 

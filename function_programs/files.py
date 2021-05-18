@@ -46,7 +46,8 @@ class Files:
         return absolute_path #ValueError currently doesn't check if method input is valid
 
     def get_file_ID(self):
-        path = self.get_raw_path()
+        #path = self.get_raw_path()
+        path = root_path + '/GroupProject/raw_images/green' #modifying so its finds the most recent ID number for the green channel image
         path1 = self.get_analysis_path()
         files_list = []
         for root, directories, filenames in os.walk(path):
@@ -84,7 +85,7 @@ class Files:
                 elif "red" in prev_files[i]:
                     roots_list.append(raw_path+"/red")
         else:
-            print("No existing files")
+            print("No existing analysed files.")
             prev_files = 0
         return prev_files, roots_list #roots list hasnt been updated
 
@@ -114,10 +115,10 @@ class Files:
         return list(raw_files_list), numbers, methods
 
     def get_file_name(self, type):
-        if type == "pre":
+        if type == "pre" and self.colour == "green":
             self.curr_file_ID = self.curr_file_ID+1 #the pre image is the first photo in the analysis process and decides the ID number of subsequent files
-            filename = "pre_"+str(self.method)+"_"+str(self.colour)+"_"+str(self.curr_file_ID)+".png"
-        elif type == "post":
+        filename = "pre_"+str(self.method)+"_"+str(self.colour)+"_"+str(self.curr_file_ID)+".png"
+        if type == "post":
             filename = "post_"+str(self.method)+"_"+str(self.colour)+"_"+str(self.curr_file_ID)+".png"
         elif type == "norm":
             filename = "norm_"+str(self.method)+"_"+str(self.colour)+"_"+str(self.curr_file_ID)+".png"
@@ -136,12 +137,12 @@ class Files:
     def export_files(self):
         path = self.get_analysis_path()
         filename = "/norm_"+str(self.method)+"_"+str(self.colour)+"_"+str(self.curr_file_ID)+".png"
-        filename1 = "/masked_"+str(self.method)+"_"+str(self.colour)+"_"+str(self.curr_file_ID)+".png"
         norm = skimage.io.imread(path+filename)
+        '''filename1 = "/masked_"+str(self.method)+"_"+str(self.colour)+"_"+str(self.curr_file_ID)+".png"
         masked = skimage.io.imread(path+filename1)
         masked_path = path+filename1
-        print(masked_path)
-        return norm, masked, masked_path
+        print(masked_path)'''
+        return norm#, masked, masked_path
 
 def find_max(name): #Find the largest filename ID number
     numbers = re.findall(r'\d+', str(name)) #Finds all the numbers listed in each file name
@@ -164,13 +165,22 @@ def compare_filenames(list):
     for j in counter.items():
         if j[1] == 2:
             s = str(j[0])
-            s = s.replace("\'","")
-            s = s.replace(",","")
-            s = s.replace("(","")
-            s = s.replace(")","")
-            s = s.replace(" ","_")
+            s = s.replace("\'", "")
+            s = s.replace(",", "")
+            s = s.replace("(", "")
+            s = s.replace(")", "")
+            s = s.replace(" ", "_")
             file_info.append(s)
     return file_info
+
+def get_equiv_file(filepath):
+    if "green" in filepath:
+        green_path = filepath
+        red_path = filepath.replace("green", "red")
+    elif "red" in filepath:
+        red_path = filepath
+        green_path = filepath.replace("red", "green")
+    return green_path, red_path
 
 
 '''if __name__ == "__main__":

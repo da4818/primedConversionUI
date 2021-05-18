@@ -46,5 +46,5 @@ def raspi_connection(var,gpio_class):
         sleep(2)
         lime540.off()
 '''
-if __name__ == "__main__":
-    raspi_connection('red_connection')
+'''if __name__ == "__main__":
+    raspi_connection('red_connection')'''
