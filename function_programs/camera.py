@@ -71,8 +71,8 @@ class Camera:
         else:
             pre, post = self.get_file_name()
             print("Looking for", pre, "and", post)
-            p1=os.path.join(raw,pre)
-            p2=os.path.join(raw,post)
+            p1 = os.path.join(raw,pre)
+            p2 = os.path.join(raw,post)
             print(os.path.isfile(p1))
             print(os.path.isfile(p2))
             if os.path.isfile(p1) and os.path.isfile(p2):

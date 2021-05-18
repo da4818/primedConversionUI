@@ -28,8 +28,8 @@ class startPage(Frame):
         frame.pack(fill="both", expand=True)
         self.pack(fill="both", expand=True)
 
-        #Displays 3 menu options: Photoconversion, PRimed Conversion and previous data
-        #photoButton = Button(self, text="Photo Conversion", command=lambda: (self.destroy(), excitationPage("pc")))
+        #Displays 3 menu options: Photoconversion, Primed Conversion and previous data
+
         photoButton = Button(self, text="Photo Conversion", command=lambda: (self.destroy(), methodPage("pc")))
         photoButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         primedButton = Button(self, text="Primed Conversion", command=lambda: (self.destroy(), methodPage("pr")))
@@ -94,7 +94,7 @@ class methodPage(Frame):
         dataButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
 
     def analyse_images(self):
-        c = Camera(f)
+        #c = Camera(f)
         if f.curr_filename == None :
             print("No current normalised images. Please ensure a normalised image is saved.")
         else:
@@ -189,9 +189,10 @@ class analysisPage(Frame):
         spec = fig.add_gridspec(2, 2)
         #Generate equivalent sample images' filepath (e.g. paths for green and red pc test ID 2)
         green_path, red_path = get_equiv_file(f.curr_filepath)
-        #Plot green channel and red channel together
+        #Obtain green channel and red channel values
         green_norm_img, green_brightness_profile = generate_brightness_profile(green_path)
         red_norm_img, red_brightness_profile = generate_brightness_profile(red_path)
+        #Display normalised green and red channel together
         a = fig.add_subplot(spec[0, 0])
         a.imshow(green_norm_img)
         a.axis('off')
@@ -200,6 +201,7 @@ class analysisPage(Frame):
         b.imshow(red_norm_img)
         b.axis('off')
         b.set_title("Normalised (Red Channel)")
+        #Plot green and red channel values together
         c = fig.add_subplot(spec[1, 0:2])
         c.plot(green_brightness_profile[:], color="green")
         c.plot(red_brightness_profile[:], color="red")
@@ -213,9 +215,9 @@ class analysisPage(Frame):
         self.pack(fill="both", expand=True)
         home = Button(self, text="Home", command=lambda: (self.destroy(), startPage()))
         home.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-        photoButton = Button(self, text="Photo Conversion", command=lambda: (self.destroy(), excitationPage("Photo Conversion")))
+        photoButton = Button(self, text="Photo Conversion", command=lambda: (self.destroy(), methodPage("pc")))
         photoButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-        primedButton = Button(self, text="Primed Conversion", command=lambda: (self.destroy(), excitationPage("Primed Conversion")))
+        primedButton = Button(self, text="Primed Conversion", command=lambda: (self.destroy(), methodPage("pr")))
         primedButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
 
 #PREVIOUS DATA PAGE
@@ -248,6 +250,7 @@ class dataPage(Frame):
                     render = ImageTk.PhotoImage(photo)
                     img = Label(canvas, text=str(method) + " Test " + str(num), image=render, compound="bottom")
                     img.image = render
+                    img.bind("<Button>",self.obtain_filename)
                     img.grid(row=r, column=c, padx=5, pady=5)
 
         self.pack(fill="both", expand=True)
@@ -257,6 +260,25 @@ class dataPage(Frame):
         photoButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         primedButton = Button(self, text="Primed Conversion", command=lambda: (self.destroy(), methodPage("pr")))
         primedButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
+    def obtain_filename(self, event):
+        widget = event.widget
+        out = widget.cget("text")
+        filename = self.convert_to_filename(out)
+        print("Opening " + out)
+        p = f.get_analysis_path()
+        f.curr_filepath = p + 'green/' + filename
+        self.destroy()
+        analysisPage()
+
+    def convert_to_filename(self, text):
+        #Finds the numbers in the name -> must be converted into list format, but as there is only 1 number in the list, we take the first (0th) element
+        ID = list(re.findall(r'\d+', text))[0]
+        if "Photo Conversion" in text:
+            file_method = "pc"
+        elif "Primed Conversion" in text:
+            file_method = "pr"
+        return "norm_" + file_method + "_green_" + ID + ".png"
+
 
 
 # raspberry pi GPIO class, needed in main program to ensure that the pins stay in correct voltage at all times, even when exiting external

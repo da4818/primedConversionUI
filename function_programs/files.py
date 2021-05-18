@@ -42,7 +42,10 @@ class Files:
         return absolute_path #ValueError currently doesn't check if method input is valid
 
     def get_analysis_path(self):
-        absolute_path = root_path + '/GroupProject/analysis_images/'+str(self.colour)
+        if self.colour is not None:
+            absolute_path = root_path + '/GroupProject/analysis_images/'+str(self.colour)
+        else:
+            absolute_path = root_path + '/GroupProject/analysis_images/'
         return absolute_path #ValueError currently doesn't check if method input is valid
 
     def get_file_ID(self):
@@ -60,10 +63,10 @@ class Files:
                     if self.method+str("_") in name:
                         files_list.append((i, name))
         n = find_max(files_list)
-        if (n == None or n == 0):
+        if n == None or n == 0:
             n = 0  #Shows number of existing files of the existing experiments
         return n
-    #Finds existing normalised & masked files for a given experiment
+    #Finds existing normalised files for a given experiment
     # - if they both exist, then the experiment has been completed its raw image will exist
     # We will generate the corresponding raw image file name to find
     def get_prev_files(self):
@@ -73,28 +76,26 @@ class Files:
         roots_list = []
         for root, directories, filenames in os.walk(path):
             for name in filenames:
-                out = root.replace("analysis_images", "raw_images")
                 files_list.append(name)
         if len(files_list) > 0:
             prev_files = compare_filenames(files_list)
 
             for i, attr in enumerate(prev_files):
                 prev_files[i] = "post_"+str(attr)+".png"
+                #A green and red channel images are classed as one test, so we will only look for green channel images
                 if "green" in prev_files[i]:
                     roots_list.append(raw_path+"/green")
-                elif "red" in prev_files[i]:
-                    roots_list.append(raw_path+"/red")
         else:
             print("No existing analysed files.")
             prev_files = 0
-        return prev_files, roots_list #roots list hasnt been updated
+        return prev_files, roots_list #roots list hasn't been updated
 
     def get_raw_images(self, prev_list = None, roots_list=None):
         path = root_path + '/GroupProject/raw_images'
         raw_files_list = []
         methods = []
         if prev_list is not None and roots_list is not None:
-            raw_files_list = list(zip(roots_list,prev_list))
+            raw_files_list = list(zip(roots_list, prev_list))
             for i, name in enumerate(raw_files_list):
                 raw_files_list[i] = os.path.join(*name)
                 if 'pc' in raw_files_list[i]:
@@ -114,19 +115,20 @@ class Files:
         numbers = list(map(int, res))
         return list(raw_files_list), numbers, methods
 
-    def get_file_name(self, type):
-        if type == "pre" and self.colour == "green":
+    def get_file_name(self, photo_type):
+        if photo_type == "pre" and self.colour == "green":
             self.curr_file_ID = self.curr_file_ID+1 #the pre image is the first photo in the analysis process and decides the ID number of subsequent files
         filename = "pre_"+str(self.method)+"_"+str(self.colour)+"_"+str(self.curr_file_ID)+".png"
-        if type == "post":
+        if photo_type == "post":
             filename = "post_"+str(self.method)+"_"+str(self.colour)+"_"+str(self.curr_file_ID)+".png"
-        elif type == "norm":
+        elif photo_type == "norm":
             filename = "norm_"+str(self.method)+"_"+str(self.colour)+"_"+str(self.curr_file_ID)+".png"
-        elif type == "masked":
+        elif photo_type == "masked":
             filename = "masked_"+str(self.method)+"_"+str(self.colour)+"_"+str(self.curr_file_ID)+".png"
         return filename
 
     def get_normalised_image(self):
+        norm_file = False
         path = self.get_analysis_path()
         for root, directories, filenames in os.walk(path):
             for name in filenames:
@@ -151,9 +153,9 @@ def find_max(name): #Find the largest filename ID number
         res = [0]
     return max(res)
 
-def compare_filenames(list):
+def compare_filenames(file_list):
     attributes = []
-    for names in list:
+    for names in file_list:
         temp = names.replace("_", " ")
         attr = re.findall(r'(\w+)', temp)
         method = attr[1]
@@ -161,16 +163,15 @@ def compare_filenames(list):
         ID = attr[3]
         attributes.append([method, colour, ID])
     counter = Counter([tuple(i) for i in attributes])
-    file_info=[]
+    file_info = []
     for j in counter.items():
-        if j[1] == 2:
-            s = str(j[0])
-            s = s.replace("\'", "")
-            s = s.replace(",", "")
-            s = s.replace("(", "")
-            s = s.replace(")", "")
-            s = s.replace(" ", "_")
-            file_info.append(s)
+        s = str(j[0])
+        s = s.replace("\'", "")
+        s = s.replace(",", "")
+        s = s.replace("(", "")
+        s = s.replace(")", "")
+        s = s.replace(" ", "_")
+        file_info.append(s)
     return file_info
 
 def get_equiv_file(filepath):
@@ -188,4 +189,3 @@ def get_equiv_file(filepath):
     prev_files, roots = f.get_prev_files()
     previous, IDs, methods = f.get_raw_images(prev_files, roots)
     print(previous, IDs, methods)'''
-
