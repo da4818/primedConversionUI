@@ -4,7 +4,7 @@ import skimage.io
 import skimage.viewer
 from scipy.signal import find_peaks
 import cv2
-from function_programs.colour_conversion import hex_to_RGB
+from OldFiles.colour_conversion import hex_to_RGB
 #This performs the main image analysis - masking and plotting
 def get_thresholds():
     t_Values = np.linspace(0, 1.0, num=10) #Can modify thresholds to meaningful values

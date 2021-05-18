@@ -5,13 +5,8 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg#, NavigationToolbar2Tk
 from PIL import Image, ImageTk
 from PIL.Image import ANTIALIAS
-from gpiozero import DigitalOutputDevice
-from function_programs.raspigpio import raspi_turnon, raspi_turnoff
-from function_programs.image_analysis import *
-from function_programs.files import *
 from function_programs.camera import *
 from function_programs.image_profile import *
-import os
 
 root = Tk()
 root.title("Primed Conversion Testing Stage")

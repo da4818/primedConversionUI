@@ -3,7 +3,6 @@ import PIL
 from PIL import Image
 from function_programs.files import *
 from function_programs.image_normalisation import *
-from function_programs.image_analysis import *
 from function_programs.raspigpio import raspi_turnon, raspi_turnoff
 '''
 Raspberry pi ribbon should have blue side facing towards ethernet port
@@ -28,7 +27,6 @@ class Camera:
         self.pre_path = ""
         self.post_path = ""
         self.norm_path = ""
-        ##self.masked_path = ""
         #camera = PiCamera() #initiatilse camera
 
     def take_photo(self, state):
@@ -54,32 +52,29 @@ class Camera:
             elif self.files.excitation == "red_excitation":
                 img1 = Image.open("red_test_after.png")
             filename = self.files.get_file_name("post")
-
             self.post_path = os.path.join(self.files.get_raw_path(), filename)
             img1.save(self.post_path)
             self.files.curr_filename = filename
             self.files.curr_filepath = self.post_path
             print(filename, "saved")
 
-
     def check_recent_photos(self):
         raw = self.files.get_raw_path()
-        #analysis = self.files.get_analysis_path()
+        #Generate file names, corresponding ID number and method (pc or pr)
         raw_files_list, numbers, methods = self.files.get_raw_images()
         if (not raw_files_list) or self.files.curr_file_ID == 0:
             print("No previously saved photos")
         else:
             pre, post = self.get_file_name()
             print("Looking for", pre, "and", post)
-            p1 = os.path.join(raw,pre)
-            p2 = os.path.join(raw,post)
+            p1 = os.path.join(raw, pre)
+            p2 = os.path.join(raw, post)
             print(os.path.isfile(p1))
             print(os.path.isfile(p2))
             if os.path.isfile(p1) and os.path.isfile(p2):
                 self.pre_path = p1
                 self.post_path = p2
                 self.generate_analysed_photos()
-
 
     def generate_analysed_photos(self):
         #Create and save normalised image
@@ -91,22 +86,15 @@ class Camera:
         norm_path = os.path.join(norm_directory, norm_name)
         norm.save(norm_path)
         print(norm_name, "saved")
-        '''#Create and save masked image
-        masked = Image.fromarray(masked_image(norm_path))
-        masked_name = self.files.get_file_name("masked")
-        masked_path = os.path.join(norm_directory, masked_name)
-        masked.save(masked_path)
-        print(masked_name, "saved")
-        self.masked_path = masked_path'''
         self.norm_path = norm_path
         self.files.curr_filename = norm_name
         self.files.curr_filepath = norm_path
 
-
     def get_file_name(self):
-        pre_filename = "pre_"+str(self.files.method)+"_"+str(self.files.excitation[:-11])+"_"+str(self.files.curr_file_ID)+".png"
-        post_filename = "post_"+str(self.files.method)+"_"+str(self.files.excitation[:-11])+"_"+str(self.files.curr_file_ID)+".png"
+        pre_filename = "pre_"+str(self.files.method)+"_"+str(self.files.colour)+"_"+str(self.files.curr_file_ID)+".png"
+        post_filename = "post_"+str(self.files.method)+"_"+str(self.files.colour)+"_"+str(self.files.curr_file_ID)+".png"
         return pre_filename, post_filename
+
 
 '''if __name__ == "__main__":
     f = Files("green_excitation", "pc")
