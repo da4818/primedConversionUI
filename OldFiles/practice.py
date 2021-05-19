@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import *
+
 from tkinter.ttk import Frame, Button
 import PIL
 from PIL import Image, ImageTk
@@ -29,11 +30,13 @@ class imagePage(Frame):
         self.master.title("Images")
         frame = Frame(self, relief=RAISED, borderwidth=1)
         frame.pack(fill="both", expand=True)
+
         canvas = tk.Canvas(frame, width=300, height=500, bg='gray92')
         canvas.pack(fill="both", expand=True, pady=5)
-        IDs = [1,2]
-        methods = ["Photoconversion","Primed Conversion"]
-        prev_data_list = ["green_test_after.png","green_test_before.png"]
+
+        IDs = [1,2,4,6,7,3,2,4]
+        methods = ["Photoconversion","Primed Conversion","Photoconversion","Primed Conversion","Photoconversion","Primed Conversion","Primed Conversion","Primed Conversion",]
+        prev_data_list = ["green_test_after.png","green_test_after.png","green_test_before.png","green_test_after.png","green_test_before.png","green_test_before.png","green_test_after.png","green_test_before.png"]
 
         #Previous images displayed in a grid format - .grid() can only be in frames that also use only .grid()
         col_num = 4 #Set to 4 columns
@@ -46,7 +49,12 @@ class imagePage(Frame):
             img.image = render
             img.bind("<Button>",self.printName)
             img.grid(row=r, column=c, padx=5, pady=5)
-            self.pack(fill="both", expand=True)
+
+        self.pack(fill="both", expand=True)
+        b = Button(self, text="Options", command=lambda: (self.destroy(), buttonsPage()))
+        b.pack(side="left", fill="both", expand=True, padx=5, pady=5)
+        h = Button(self, text="Home", command=lambda: (self.destroy(), startPage()))
+        h.pack(side="left", fill="both", expand=True, padx=5, pady=5)
 
     def printName(self, event):
         widget=event.widget
@@ -95,6 +103,8 @@ class buttonsPage(Frame):
 
         h = Button(self, text="Home", command=lambda: (self.destroy(), startPage()))
         h.pack(side="left", fill="both", expand=True, padx=5, pady=5)
+        i = Button(self, text="Images", command=lambda: (self.destroy(), imagePage()))
+        i.pack(side="left", fill="both", expand=True, padx=5, pady=5)
 
     def showPosEvent(self, event):
         widget=event.widget

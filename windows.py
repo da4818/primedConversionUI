@@ -32,7 +32,7 @@ class startPage(Frame):
         dataButton = Button(self, text="Load Previous Data", command=lambda: (self.destroy(), dataPage()))
         dataButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
 
-#METHOD PAGE - this page is for primed conversion or photoconversion, dpeneidng on the value passed through
+#METHOD PAGE - this page is for primed conversion or photo conversion, depending on the value passed through
 class methodPage(Frame):
     def __init__(self, method):
         super().__init__()
@@ -63,7 +63,7 @@ class methodPage(Frame):
         methodButton = Button(optionsFrame, text="Undergo " + title, command=lambda: (self.destroy(), excitationPage(method, method)))
         methodButton.grid(row=3, column=0, padx=5, pady=5)
 
-        normaliseButton = Button(optionsFrame, text="Normalise (green channel)", command=lambda: (modify_images("green_excitation",method)))
+        normaliseButton = Button(optionsFrame, text="Normalise (green channel)", command=lambda: (modify_images("green_excitation", method)))
         normaliseButton.grid(row=4, column=0, padx=5, pady=5)
 
         rblankButton = Button(optionsFrame, text="Take a Blank Photo (Red Channel)",  command=lambda: (blank_camera("red_excitation", method)))
@@ -75,7 +75,7 @@ class methodPage(Frame):
         rcameraButton = Button(optionsFrame, text="Take Red Channel Photo", command=lambda: (fluo_camera("red_excitation", method)))
         rcameraButton.grid(row=2, column=1, padx=5, pady=5)
 
-        normaliseButton = Button(optionsFrame, text="Normalise (red channel)", command=lambda: (modify_images("red_excitation",method)))
+        normaliseButton = Button(optionsFrame, text="Normalise (red channel)", command=lambda: (modify_images("red_excitation", method)))
         normaliseButton.grid(row=3, column=1, padx=5, pady=5)
 
         analysisButton = Button(optionsFrame, text="View Image Analysis", command=lambda: self.analyse_images())
@@ -90,7 +90,7 @@ class methodPage(Frame):
 
     def analyse_images(self):
         #c = Camera(f)
-        if f.curr_filename == None :
+        if f.curr_filename is None:
             print("No current normalised images. Please ensure a normalised image is saved.")
         else:
             self.destroy()
@@ -131,8 +131,6 @@ def modify_images(colour, method):
     c = Camera(f)
     c.check_recent_photos()
 
-
-
 #EXCITATION PAGE
 class excitationPage(Frame):
     def __init__(self, colour, method):
@@ -149,28 +147,28 @@ class excitationPage(Frame):
 
     def display_LED_message(self, colour, frame, method):
         if colour == 'green_excitation':
-            description ="Green Excitation: "
+            description = "Green Excitation: "
         elif colour == 'red_excitation':
-            description ="Red Excitation: "
+            description = "Red Excitation: "
         elif colour == 'pc':
-            description ="Photo Conversion: "
+            description = "Photo Conversion: "
         elif colour == 'pr':
-            description ="Primed Conversion: "
+            description = "Primed Conversion: "
         #Will lead to a raspi LED functions
+
         label = Label(frame, text=description+"LED on...", bg='gray92')
         label.grid(row=4, column=4)
         frame.after(1000, self.message, frame, label, colour, method)
 
-    def message(self, frame, label, colour, method):
+    def message(self, frame, label, method):
         label['text'] = "LED off..."
-        frame.after(1000, self.remove_message,label, method)
+        frame.after(1000, self.remove_message, label, method)
 
     def remove_message(self, label, method):
         label.grid_forget()
         self.destroy()
         methodPage(method)
         #analysisPage(frame, colour)
-
 
 #DATA ANALYSIS PAGE
 class analysisPage(Frame):
@@ -225,8 +223,8 @@ class dataPage(Frame):
         f = Files() #here f is not global as the current files are irrelevant
         prev_files, roots_list = f.get_prev_files()
         if prev_files == 0:
-            l = Label(dataFrame, text="No previous data")
-            l.pack(fill="both", expand=True)
+            emptyLabel = Label(dataFrame, text="No previous data")
+            emptyLabel.pack(fill="both", expand=True)
         else:
             previous, IDs, methods = f.get_raw_images(prev_files, roots_list)
             if len(previous) > 0:
@@ -238,14 +236,14 @@ class dataPage(Frame):
 
                 #Previous images displayed in a grid format - .grid() can only be in frames that also use only .grid()
                 col_num = 4 #Set to 4 columns
-                for i,(num, method, filename) in enumerate(zip(IDs, methods, prev_data_list)):
+                for i, (num, method, filename) in enumerate(zip(IDs, methods, prev_data_list)):
                     r = int(i/col_num) #Calculates row number
                     c = i % col_num #Calculates column number
                     photo = PIL.Image.open(filename).resize((150, 150), ANTIALIAS)
                     render = ImageTk.PhotoImage(photo)
                     img = Label(canvas, text=str(method) + " Test " + str(num), image=render, compound="bottom")
                     img.image = render
-                    img.bind("<Button>",self.obtain_filename)
+                    img.bind("<Button>", self.obtain_filename)
                     img.grid(row=r, column=c, padx=5, pady=5)
 
         self.pack(fill="both", expand=True)
@@ -255,6 +253,7 @@ class dataPage(Frame):
         photoButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         primedButton = Button(self, text="Primed Conversion", command=lambda: (self.destroy(), methodPage("pr")))
         primedButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
+
     def obtain_filename(self, event):
         widget = event.widget
         out = widget.cget("text")
@@ -266,7 +265,8 @@ class dataPage(Frame):
         analysisPage()
 
     def convert_to_filename(self, text):
-        #Finds the numbers in the name -> must be converted into list format, but as there is only 1 number in the list, we take the first (0th) element
+        #Finds the numbers in the name -> must be converted into list format,
+        # but as there is only 1 number in the list, we take the first (0th) element
         ID = list(re.findall(r'\d+', text))[0]
         if "Photo Conversion" in text:
             file_method = "pc"
@@ -274,10 +274,11 @@ class dataPage(Frame):
             file_method = "pr"
         return "norm_" + file_method + "_green_" + ID + ".png"
 
-
-
-# raspberry pi GPIO class, needed in main program to ensure that the pins stay in correct voltage at all times, even when exiting external
+# raspberry pi GPIO class, needed in main program to ensure that the pins stay in correct voltage at all times,
+# even when exiting external
 # modules that alter their state
+
+
 '''class raspi:
     def __init__(self):
         # initializing output pins and setting them LOW to ensure transistor gates are all closed on startup, thus all LEDs start off
