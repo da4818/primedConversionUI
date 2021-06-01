@@ -12,7 +12,6 @@ root = Tk()
 root.title("Primed Conversion Testing Stage")
 root.geometry("700x600")
 
-
 #START PAGE
 f = Files()
 class startPage(Frame):
@@ -95,7 +94,6 @@ class methodPage(Frame):
         else:
             self.destroy()
             analysisPage()
-
 
 def blank_camera(colour, method):
     if colour == "both":

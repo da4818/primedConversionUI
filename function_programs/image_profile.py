@@ -1,6 +1,9 @@
 import cv2
 import numpy as np
-def generate_brightness_profile(filename):
+import matplotlib.pyplot as plt
+import find_centres
+from find_centres import *
+def generate_brightness_profile(filename, y_coords):
     img = cv2.imread(filename)
     #Convert image to HSV values
     hsv_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
@@ -9,11 +12,33 @@ def generate_brightness_profile(filename):
     start_x = 0
     end_x = width
     #Create height to create brightness profile
-    y = 200 #Will possibly create a user defined height by finding cursor location
+    #y = y_coords #Will possibly create a user defined height by finding cursor location
     colour_mask = cv2.imread(filename)
-    colour_mask[y:y+1, start_x:end_x] = (255, 255, 255)
+    pixel_brightnesses=[]
+    for y in y_coords:
+        colour_mask[y:y+1, start_x:end_x] = (255, 255, 255)
+        pixel_info = hsv_img[y, start_x:end_x]
+        pixel_brightnesses.append(pixel_info[:, 2])
     mask = np.zeros(img.shape[:2], np.uint8)
     mask[y:y+1, start_x:end_x] = 255
-    pixel_info = hsv_img[y, start_x:end_x] #returns a 3 column vector contains Hue, Saturation and (brightness) Value
-    pixel_brightnesses = pixel_info[:, 2]
+    '''pixel_info = hsv_img[y, start_x:end_x] #returns a 3 column vector contains Hue, Saturation and (brightness) Value
+    pixel_brightnesses = pixel_info[:, 2]'''
+
+
+
     return colour_mask, pixel_brightnesses
+
+
+if __name__ == "__main__":
+    y_coords = find_centres('sample.png')
+    print(y_coords)
+    colour_mask, pixel_brightness = generate_brightness_profile('sample.png',y_coords)
+
+    fig, axs = plt.subplots(2)
+    axs[0].imshow(colour_mask)
+    for p in pixel_brightness:
+        axs[1].plot(p)
+    plt.show()
+
+
+

@@ -14,7 +14,7 @@ class dataPage(Frame):
 
         wrapper = LabelFrame(frame)
 
-        canvas = Canvas(wrapper)
+        canvas = Canvas(wrapper,bg="bisque")
         canvas.pack(side="left", expand=True, fill="both")
 
         yscrollbar = Scrollbar(wrapper, orient="vertical", command=canvas.yview)
@@ -33,9 +33,9 @@ class dataPage(Frame):
         columns = 3
         buttons = [[tk.Button() for j in range(columns)] for i in range(rows)]
         for i in range(0, rows):
-            #Grid.grid_rowconfigure(buttonFrame, i, weight=1)
+            Grid.grid_rowconfigure(buttonFrame, i, weight=1)
             for j in range(0, columns):
-                #Grid.grid_columnconfigure(buttonFrame, j, weight=1)
+                Grid.grid_columnconfigure(buttonFrame, j, weight=1)
                 buttons[i][j] = tk.Button(buttonFrame, height=10, width=10, text=((columns*i)+j+1))
                 buttons[i][j].grid(row=i, column=j, padx=5, pady=5, sticky="nsew")
 
