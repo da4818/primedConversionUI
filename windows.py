@@ -195,15 +195,13 @@ class analysisPage(Frame):
 
 
 
-
-
     def show_graph(self, c, fig, distance, filename):
         thresholds, colours = get_thresholds()
         hist, bin_edges = generate_histogram(filename)
         c.plot(bin_edges[0:-1], hist)
 
         for t, col in zip(thresholds, colours):
-            c.axvline(x=t, color=col, label='line at x = {}'.format(t))
+            c.axvline(x=t, color=col, label='line at x =n  {}'.format(t))
         c.set_xlabel('Greyscale value')
         c.set_ylabel('Number of pixels')
         c.set_title("Graph")
