@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import *
-from tkinter.ttk import Frame, Button
+from tkinter import Frame, Button
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg#, NavigationToolbar2Tk
 from PIL import Image, ImageTk
@@ -234,10 +234,25 @@ class dataPage(Frame):
         self.master.title("Previous Data")
         dataFrame = Frame(self, relief=RAISED, borderwidth=1)
         dataFrame.pack(fill="both", expand=True)
+        self.canvas = Canvas(dataFrame, bg='gray92')
+        self.canvas.pack(side="left", expand=True, fill="both")
+
+        self.buttonFrame = Frame(self.canvas,bg='gray92')
+        self.buttonFrame.configure(width=self.canvas.cget("width"))
+
+        yscrollbar = Scrollbar(dataFrame, orient="vertical", command=self.canvas.yview)
+        yscrollbar.pack(side="right", fill="y")
+        self.canvasFrame = self.canvas.create_window((0,0), window=self.buttonFrame, anchor="nw")
+
+        self.canvas.configure(yscrollcommand=yscrollbar.set)
+        self.buttonFrame.bind('<Configure>', self.onFrameConfigure)
+        self.canvas.bind('<Configure>', self.frameWidth)
+
+
         f = Files() #here f is not global as the current files are irrelevant
         prev_files, roots_list = f.get_prev_files()
         if prev_files == 0:
-            emptyLabel = Label(dataFrame, text="No previous data")
+            emptyLabel = Label(self.canvas, text="No previous data")
             emptyLabel.pack(fill="both", expand=True)
         else:
             previous, IDs, methods = f.get_raw_images(prev_files, roots_list)
@@ -245,8 +260,6 @@ class dataPage(Frame):
                 prev_data_list = []
                 for names in previous:
                     prev_data_list.append(names)
-                canvas = tk.Canvas(dataFrame, width=300, height=500, bg='gray92')
-                canvas.pack(fill="both", expand=True, pady=5)
 
                 #Previous images displayed in a grid format - .grid() can only be in frames that also use only .grid()
                 col_num = 4 #Set to 4 columns
@@ -255,7 +268,7 @@ class dataPage(Frame):
                     c = i % col_num #Calculates column number
                     photo = PIL.Image.open(filename).resize((150, 150), ANTIALIAS)
                     render = ImageTk.PhotoImage(photo)
-                    img = Label(canvas, text=str(method) + " Test " + str(num), image=render, compound="bottom")
+                    img = Label(self.buttonFrame, text=str(method) + " Test " + str(num), image=render, compound="bottom")
                     img.image = render
                     img.bind("<Button>", self.obtain_filename)
                     img.grid(row=r, column=c, padx=5, pady=5)
@@ -267,6 +280,13 @@ class dataPage(Frame):
         photoButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         primedButton = Button(self, text="Primed Conversion", command=lambda: (self.destroy(), methodPage("pr")))
         primedButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
+
+    def frameWidth(self, event):
+        canvas_width = event.width
+        self.canvas.itemconfig(self.canvasFrame, width = canvas_width)
+
+    def onFrameConfigure(self, event):
+        self.canvas.configure(scrollregion=self.canvas.bbox("all"))
 
     def obtain_filename(self, event):
         widget = event.widget
@@ -287,6 +307,7 @@ class dataPage(Frame):
         elif "Primed Conversion" in text:
             file_method = "pr"
         return "norm_" + file_method + "_green_" + ID + ".png"
+
 
 # raspberry pi GPIO class, needed in main program to ensure that the pins stay in correct voltage at all times,
 # even when exiting external
