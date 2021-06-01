@@ -1,10 +1,7 @@
 import tkinter as tk
 from tkinter import *
-
 from tkinter import Frame, Button
-import PIL
-from PIL import Image, ImageTk
-from PIL.Image import ANTIALIAS
+
 root = Tk()
 root.geometry("700x600")
 
