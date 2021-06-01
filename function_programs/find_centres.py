@@ -55,7 +55,7 @@ def group_values(counter):
 
 
 '''if __name__ == "__main__":
-    y=find_centres("../analysis_images/green/norm_pc_green_1.png")
+    y=find_centres("../analysis_images/green/)
     print(list(y))
 '''
 

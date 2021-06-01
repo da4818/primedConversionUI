@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import *
-from tkinter.ttk import Frame, Button, LabelFrame
+from tkinter import Frame, Button, LabelFrame
 root = Tk()
 root.geometry("700x600")
 class dataPage(Frame):
@@ -21,7 +21,6 @@ class dataPage(Frame):
         yscrollbar.pack(side="right", fill="y")
 
         canvas.configure(yscrollcommand=yscrollbar.set)
-
         canvas.bind('<Configure>', lambda e: canvas.configure(scrollregion = canvas.bbox('all')))
 
         buttonFrame = Frame(canvas)
@@ -33,7 +32,7 @@ class dataPage(Frame):
         columns = 3
         buttons = [[tk.Button() for j in range(columns)] for i in range(rows)]
         for i in range(0, rows):
-            Grid.grid_rowconfigure(buttonFrame, i, weight=1)
+            #Grid.grid_rowconfigure(buttonFrame, i, weight=1)
             for j in range(0, columns):
                 Grid.grid_columnconfigure(buttonFrame, j, weight=1)
                 buttons[i][j] = tk.Button(buttonFrame, height=10, width=10, text=((columns*i)+j+1))

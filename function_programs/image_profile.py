@@ -24,7 +24,7 @@ def generate_brightness_profile(filename):
     '''pixel_info = hsv_img[y, start_x:end_x] #returns a 3 column vector contains Hue, Saturation and (brightness) Value
     pixel_brightnesses = pixel_info[:, 2]'''
 
-    return colour_mask, pixel_brightnesses
+    return colour_mask, pixel_brightnesses, y_coords
 
 
 '''if __name__ == "__main__":

@@ -177,32 +177,44 @@ class analysisPage(Frame):
         analysisFrame.pack(fill="both", expand=True)
         
         fig = plt.figure(constrained_layout=True)
-        spec = fig.add_gridspec(2, 2)
+        spec = fig.add_gridspec(3, 2)
         #Generate equivalent sample images' filepath (e.g. paths for green and red pc test ID 2)
         green_path, red_path = get_equiv_file(f.curr_filepath)
         #Obtain green channel and red channel values
-        green_norm_img, green_brightness_profile = generate_brightness_profile(green_path)
-        #red_norm_img, red_brightness_profile = generate_brightness_profile(red_path)
+        green_norm_img, green_brightness_profile, green_y_coords = generate_brightness_profile(green_path)
+        red_norm_img, red_brightness_profile, red_y_coords = generate_brightness_profile(red_path)
         #Display normalised green and red channel together
         a = fig.add_subplot(spec[0, 0])
         a.imshow(green_norm_img)
         a.axis('off')
         a.set_title("Normalised (Green Channel)")
         b = fig.add_subplot(spec[0, 1])
-       # b.imshow(red_norm_img)
+        b.imshow(red_norm_img)
         b.axis('off')
         b.set_title("Normalised (Red Channel)")
-        #Plot green and red channel values together
+
+        #Plotting green values together
         c = fig.add_subplot(spec[1, 0:2])
-        ##c.plot(green_brightness_profile[:], color="green")
-        for p in green_brightness_profile:
-            c.plot(p)
-        #for p in red_brightness_profile:
-        #    c.plot(p)
-        ##c.plot(red_brightness_profile[:], color="red")
+        greens = ('#008000', '#90EE90', '#00A550', '#39FF14')
+        for profile, y, col in zip(green_brightness_profile, green_y_coords, greens):
+            c.plot(profile, color=col, label='line at y ={}'.format(y))
         c.set_xlabel('Pixel location')
         c.set_ylabel('Brightness')
         c.set_title("Brightness profile")
+        c.legend()
+
+        #Plotting red values together
+        #for p in red_brightness_profile:
+        #    c.plot(p)
+        ##c.plot(red_brightness_profile[:], color="red")
+        d = fig.add_subplot(spec[2, 0:2])
+        reds = ('#FF0000', '#A50021', '#FF91A4', '#C51E3A')
+        for profile, y, col in zip(red_brightness_profile, red_y_coords, reds):
+            d.plot(profile, color=col, label='line at y ={}'.format(y))
+        d.set_xlabel('Pixel location')
+        d.set_ylabel('Brightness')
+        d.legend()
+
         fig.canvas.draw()
         canvas = FigureCanvasTkAgg(fig, self)
         plot_widget = canvas.get_tk_widget()
