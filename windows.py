@@ -13,17 +13,16 @@ root.title("Primed Conversion Testing Stage")
 root.geometry("700x600")
 
 #START PAGE
-f = Files()
+f = Files() #global file variable (to have continual access to files)
 class startPage(Frame):
     def __init__(self):
         super().__init__()
         self.master.title("Home")
-        frame = Frame(self, relief=RAISED, borderwidth=1)
+        frame = Frame(self, relief=RAISED, borderwidth=1, bg='gray92')
         frame.pack(fill="both", expand=True)
         self.pack(fill="both", expand=True)
 
-        #Displays 3 menu options: Photoconversion, Primed Conversion and previous data
-
+        #Displays 3 menu options: Photo Conversion, Primed Conversion and Previous Data
         photoButton = Button(self, text="Photo Conversion", command=lambda: (self.destroy(), methodPage("pc")))
         photoButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         primedButton = Button(self, text="Primed Conversion", command=lambda: (self.destroy(), methodPage("pr")))
@@ -42,15 +41,11 @@ class methodPage(Frame):
         self.master.title(title)
         '''Grid.rowconfigure(self, 0, weight=1)
         Grid.columnconfigure(self, 0, weight=1)'''
-        optionsFrame = Frame(self, relief=RAISED, borderwidth=1)
+        optionsFrame = Frame(self, relief=RAISED, borderwidth=1, bg='gray92')
         optionsFrame.pack(fill="both", expand=True)
         self.pack(fill="both", expand=True)
-        #Takes green and red channel images in succession (automatically)
-        '''blankButton = Button(optionsFrame, text="Take a Blank Photo", command=lambda: (blank_camera("both", method)))
-        blankButton.grid(row=0, column=0, padx=5, pady=5)'''
-        '''cameraButton = Button(optionsFrame, text="Take Post Photo", command=lambda: (fluo_camera("both", method)))
-        cameraButton.grid(row=2, column=0, padx=5, pady=5)'''
 
+        #Button options
         gblankButton = Button(optionsFrame, text="Take a Blank Photo (Green Channel)", command=lambda: (blank_camera("green_excitation", method)))
         gblankButton.grid(row=0, column=0, padx=5, pady=5)
 
@@ -81,14 +76,13 @@ class methodPage(Frame):
         analysisButton.grid(row=4, column=1, padx=5, pady=5, sticky=N+S+E+W)
 
         self.pack(fill="both", expand=True)
-
+        #Main menu options
         home = Button(self, text="Home", command=lambda: (self.destroy(), startPage()))
         home.pack(side="left", fill="both", expand=True, padx=5, pady=5)
         dataButton = Button(self, text="Load Previous Data", command=lambda: (self.destroy(), dataPage()))
         dataButton.pack(side="left", fill="both", expand=True, padx=5, pady=5)
 
     def analyse_images(self):
-        #c = Camera(f)
         if f.curr_filename is None:
             print("No current normalised images. Please ensure a normalised image is saved.")
         else:
@@ -105,7 +99,7 @@ def blank_camera(colour, method):
         c.take_photo("pre")
     else:
         global f
-        f = Files(colour, method)
+        f = Files(colour, method) #prepare filenames for specifc channel
         c = Camera(f)
         c.take_photo("pre")
 
@@ -166,7 +160,6 @@ class excitationPage(Frame):
         label.grid_forget()
         self.destroy()
         methodPage(method)
-        #analysisPage(frame, colour)
 
 #DATA ANALYSIS PAGE
 class analysisPage(Frame):
@@ -177,20 +170,21 @@ class analysisPage(Frame):
         analysisFrame.pack(fill="both", expand=True)
         
         fig = plt.figure(constrained_layout=True)
-        spec = fig.add_gridspec(3, 2)
+        spec = fig.add_gridspec(3, 2) #Creates 3 x 2 grid (1st row for images, 2nd & 3rd row for brightness profiles)
         #Generate equivalent sample images' filepath (e.g. paths for green and red pc test ID 2)
         green_path, red_path = get_equiv_file(f.curr_filepath)
         #Obtain green channel and red channel values
         green_norm_img, green_brightness_profile, green_y_coords = generate_brightness_profile(green_path)
         red_norm_img, red_brightness_profile, red_y_coords = generate_brightness_profile(red_path)
-        #Display normalised green and red channel together
+
+        #Display normalised green and red channel images together
         a = fig.add_subplot(spec[0, 0])
         a.imshow(green_norm_img)
-        a.axis('off')
+        #a.axis('off')
         a.set_title("Normalised (Green Channel)")
         b = fig.add_subplot(spec[0, 1])
         b.imshow(red_norm_img)
-        b.axis('off')
+        #b.axis('off')
         b.set_title("Normalised (Red Channel)")
 
         #Plotting green values together
