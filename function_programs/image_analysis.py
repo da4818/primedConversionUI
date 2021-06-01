@@ -33,6 +33,7 @@ def masked_image(filename):
     sigma = 2 #Blurring factor
     blur = skimage.color.rgb2gray(image) #Blur and grayscale before thresholding
     blur = skimage.filters.gaussian(blur, sigma=sigma)
+
     #Performs binary thresholding for each threshold value
     for t in t_Values:
         masks.append(blur > t)
