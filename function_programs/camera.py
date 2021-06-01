@@ -27,7 +27,7 @@ class Camera:
         self.pre_path = ""
         self.post_path = ""
         self.norm_path = ""
-        #camera = PiCamera() #initiatilse camera
+        #self.camera = PiCamera() #initiatilse camera
 
     def take_photo(self, state):
         print("Camera on")
@@ -101,3 +101,19 @@ class Camera:
     c = Camera(f)
     c.check_recent_photos()
     #c.take_photo("post")'''
+
+
+'''from picamera import PiCamera
+from datetime import datetime
+
+class Camera:
+    def __init__(self):
+        self.camera = PiCamera()
+        print("Camera connected")
+
+    def capture(self, ID):
+        timestamp = datetime.now().isoformat()
+        filename = "file" + str(ID) +".jpg"
+        self.camera.capture('/home/pi/'+filename)
+        print(filename+ " captured at", timestamp)
+        self.camera.close()'''

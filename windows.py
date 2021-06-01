@@ -152,11 +152,11 @@ class excitationPage(Frame):
             description = "Photo Conversion: "
         elif colour == 'pr':
             description = "Primed Conversion: "
-        #Will lead to a raspi LED functions
+        #Will lead to raspi LED functions
 
         label = Label(frame, text=description+"LED on...", bg='gray92')
         label.grid(row=4, column=4)
-        frame.after(1000, self.message, frame, label, colour, method)
+        frame.after(1000, self.message, frame, label, method)
 
     def message(self, frame, label, method):
         label['text'] = "LED off..."
@@ -182,20 +182,24 @@ class analysisPage(Frame):
         green_path, red_path = get_equiv_file(f.curr_filepath)
         #Obtain green channel and red channel values
         green_norm_img, green_brightness_profile = generate_brightness_profile(green_path)
-        red_norm_img, red_brightness_profile = generate_brightness_profile(red_path)
+        #red_norm_img, red_brightness_profile = generate_brightness_profile(red_path)
         #Display normalised green and red channel together
         a = fig.add_subplot(spec[0, 0])
         a.imshow(green_norm_img)
         a.axis('off')
         a.set_title("Normalised (Green Channel)")
         b = fig.add_subplot(spec[0, 1])
-        b.imshow(red_norm_img)
+       # b.imshow(red_norm_img)
         b.axis('off')
         b.set_title("Normalised (Red Channel)")
         #Plot green and red channel values together
         c = fig.add_subplot(spec[1, 0:2])
-        c.plot(green_brightness_profile[:], color="green")
-        c.plot(red_brightness_profile[:], color="red")
+        ##c.plot(green_brightness_profile[:], color="green")
+        for p in green_brightness_profile:
+            c.plot(p)
+        #for p in red_brightness_profile:
+        #    c.plot(p)
+        ##c.plot(red_brightness_profile[:], color="red")
         c.set_xlabel('Pixel location')
         c.set_ylabel('Brightness')
         c.set_title("Brightness profile")
