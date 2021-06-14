@@ -6,7 +6,7 @@ import time
 class LEDs:
     def __init__(self):
         self.lime = LED(17) #GPIO17 = BOARD11
-        self.red = LED(18) #GPIO18 = BOARD12˚
+        self.red = LED(18) #GPIO18 = BOARD12
         self.blue = LED(22) #GPIO22 = BOARD15
         #self.uv = LED(23) #GPIO23 = BOARD16
         self.lime.off()
@@ -40,3 +40,17 @@ class LEDs:
             time.sleep(5)
             self.red.off()
             print("Finished Red Excitation")
+
+
+import RPi.GPIO as GPIO
+import time
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
+GPIO.setup(17,GPIO.OUT)
+for i in range(5):
+    print("LED off")
+    GPIO.output(17,GPIO.HIGH)
+    time.sleep(1)
+    print("LED on")
+    GPIO.output(17,GPIO.LOW)
+    time.sleep(1)

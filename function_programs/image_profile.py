@@ -17,12 +17,10 @@ def generate_brightness_profile(filename):
     pixel_brightnesses=[]
     for y in list(y_coords):
         colour_mask[y:y+1, start_x:end_x] = (255, 255, 255)
-        pixel_info = hsv_img[y, start_x:end_x]
+        pixel_info = hsv_img[y, start_x:end_x] #returns a 3 column vector containing Hue, Saturation and Value (brightness)
         pixel_brightnesses.append(pixel_info[:, 2])
     mask = np.zeros(img.shape[:2], np.uint8)
     mask[y:y+1, start_x:end_x] = 255
-    '''pixel_info = hsv_img[y, start_x:end_x] #returns a 3 column vector contains Hue, Saturation and (brightness) Value
-    pixel_brightnesses = pixel_info[:, 2]'''
 
     return colour_mask, pixel_brightnesses, y_coords
 

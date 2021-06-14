@@ -161,7 +161,7 @@ class excitationPage(Frame):
         self.destroy()
         methodPage(method)
 
-#DATA ANALYSIS PAGE
+#DATA ANALYSIS PAGE§
 class analysisPage(Frame):
     def __init__(self):
         super().__init__()
@@ -189,25 +189,25 @@ class analysisPage(Frame):
 
         #Plotting green values together
         c = fig.add_subplot(spec[1, 0:2])
-        greens = ('#008000', '#90EE90', '#00A550', '#39FF14')
+        greens = ('#E0FFD4', '#7BC45E', '#337A1D', '#0B2902')
         for profile, y, col in zip(green_brightness_profile, green_y_coords, greens):
             c.plot(profile, color=col, label='line at y ={}'.format(y))
         c.set_xlabel('Pixel location')
         c.set_ylabel('Brightness')
         c.set_title("Brightness profile")
-        c.legend()
+        c.legend(loc="lower right")
 
         #Plotting red values together
         #for p in red_brightness_profile:
         #    c.plot(p)
         ##c.plot(red_brightness_profile[:], color="red")
         d = fig.add_subplot(spec[2, 0:2])
-        reds = ('#FF0000', '#A50021', '#FF91A4', '#C51E3A')
+        reds = ('#FFD4D4', '#FF0000', '#8F0A0C', '#781214')
         for profile, y, col in zip(red_brightness_profile, red_y_coords, reds):
             d.plot(profile, color=col, label='line at y ={}'.format(y))
         d.set_xlabel('Pixel location')
         d.set_ylabel('Brightness')
-        d.legend()
+        d.legend(loc="lower right")
 
         fig.canvas.draw()
         canvas = FigureCanvasTkAgg(fig, self)
