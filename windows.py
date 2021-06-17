@@ -166,9 +166,6 @@ class analysisPage(Frame):
     def __init__(self):
         super().__init__()
         self.master.title("Image Analysis")
-        analysisFrame = Frame(self, relief=RAISED, borderwidth=1)
-        analysisFrame.pack(fill="both", expand=True)
-        
         fig = plt.figure(constrained_layout=True)
         spec = fig.add_gridspec(3, 2) #Creates 3 x 2 grid (1st row for images, 2nd & 3rd row for brightness profiles)
         #Generate equivalent sample images' filepath (e.g. paths for green and red pc test ID 2)
@@ -190,8 +187,9 @@ class analysisPage(Frame):
         #Plotting green values together
         c = fig.add_subplot(spec[1, 0:2])
         greens = ('#E0FFD4', '#7BC45E', '#337A1D', '#0B2902')
+        greens = ('#7BC45E', '#0B2902')
         for profile, y, col in zip(green_brightness_profile, green_y_coords, greens):
-            c.plot(profile, color=col, label='line at y ={}'.format(y))
+            c.plot(profile, color=col, label='line at y={}'.format(y))
         c.set_xlabel('Pixel location')
         c.set_ylabel('Brightness')
         c.set_title("Brightness profile")
@@ -203,6 +201,7 @@ class analysisPage(Frame):
         ##c.plot(red_brightness_profile[:], color="red")
         d = fig.add_subplot(spec[2, 0:2])
         reds = ('#FFD4D4', '#FF0000', '#8F0A0C', '#781214')
+        reds = ( '#FF0000', '#781214')
         for profile, y, col in zip(red_brightness_profile, red_y_coords, reds):
             d.plot(profile, color=col, label='line at y ={}'.format(y))
         d.set_xlabel('Pixel location')
