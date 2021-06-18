@@ -45,35 +45,57 @@ class methodPage(Frame):
         optionsFrame.pack(fill="both", expand=True)
         self.pack(fill="both", expand=True)
 
+
         #Button options
+        Grid.grid_columnconfigure(optionsFrame, 0, weight=1)
+        Grid.grid_rowconfigure(optionsFrame, 0, weight=1)
         gblankButton = Button(optionsFrame, text="Take a Blank Photo (Green Channel)", command=lambda: (blank_camera("green_excitation", method)))
-        gblankButton.grid(row=0, column=0, padx=5, pady=5)
+        gblankButton.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
 
+        Grid.grid_columnconfigure(optionsFrame, 0, weight=1)
+        Grid.grid_rowconfigure(optionsFrame, 1, weight=1)
         greenButton = Button(optionsFrame, text="Green Excitation", command=lambda: (self.destroy(), excitationPage("green_excitation", method)))
-        greenButton.grid(row=1, column=0, padx=5, pady=5)
+        greenButton.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
+
+        Grid.grid_columnconfigure(optionsFrame, 0, weight=1)
+        Grid.grid_rowconfigure(optionsFrame, 2, weight=1)
         gcameraButton = Button(optionsFrame, text="Take Green Channel Photo", command=lambda: (fluo_camera("green_excitation", method)))
-        gcameraButton.grid(row=2, column=0, padx=5, pady=5)
+        gcameraButton.grid(row=2, column=0, padx=5, pady=5, sticky="nsew")
 
+        Grid.grid_columnconfigure(optionsFrame, 0, weight=1)
+        Grid.grid_rowconfigure(optionsFrame, 3, weight=1)
         methodButton = Button(optionsFrame, text="Undergo " + title, command=lambda: (self.destroy(), excitationPage(method, method)))
-        methodButton.grid(row=3, column=0, padx=5, pady=5)
+        methodButton.grid(row=3, column=0, padx=5, pady=5, sticky="nsew")
 
+        Grid.grid_columnconfigure(optionsFrame, 0, weight=1)
+        Grid.grid_rowconfigure(optionsFrame, 4, weight=1)
         normaliseButton = Button(optionsFrame, text="Normalise (green channel)", command=lambda: (modify_images("green_excitation", method)))
-        normaliseButton.grid(row=4, column=0, padx=5, pady=5)
+        normaliseButton.grid(row=4, column=0, padx=5, pady=5, sticky="nsew")
 
+        Grid.grid_columnconfigure(optionsFrame, 1, weight=1)
+        Grid.grid_rowconfigure(optionsFrame, 0, weight=1)
         rblankButton = Button(optionsFrame, text="Take a Blank Photo (Red Channel)",  command=lambda: (blank_camera("red_excitation", method)))
-        rblankButton.grid(row=0, column=1, padx=5, pady=5)
+        rblankButton.grid(row=0, column=1, padx=5, pady=5, sticky="nsew")
 
+        Grid.grid_columnconfigure(optionsFrame, 1, weight=1)
+        Grid.grid_rowconfigure(optionsFrame, 1, weight=1)
         redButton = Button(optionsFrame, text="Red Excitation", command=lambda: (self.destroy(), excitationPage("red_excitation", method)))
-        redButton.grid(row=1, column=1, padx=5, pady=5)
+        redButton.grid(row=1, column=1, padx=5, pady=5, sticky="nsew")
 
+        Grid.grid_columnconfigure(optionsFrame, 1, weight=1)
+        Grid.grid_rowconfigure(optionsFrame, 2, weight=1)
         rcameraButton = Button(optionsFrame, text="Take Red Channel Photo", command=lambda: (fluo_camera("red_excitation", method)))
-        rcameraButton.grid(row=2, column=1, padx=5, pady=5)
+        rcameraButton.grid(row=2, column=1, padx=5, pady=5, sticky="nsew")
 
+        Grid.grid_columnconfigure(optionsFrame, 1, weight=1)
+        Grid.grid_rowconfigure(optionsFrame, 3, weight=1)
         normaliseButton = Button(optionsFrame, text="Normalise (red channel)", command=lambda: (modify_images("red_excitation", method)))
-        normaliseButton.grid(row=3, column=1, padx=5, pady=5)
+        normaliseButton.grid(row=3, column=1, padx=5, pady=5, sticky="nsew")
 
+        Grid.grid_columnconfigure(optionsFrame, 1, weight=1)
+        Grid.grid_rowconfigure(optionsFrame, 4, weight=1)
         analysisButton = Button(optionsFrame, text="View Image Analysis", command=lambda: self.analyse_images())
-        analysisButton.grid(row=4, column=1, padx=5, pady=5, sticky=N+S+E+W)
+        analysisButton.grid(row=4, column=1, padx=5, pady=5, sticky="nsew")
 
         self.pack(fill="both", expand=True)
         #Main menu options
