@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import *
 from tkinter import Frame, Button
 import matplotlib.pyplot as plt
+from tkinter import font as tkFont
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg#, NavigationToolbar2Tk
 from PIL import Image, ImageTk
 from PIL.Image import ANTIALIAS
@@ -47,54 +48,55 @@ class methodPage(Frame):
 
 
         #Button options
+        helv36 = tkFont.Font(size=20, weight=tkFont.BOLD)
         Grid.grid_columnconfigure(optionsFrame, 0, weight=1)
         Grid.grid_rowconfigure(optionsFrame, 0, weight=1)
-        gblankButton = Button(optionsFrame, text="Take a Blank Photo (Green Channel)", command=lambda: (blank_camera("green_excitation", method)))
+        gblankButton = Button(optionsFrame, text="Take a Blank Photo (Green Channel)", font=helv36, command=lambda: (blank_camera("green_excitation", method)))
         gblankButton.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
 
         Grid.grid_columnconfigure(optionsFrame, 0, weight=1)
         Grid.grid_rowconfigure(optionsFrame, 1, weight=1)
-        greenButton = Button(optionsFrame, text="Green Excitation", command=lambda: (self.destroy(), excitationPage("green_excitation", method)))
+        greenButton = Button(optionsFrame, text="Green Excitation", font=helv36, command=lambda: (self.destroy(), excitationPage("green_excitation", method)))
         greenButton.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
 
         Grid.grid_columnconfigure(optionsFrame, 0, weight=1)
         Grid.grid_rowconfigure(optionsFrame, 2, weight=1)
-        gcameraButton = Button(optionsFrame, text="Take Green Channel Photo", command=lambda: (fluo_camera("green_excitation", method)))
+        gcameraButton = Button(optionsFrame, text="Take Green Channel Photo", font=helv36, command=lambda: (fluo_camera("green_excitation", method)))
         gcameraButton.grid(row=2, column=0, padx=5, pady=5, sticky="nsew")
 
         Grid.grid_columnconfigure(optionsFrame, 0, weight=1)
         Grid.grid_rowconfigure(optionsFrame, 3, weight=1)
-        methodButton = Button(optionsFrame, text="Undergo " + title, command=lambda: (self.destroy(), excitationPage(method, method)))
+        methodButton = Button(optionsFrame, text="Undergo " + title, font=helv36, command=lambda: (self.destroy(), excitationPage(method, method)))
         methodButton.grid(row=3, column=0, padx=5, pady=5, sticky="nsew")
 
         Grid.grid_columnconfigure(optionsFrame, 0, weight=1)
         Grid.grid_rowconfigure(optionsFrame, 4, weight=1)
-        normaliseButton = Button(optionsFrame, text="Normalise (green channel)", command=lambda: (modify_images("green_excitation", method)))
+        normaliseButton = Button(optionsFrame, text="Normalise (green channel)", font=helv36, command=lambda: (modify_images("green_excitation", method)))
         normaliseButton.grid(row=4, column=0, padx=5, pady=5, sticky="nsew")
 
         Grid.grid_columnconfigure(optionsFrame, 1, weight=1)
         Grid.grid_rowconfigure(optionsFrame, 0, weight=1)
-        rblankButton = Button(optionsFrame, text="Take a Blank Photo (Red Channel)",  command=lambda: (blank_camera("red_excitation", method)))
+        rblankButton = Button(optionsFrame, text="Take a Blank Photo (Red Channel)", font=helv36, command=lambda: (blank_camera("red_excitation", method)))
         rblankButton.grid(row=0, column=1, padx=5, pady=5, sticky="nsew")
 
         Grid.grid_columnconfigure(optionsFrame, 1, weight=1)
         Grid.grid_rowconfigure(optionsFrame, 1, weight=1)
-        redButton = Button(optionsFrame, text="Red Excitation", command=lambda: (self.destroy(), excitationPage("red_excitation", method)))
+        redButton = Button(optionsFrame, text="Red Excitation", font=helv36, command=lambda: (self.destroy(), excitationPage("red_excitation", method)))
         redButton.grid(row=1, column=1, padx=5, pady=5, sticky="nsew")
 
         Grid.grid_columnconfigure(optionsFrame, 1, weight=1)
         Grid.grid_rowconfigure(optionsFrame, 2, weight=1)
-        rcameraButton = Button(optionsFrame, text="Take Red Channel Photo", command=lambda: (fluo_camera("red_excitation", method)))
+        rcameraButton = Button(optionsFrame, text="Take Red Channel Photo", font=helv36, command=lambda: (fluo_camera("red_excitation", method)))
         rcameraButton.grid(row=2, column=1, padx=5, pady=5, sticky="nsew")
 
         Grid.grid_columnconfigure(optionsFrame, 1, weight=1)
         Grid.grid_rowconfigure(optionsFrame, 3, weight=1)
-        normaliseButton = Button(optionsFrame, text="Normalise (red channel)", command=lambda: (modify_images("red_excitation", method)))
+        normaliseButton = Button(optionsFrame, text="Normalise (red channel)", font=helv36, command=lambda: (modify_images("red_excitation", method)))
         normaliseButton.grid(row=3, column=1, padx=5, pady=5, sticky="nsew")
 
         Grid.grid_columnconfigure(optionsFrame, 1, weight=1)
         Grid.grid_rowconfigure(optionsFrame, 4, weight=1)
-        analysisButton = Button(optionsFrame, text="View Image Analysis", command=lambda: self.analyse_images())
+        analysisButton = Button(optionsFrame, text="View Image Analysis", font=helv36, command=lambda: self.analyse_images())
         analysisButton.grid(row=4, column=1, padx=5, pady=5, sticky="nsew")
 
         self.pack(fill="both", expand=True)
